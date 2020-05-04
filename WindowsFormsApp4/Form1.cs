@@ -14,8 +14,8 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Diagnostics;
-using System.Windows.Forms.DataVisualization.Charting;
-
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace WindowsFormsApp4
 {
@@ -27,21 +27,30 @@ namespace WindowsFormsApp4
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
         Thread Updater;
-        string[] saRazmForInd = new string[] { " Гц", " В", " В", " В", " A", " o" };
+        string[] saRazmForInd = new string[] { " Гц", " В", " В", " В", "А", " С", "", "", "", "", "", "", "", "", "" };
         int[][] iaLevelForInd = new int[][] {
-            new int[] {   0,4000}, // freq_out
-            new int[] {1000,3900}, // Volt_out
-            new int[] {2900,5800}, // BUS
-            new int[] {3100,4200}, // GRID
-            new int[] {  10,1000}, // CURRENT
-            new int[] {  20,  60}, // Temp
+            new int[] {0,600},
+            new int[] {2000,2300},
+            new int[] {2100,5400},
+            new int[] {2100,5400},
+            new int[] {0,400},
+            new int[] {20,50},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536}
         };
 
         public enum eDev_cmd
         {
-            RUN   = 0x1,
-            STOP   = 0x2,
-            RESET  = 0x4,
+            RUN = 0x1,
+            STOP = 0x2,
+            RESET = 0x4,
             REBOOT = 0x1603,
             SAVEPRM = 0x8,
             LOADPRM = 0x10,
@@ -66,41 +75,81 @@ namespace WindowsFormsApp4
 
         public FormScope ScopeForm = null;
         SetupForm SetupForm1 = null;
-   
-
+        List<FormChart> ListOfCharts = new List<FormChart>();
         private string sTempForCell = null;
-        UInt16 chart_cnt = 0;
-        UInt16 chart_max = 1000;
+        UInt16 uiServerDelay = 10;
+        private List<ParamNames> paramNames;
 
-        UInt16 uiServerDelay=50;
+        private class CustomControlTyple
+        {
+            public TextBox  textboxIndicator { get; set; }
+            public TrackBar trackBarController { get; set; }
+            public UInt16 index { get; set; }
+
+        }
+
+        private List<CustomControlTyple> customControlsList = new List<CustomControlTyple>();
 
         public delegate void MyDelegate();
 
+        public class ParamNames
+        {
+            [JsonProperty("Name")]
+            public string Name { get; set; }
 
+            [JsonProperty("Options")]
+            public List<List<string>> Options { get; set; }
+
+            [JsonProperty("Control")]
+            public bool Control { get; set; }
+
+            [JsonProperty("Max")]
+            public int Max { get; set; }
+
+            [JsonProperty("Min")]
+            public int Min { get; set; }
+
+            [JsonProperty("Adr")]
+            public int Adr { get; set; }
+        }
 
         public Form1()
         {
 
-
-
             InitializeComponent();
 
+            try
+            {
+                string jsonString = File.ReadAllText("prm.json", Encoding.Default);
+                paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+            }
+            catch (Newtonsoft.Json.JsonReaderException e)
+            {
+                Debug.WriteLine(e);
+            }
+
+
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            this.Text = "МПЧ Сервер " + version;
+            this.Text = "БУОП01 " + version;
 
-            lstIndIR.AddRange(new TextBox[] { tbFREQ_out, tbVOLT_out, tbDC, tbGRID, tbCUR_out, tbTemp });
+            lstIndIR.AddRange(new TextBox[] { tbOutFreq, tbOutVolt, tbBusDc, tbGrid, tbOutCur, tbFcTmp, tbRdioState, tbPosMotor, tbMotorTemp,  tbPosVirt, tbPosPhys,  tbHR10, tbHR11, tbHR12, tbHR13 });
+            foreach (TextBox el in lstIndIR)
+            {
+                el.Click += new System.EventHandler((s, e) => {
+                    this.ListOfCharts[lstIndIR.IndexOf(el)].Show();
+                    this.ListOfCharts[lstIndIR.IndexOf(el)].BringToFront();
+                });
+                ListOfCharts.Add(new FormChart(lstIndIR.IndexOf(el)));
+            }
 
-            cmbBoxBaudRate.Items.AddRange(new string[] { "9600", "38400", "115200", "128000", "230400" , "406000"});
-            cmbBoxBaudRate.SelectedIndex = 2;
-            cmbBoxPortList.Items.Clear();
-            cmbBoxPortList.Items.Add("COM7");
-            cmbBoxPortList.SelectedIndex = 0;
+            var dsdf = new FormChart(1);
+
             string[] ports = SerialPort.GetPortNames();
 
-            cmbBoxPortList.Items.AddRange(ports);
             vIndi_Clear();
             // читаю файл с именами ошибок
-            try{
+            try
+            {
                 FileStream fs = new FileStream("ERR.mpch", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs, Encoding.Default);
                 string str;
@@ -110,9 +159,11 @@ namespace WindowsFormsApp4
                 }
                 sr.Close();
                 fs.Close();
-            } catch (Exception ex) { };
+            }
+            catch (Exception ex) { };
             // читаю файл с именами параметров
-            try{
+            try
+            {
                 string str = "";
                 FileStream fs = new FileStream("PRM.mpch", FileMode.Open, FileAccess.Read);
                 StreamReader sr = new StreamReader(fs, Encoding.Default);
@@ -122,14 +173,19 @@ namespace WindowsFormsApp4
                 }
                 sr.Close();
                 fs.Close();
-            }catch (Exception ex) { };
+            }
+            catch (Exception ex) { };
+
+   
+
+
             //Заполняю таблицу RIO
             for (int i = 0; i < 8; i++)
             {
 
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(gridRelayIO);
-                row.SetValues(new object[] { "Выход "+i.ToString(), 0, "Вход "+ i.ToString(), 0 });
+                row.SetValues(new object[] { "Выход " + i.ToString(), 0, "Вход " + i.ToString(), 0 });
                 this.gridRelayIO.Rows.Add(row);
 
             }
@@ -137,54 +193,8 @@ namespace WindowsFormsApp4
             Updater = new Thread(updater);
             Updater.IsBackground = true;
 
-            btnCnct.Text = "Соединить";
-
-//Контекстное меню графика
-
-            ToolStripMenuItem clearMenuItem = new ToolStripMenuItem("Очистить");
-            contextMenuForChart.Items.AddRange(new[] { clearMenuItem });
-            chart1.ContextMenuStrip = contextMenuForChart;
-            clearMenuItem.Click += clearChartItem_Click;
-            txtBoxModbusAdr.Text = "1";
-
-//Контекстное меню 
-
-            // Графики
-            cmbBoxChart1Series.SelectedIndex = 4;
-            cmbBoxChart2Series.SelectedIndex = 1;
-            chart1.ChartAreas[0].AxisX.Maximum = chart_max;
-            chart1.ChartAreas[0].AxisX.Minimum = 0;
-            chart1.ChartAreas[0].AxisX.Interval = chart_max/10;
-            chart1.ChartAreas[0].AxisX.LineColor = Color.Black;
-            chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.Gray;
-            chart1.ChartAreas[0].AxisY.LineColor = Color.Black;
-            chart1.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.Gray;
-            chart1.ChartAreas[0].AxisY.IsStartedFromZero = false;
-
-            chart2.ChartAreas[0].AxisX.Maximum = chart_max;
-            chart2.ChartAreas[0].AxisX.Minimum = 0;
-            chart2.ChartAreas[0].AxisX.Interval = chart_max/10;
-            chart2.ChartAreas[0].AxisX.LineColor = Color.Black;
-            chart2.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.Gray;
-            chart2.ChartAreas[0].AxisY.LineColor = Color.Black;
-            chart2.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.Gray;
-            chart2.ChartAreas[0].AxisY.IsStartedFromZero = false;
-
- 
-
-            foreach (Series el in chart1.Series)
-            {
-                el.BorderWidth = 3;
-                el.BorderColor = Color.DarkBlue;
-            }
-
-            foreach (Series el in chart2.Series)
-            {
-                el.BorderWidth = 3;
-                el.BorderColor = Color.DarkBlue;
-            }
-
-            cmbBoxServerDelay.SelectedIndex = 3;
+            ToolStripMenuItem_Connect.Text = "Соединить";
+            this.toolStripComboBox_RefTime.SelectedIndex = 3;
 
         }
         //основной поток
@@ -193,6 +203,8 @@ namespace WindowsFormsApp4
 
             while (true)
             {
+                try {BeginInvoke(new MyDelegate(vLog_Update));}
+                catch (Exception){}
                 
                 if (Server.spPort.IsOpen)
                 {
@@ -201,20 +213,29 @@ namespace WindowsFormsApp4
                         BeginInvoke(new MyDelegate(vIndi_Update));
                     }
                     catch (System.InvalidOperationException e) { };
-               //     Application.DoEvents();
 
-                    if (Server.suspend) { Thread.Sleep(1000);  continue; }
+                    if (Server.suspend) { Thread.Sleep(1000); continue; }
 
                     if (bloader != null) bloader = null;
 
-                    if (Server.iFail > 10) btn_Cnct_Click(this, null);
-                    if (Server.iFail < 10) Server.blReadIRreq = true;
+                    if (!Server.blDevCnctd)
+                    {
+                        Server.vConnectToDev();
+                        if (!Server.blDevCnctd)
+                        {
+                            Server.iFail++;
+                            Server.logger.Add("Нет ответа");
+                            btn_Cnct_Click(this, null);
+                            continue;
+                        }
+                    }
 
-                    if (!Server.blDevCnctd) { Server.vConnectToDev(); Server.iFail++; continue; }
-
+                    Server.blReadIRreq = true;
+               
                     Server.vPoll();
-                    
-                }else
+
+                }
+                else
                 {
                     BeginInvoke(new MyDelegate(vIndi_Clear));
                     Server.vReset();
@@ -242,25 +263,27 @@ namespace WindowsFormsApp4
             if (mes < Level[0]) tb.ForeColor = Color.LightGreen;
             if (mes > Level[1]) tb.ForeColor = Color.LightCoral;
         }
+
+        private void vLog_Update()
+        {
+            // пишу сообщения в лог 
+            while (Server.logger.Count != 0) // Print Log 
+            {
+                txtBoxLog.AppendText(Environment.NewLine + DateTime.Now.ToLongTimeString() + "  " + Server.logger[0]);
+                Server.logger.RemoveAt(0);
+            };
+        }
+
         // Обновление индикаторов
         private void vIndi_Update()
         {
             int i = 0;
 
-
-            // пишу сообщения в лог 
-            if (Server.logger.Count != 0) // Print Log 
-            {
-                txtBoxLog.AppendText(Environment.NewLine + "SV: " + Server.logger[0]);
-                Server.logger.RemoveAt(0);
-            };
-
             if (bloader != null) while (bloader.logger.Count != 0) // Print Log 
                 {
-                    
-                    if (bloader.logger[0].Length>1)
-                    {
-                        var lines = txtBoxLog.Lines.ToList();
+
+                    if (bloader.logger[0].Length > 1)
+                    {                      var lines = txtBoxLog.Lines.ToList();
                         lines.RemoveAt(lines.Count - 1);
                         txtBoxLog.Lines = lines.ToArray();
                     }
@@ -268,48 +291,54 @@ namespace WindowsFormsApp4
                     bloader.logger.RemoveAt(0);
                 };
 
-            if (txtBoxLog.Lines.Count() > 20) txtBoxLog.Clear();
+            //if (txtBoxLog.Lines.Count() > 20) txtBoxLog.Clear();
 
             if (Server.suspend) return;
 
             //  Debug.WriteLine(Server.uiInputReg[1].ToString());
             //кнопка коннект
-            if (Server.spPort.IsOpen) { btnCnct.Text = "Отключить"; } else { btnCnct.Text = "Соединить"; };
+            if (Server.spPort.IsOpen) { ToolStripMenuItem_Connect.Text = "Отключить"; } else { ToolStripMenuItem_Connect.Text = "Соединить"; };
             //проверяем актуальность размера таблиц
             if (gridHRTable.Rows.Count < Server.uiInputReg[1]) vIndi_HRGrid_init(Server.uiInputReg[1]);
 
             //обновляю индикаторы
 
             //  foreach (TextBox element in lstIndIR) //update indicators
-            i = 0; while(i<100)
+            i = 0; while (i < 100)
             {
-                if ((i+3) == Server.uiInputReg.Length) break;
+                if ((i + 3) == Server.uiInputReg.Length) break;
                 if (i == 12) break;
 
                 Int16 mes = (Int16)Server.uiInputReg[i + 3];
                 float temp = ((float)mes * 10 / 100);
-                if (i < lstIndIR.Count) {
-                    lstIndIR[i].Text = temp.ToString("#####0.0") + saRazmForInd[i];
-                    vIndi_SetColor(lstIndIR[i], mes, iaLevelForInd[i]);
+                if (i < lstIndIR.Count)
+                {
+                    string temp_str = mes.ToString();
+
+                    if (i < 5)
+                    {
+                        temp_str = temp.ToString("#####0.0") + saRazmForInd[i];
+                        vIndi_SetColor(lstIndIR[i], mes, iaLevelForInd[i]);
+                        ListOfCharts[i].AddPoint(temp);
+                    }
+                    else
+                    {
+                        ListOfCharts[i].AddPoint(mes);
+                    }
+
+                    lstIndIR[i].Text = temp_str;
                 }
-
-                chart1.Series[i].Points.Add(temp);
-                chart2.Series[i].Points.Add(temp);
-
-                if (chart1.Series[i].Points.Count > chart_max) chart1.Series[i].Points.Clear();
-                if (chart2.Series[i].Points.Count > chart_max) chart2.Series[i].Points.Clear();
-
                 i++;
             }
 
             //Осциллограф
-            if (ScopeForm!= null)
+            if (ScopeForm != null)
             {
                 if (Server.blnScpDataRdy)
                 {
                     ScopeForm.UpdateCharts(Server.uialScope, Server.iScpChNum);
                     Server.blnScpDataRdy = false;
-                  
+
                 };
                 if (!Server.blnScpEnbl) ScopeForm.Close();
             }
@@ -350,7 +379,6 @@ namespace WindowsFormsApp4
 
                     if (row.Cells[2].Value != null)
                     {
-                        //  if (Convert.ToUInt16(row.Cells[2].Value.ToString()) != Server.uiHoldingReg[i]) //--------------------------------------------------------
                         if (Convert.ToInt32(row.Cells[2].Value.ToString()) != Server.uiHoldingReg[i])
                         {
                             row.Cells[2].Style.BackColor = Color.Yellow;
@@ -360,63 +388,90 @@ namespace WindowsFormsApp4
                             if (row.Cells[2].Style.BackColor == Color.Red)
                             {
                                 row.Cells[2].Style.BackColor = Color.LightGreen;
-                                
+
                             }
                             else
                             {
                                 row.Cells[2].Style.BackColor = Color.White;
                             };
-
-                            
-
                         }
-
-                        // предел по частоте
-                        trackBar1.Maximum = Server.uiHoldingReg[5];
-                        if (i == 3)
-                        {
-                            if (Server.uiHoldingReg[i] > trackBar1.Maximum) { trackBar1.Value = trackBar1.Maximum; }
-                            else
-                            if (Server.uiHoldingReg[i] < trackBar1.Minimum) { trackBar1.Value = trackBar1.Minimum; } else
-                            { trackBar1.Value = Server.uiHoldingReg[i]; }
-
-                           
-                        };
                     }
                     // задание отрицательных значений
-                    if ( (Convert.ToInt32(row.Cells[2].Value.ToString()) < 0) && (Server.uiHoldingReg[i]> 0X7FFF) )
+                    if ((Convert.ToInt32(row.Cells[2].Value.ToString()) < 0) && (Server.uiHoldingReg[i] > 0X7FFF))
                     {
-                        if (Convert.ToInt32(row.Cells[2].Value.ToString()) == ((Int32) Server.uiHoldingReg[i] - 65536))
-                            {
+                        if (Convert.ToInt32(row.Cells[2].Value.ToString()) == ((Int32)Server.uiHoldingReg[i] - 65536))
+                        {
                             row.Cells[2].Style.BackColor = Color.LightGreen;
                         }
-                        else {
+                        else
+                        {
                             row.Cells[2].Value = Server.uiHoldingReg[i];
-                        } 
+                        }
                     }
                     else
                     {
 
                         row.Cells[2].Value = Server.uiHoldingReg[i];
                     }
-               
-                   
+
+
+                    // обновление listbox соответсвенно значению
                     if ((row.Cells[3] as DataGridViewComboBoxCell) != null)
                     {
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            if (i != 0)
-                                row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                    }
+                        foreach (var opt in paramNames[i].Options)
+                        {
+                            if (Convert.ToUInt16(opt[1]) == Server.uiHoldingReg[i])
+                            {
+                                row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[paramNames[i].Options.IndexOf(opt)];
+                            };
+                        };
+                    };
 
-                    
 
+                    // обновляю customControlsTextBox
+                    foreach (var el in customControlsList) {
+                        if (el.index == i)
+                        {
+                            int tmp_trackBarValue = 0;
+
+                            if (el.trackBarController.Minimum < 0)
+                            {
+                                if (Convert.ToInt32(row.Cells[2].Value) > 65536 / 2)
+                                {
+                                    tmp_trackBarValue = Convert.ToInt32(row.Cells[2].Value) - 65536;
+                                }
+                                else
+                                {
+                                    tmp_trackBarValue = Convert.ToInt32(row.Cells[2].Value);
+                                }
+                            }
+                            else {
+
+                                tmp_trackBarValue = Convert.ToUInt16(row.Cells[2].Value);
+                            }
+
+                            if  (tmp_trackBarValue > el.trackBarController.Maximum)
+                            {
+                                el.trackBarController.BackColor = Color.LightPink;
+                                el.trackBarController.Value = el.trackBarController.Maximum;
+                            }else if(tmp_trackBarValue < el.trackBarController.Minimum)
+                            {
+                                el.trackBarController.BackColor = Color.LightPink;
+                                el.trackBarController.Value = el.trackBarController.Minimum;
+                            } else {
+                                el.trackBarController.Value = tmp_trackBarValue;
+                                el.trackBarController.BackColor = Color.White;
+                            };
+                            el.textboxIndicator.Text = tmp_trackBarValue.ToString();
+                        };
+                    };
                     i++;
                 }
                 Server.blUpdGridHR = false;
             }
 
             // пределы по току
-            iaLevelForInd[4][0] = (int)((float)Server.uiHoldingReg[8] * 0.10); 
+            iaLevelForInd[4][0] = (int)((float)Server.uiHoldingReg[8] * 0.10);
             iaLevelForInd[4][1] = (int)((float)Server.uiHoldingReg[8] * 0.95);
 
             // обновляю поле статуса
@@ -449,16 +504,16 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text = "Соединен с [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2],16)+ "]. Ошибок связи " + Server.iFail.ToString() ;
+            tsStatus.Text = "Соединен с [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
 
 
-            }
+        }
         //Процедура сброса интерфейса при обрыве связи
         private void vIndi_Clear()
         {
             gridHRTable.Rows.Clear();
-     
-            foreach (TextBox element in lstIndIR) 
+
+            foreach (TextBox element in lstIndIR)
             {
                 element.Text = "0";
                 element.ForeColor = Color.White;
@@ -466,13 +521,14 @@ namespace WindowsFormsApp4
 
             tbState.Text = "порт не открыт";
             tbState.ForeColor = Color.Gray;
-            Server.logger.Clear();
-            if(bloader!=null) bloader.logger.Clear();
+            //Server.logger.Clear();
+            if (bloader != null) bloader.logger.Clear();
 
-            btnCnct.Text = "Соединить";
+            ToolStripMenuItem_Connect.Text = "Соединить";
             Server.uiHoldingReg = new ushort[256];
-            Server.uiInputReg   = new ushort[256];
-            txtBoxLog.Clear();
+            Server.uiInputReg = new ushort[256];
+            //txtBoxLog.Clear();
+            // 
         }
         // Создание таблицы параметров
         private void vIndi_HRGrid_init(UInt32 size)
@@ -492,89 +548,165 @@ namespace WindowsFormsApp4
                 var btnSend = new DataGridViewButtonCell();
                 btnSend.Value = "Задать";
 
-
-                switch (i)
+                if (i < (paramNames.Count - 1) && paramNames[i].Options != null)
                 {
-                    case 0:
-                        listSet.Items.AddRange(new string[]
-                        {
-                            " ",
-                            "0x0002 Стоп","0x0001 Старт","0x0004 Сброс", "0x1603 Перезагрузка",
-                            "0x2801 Откл. Авар.", "0x0008 Сохранить настройки", "0x0010 Загрузить настройки", "0x0012 Настройки по умолчанию",
-                            "0x0300 Тест вентилятора", "0x1303 Тест энкодера", "0x7777 Bootloader", "0x0016 Тест релейных выходов", "0x1304 Конфигурация 1310HM"
-                        });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-                    case 2:
-                        listSet.Items.AddRange(new string[] { "9600", "38400", "115200", "128000", "230400", "406000" });
-                        Application.DoEvents();
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if(Server.uiHoldingReg[i]< (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-                    case 4:
-                        listSet.Items.AddRange(new string[] { "Вперед", "Назад" });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
 
-                    case 10:
-                        listSet.Items.AddRange(new string[] { "Modbus", "Панель", "Релейные сигналы","Аналоговый сигнал","Modbus регистр 45"});
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-                    case 11:
-                        listSet.Items.AddRange(new string[] { "АД Скалярное", "СД по датчику", "СД без датчика", "АД без датчика" });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-                    case 39:
-                        listSet.Items.AddRange(new string[] { "Выбег", "Снижение частоты", "Постоянный ток" });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-
-                    case 43:
-                        listSet.Items.AddRange(new string[] { "Замкнутый", "Разомкнутый", "Всегда 0", "Всегда 1" });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
-                    case 56:
-                        listSet.Items.AddRange(new string[] { "Нет действия", "Предупреждение", "Авария" });
-                        row.Cells[3] = listSet;
-                        row.Cells[4] = btnSend;
-                        if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
-                            row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
-                        break;
+                    listSet.Items.Clear();
+                    foreach (var itm in paramNames[i].Options)
+                    {
+                        listSet.Items.Add(itm[0]);
+                    };
+                    row.Cells[3] = listSet;
+                    row.Cells[4] = btnSend;
+                    if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
+                        row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
                 }
+                else { paramNames.Add(new ParamNames()); };
+
+                // custom controls
+                if (paramNames[i].Control != false) {
+
+                    bool elementExist = false;
+                    //foreach (var el in this.customControlsList)
+                    //    if (el.textboxIndicator.Name == "CustomTexBox_" + i.ToString()) elementExist = true;
+                    foreach (var el in this.customControlsList)
+                        if (el.index ==  (UInt16)i) elementExist = true;
+                    if (elementExist == false)
+                    {
+                        if (tableLayoutPanel_customControl.RowCount == 1) tableLayoutPanel_customControl.RowCount++;
+                        Label lb = new Label();
+                        lb.Text = paramNames[i].Name;
+                        lb.Dock = DockStyle.Fill;
+                        lb.Margin = new System.Windows.Forms.Padding(1, 10, 1, 0); ;
+                        tableLayoutPanel_customControl.Controls.Add(lb, 0, tableLayoutPanel_customControl.RowCount - 1);
+                        tableLayoutPanel_customControl.RowCount++;
+                        TrackBar bar = new TrackBar();
+                        bar.Name = "CustomTrackBar_" + i.ToString("D2");
+                        bar.Dock = DockStyle.Fill;
+                        bar.Maximum = paramNames[i].Max;
+                        bar.Minimum = paramNames[i].Min;
+                        if(Server.uiHoldingReg[i] < bar.Maximum) bar.Value = Server.uiHoldingReg[i];
+                        //Контекстное меню для регуляторов
+                        ToolStripMenuItem TrackBarlimitMenu_Hi = new ToolStripMenuItem("Максимум");
+                        ToolStripTextBox toolStripText_Hi = new ToolStripTextBox();
+                        toolStripText_Hi.Text = bar.Maximum.ToString();
+                        toolStripText_Hi.TextBoxTextAlign = HorizontalAlignment.Center;
+                        toolStripText_Hi.KeyUp += new KeyEventHandler((s, e) => {
+                            if (e.KeyCode != Keys.Enter) return;
+                            try
+                            {
+                                bar.Maximum = Convert.ToInt32(toolStripText_Hi.Text);
+                                if (bar.Minimum < 0 && bar.Maximum > 32767) {
+                                    bar.Maximum = 32767;
+                                    toolStripText_Hi.Text = bar.Maximum.ToString();
+                                }
+                            }
+                            catch (Exception) { toolStripText_Hi.Text = bar.Maximum.ToString(); };
+                        });
+                        TrackBarlimitMenu_Hi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {toolStripText_Hi});
+                        ToolStripMenuItem TrackBarlimitMenu_Lo = new ToolStripMenuItem("Минимум");
+                        ToolStripTextBox toolStripText_Lo = new ToolStripTextBox();
+                        toolStripText_Lo.Text = bar.Minimum.ToString();
+                        toolStripText_Lo.TextBoxTextAlign = HorizontalAlignment.Center;
+                        toolStripText_Lo.KeyUp += new KeyEventHandler((s, e) => {
+                            if (e.KeyCode != Keys.Enter) return;
+                            try
+                            {
+                                bar.Minimum = Convert.ToInt32(toolStripText_Lo.Text);
+                                if (bar.Minimum < -32767)
+                                {
+                                    bar.Minimum = -32767;
+                                    toolStripText_Lo.Text = bar.Minimum.ToString();
+                                }
+                            }
+                            catch (Exception) { toolStripText_Lo.Text = bar.Minimum.ToString(); };
+                        });
+                        TrackBarlimitMenu_Lo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripText_Lo });
+                        ContextMenuStrip contextMenuForTrackBar = new ContextMenuStrip();
+                        contextMenuForTrackBar.Items.AddRange(new[] { TrackBarlimitMenu_Hi, TrackBarlimitMenu_Lo });
+                        bar.ContextMenuStrip = contextMenuForTrackBar;
+                        //Changed handler for Custom Bar
+                        bar.MouseUp += new MouseEventHandler((s, e) => {
+                            if (!Server.blDevCnctd) return;
+                            UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
+                            Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp, (UInt16)bar.Value });
+                            gridHRTable.Rows[tmp].Cells[2].Style.BackColor = Color.Red;
+                        });
+                        bar.ValueChanged += new EventHandler((s, e) => {
+                            if (!Server.blDevCnctd) return;
+                            UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
+                            foreach (var el in customControlsList)
+                                if (tmp == el.index) el.textboxIndicator.Text = bar.Value.ToString();
+                        });
+                        bar.KeyUp += new KeyEventHandler((s, e) => {
+                            if (!(e.KeyCode == Keys.Up | e.KeyCode == Keys.Down | e.KeyCode == Keys.Right | e.KeyCode == Keys.Left)) return;
+                            if (!Server.blDevCnctd) return;
+                            UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
+                            Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp, (UInt16)bar.Value });
+                            gridHRTable.Rows[tmp].Cells[2].Style.BackColor = Color.Red;
+                        });
+                        tableLayoutPanel_customControl.Controls.Add(bar, 0, tableLayoutPanel_customControl.RowCount - 1);
+                        TextBox tb = new TextBox();
+                        tb.Name = "CustomTextBox_" + i.ToString("D2");
+                        tb.KeyUp += new KeyEventHandler((s, e) =>
+                        {
+                            if (e.KeyCode != Keys.Enter) return;
+                            if (!Server.blDevCnctd) return;
+
+                            UInt16 tmp_index = Convert.ToUInt16(tb.Name.Substring(tb.Name.IndexOf('_') + 1, 2));
+                            UInt16 tmp_val = 0;
+                            try
+                            {
+                                tmp_val = (UInt16)Convert.ToInt32(tb.Text);
+                            }
+                            catch (Exception) { return; };
+                            gridHRTable.Rows[3].Cells[2].Value = tmp_val;
+                            gridHRTable.Rows[3].Cells[2].Style.BackColor = Color.Red;
+                            Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp_index, (UInt16)tmp_val });
+                        });
+                        tb.Dock = DockStyle.Fill;
+                        tb.BackColor = System.Drawing.SystemColors.MenuText;
+                        tb.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+                        tb.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+                        tb.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+                        tb.HideSelection = false;
+                        tb.Location = new System.Drawing.Point(15, 203);
+                        tb.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
+                        tb.MaximumSize = new System.Drawing.Size(1000, 1000);
+                        tb.ReadOnly = false;
+                        tb.Size = new System.Drawing.Size(150, 33);
+                        tb.TabIndex = 6;
+                        tb.Text = Server.uiHoldingReg[i].ToString();
+                        tb.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+                        tableLayoutPanel_customControl.Controls.Add(tb, 1, tableLayoutPanel_customControl.RowCount - 1);
+                        tableLayoutPanel_customControl.RowCount++;
+
+                        // добавляю в customControlsList
+                        CustomControlTyple tmpcntrl = new CustomControlTyple();
+                        tmpcntrl.textboxIndicator = tb;
+                        tmpcntrl.trackBarController = bar;
+                        tmpcntrl.index = (UInt16)i;
+                        this.customControlsList.Add(tmpcntrl);
+                    }
+                    
+                }
+
+               // if (i == 0) foreach (var itm in listSet.Items) Debug.WriteLine(itm.ToString());
+
                 str = "";
-                if (i < slPrmNam.Count) str = slPrmNam[i];
+                if (i < paramNames.Count) str = paramNames[i].Name;
                 row.SetValues(new object[] { i, str, Server.uiHoldingReg[i] });
                 gridHRTable.Rows.Add(row);
-
                 i++;
             }
         }
 
         private void txtBox_ModbusAdr_TextChanged(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(txtBoxModbusAdr.Text))
+            if (!String.IsNullOrEmpty(toolStripTextBox_adr.Text))
             {
-                if (Convert.ToDouble(txtBoxModbusAdr.Text) > 255) txtBoxModbusAdr.Text = "1";
+                if (Convert.ToDouble(toolStripTextBox_adr.Text) > 255) toolStripTextBox_adr.Text = "1";
             }
         }
         private void txtBox_ModbusAdr_KeyPress(object sender, KeyPressEventArgs e)
@@ -586,64 +718,12 @@ namespace WindowsFormsApp4
             }
         }
 
-        private void cmbBox_PortList_DropDown(object sender, EventArgs e)
-        {
-            cmbBoxPortList.Items.Clear();
-            string[] ports = SerialPort.GetPortNames();
-            if (ports.Length == 0) return;
-            cmbBoxPortList.Items.AddRange(ports);
-            if (cmbBoxPortList.Items.Count == 0) cmbBoxPortList.Text = "";
-        }
-        private void cmbBoxChart1Series_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            for (int i = 0; i < chart1.Series.Count; i++)
-            {
-                chart1.Series[i].Enabled = false;
-                if (i == cmbBoxChart1Series.SelectedIndex) chart1.Series[i].Enabled = true;
-            }
 
-        }
-        private void cmbBoxChart2Series_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            for (int i = 0; i < chart1.Series.Count; i++)
-            {
-               chart2.Series[i].Enabled = false;
-               if (i == cmbBoxChart2Series.SelectedIndex) chart2.Series[i].Enabled = true;
-            }
-
-        }
         private void cmbBoxServerDelay_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.uiServerDelay = Convert.ToUInt16(cmbBoxServerDelay.Items[cmbBoxServerDelay.SelectedIndex]);
+            this.uiServerDelay = Convert.ToUInt16(this.toolStripComboBox_RefTime.Items[this.toolStripComboBox_RefTime.SelectedIndex]);
         }
 
-        private void trackBar1_ValueChanged(object sender, EventArgs e)
-        {
-            if (Server.blDevCnctd)
-            {
-                gridHRTable.Rows[3].Cells[2].Value = trackBar1.Value;
-                tbFREQ_ref.Text = (Convert.ToDouble(trackBar1.Value.ToString())/10).ToString()+" Гц";
-            }
-        }
-        private void trackBar1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (Server.blDevCnctd)
-            {
-                Server.uialHRForWrite.Add(new UInt16[2] { 3,(UInt16) trackBar1.Value });
-                gridHRTable.Rows[3].Cells[2].Style.BackColor = Color.Red;
-            }
-        }
-        private void trackBar1_KeyUp(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode==Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
-            {
-                if (Server.blDevCnctd)
-                {
-                    Server.uialHRForWrite.Add(new UInt16[2] { 3, (UInt16)trackBar1.Value });
-                    gridHRTable.Rows[3].Cells[2].Style.BackColor = Color.Red;
-                }
-            }
-        }
 
         private void GridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -661,21 +741,21 @@ namespace WindowsFormsApp4
         {
             if (e.ColumnIndex == 2)
             {
-               int num = 0;
+                int num = 0;
                 if (gridHRTable.SelectedCells[0].ColumnIndex == 2)
-                  if(gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value!=null)
-                    if (int.TryParse(gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out num))
-                    {
-
-                        Server.uialHRForWrite.Add(new UInt16[2] {(UInt16) e.RowIndex, (UInt16)num });
+                    if (gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+                        if (int.TryParse(gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out num))
+                        {
+                            Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)e.RowIndex, (UInt16)num });
                             gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Red;
-                        return;
+                            return;
 
-                    }
-                        
+                        }
+
 
                 gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = sTempForCell;
-                return;
+
+                    return;
             }
 
         }
@@ -683,26 +763,18 @@ namespace WindowsFormsApp4
         {
 
             if (e.ColumnIndex == 4) if (gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
-            {
+                {
 
                     UInt16 index = (UInt16)(gridHRTable.Rows[e.RowIndex].Cells[3] as DataGridViewComboBoxCell).Items.IndexOf
                     (
                         gridHRTable.Rows[e.RowIndex].Cells[3].Value
                     );
 
-
-                    if (e.RowIndex == 0)
-                    {
-                        vSetComandForDev(uaCMD[index]);
-                        return;
-                    };
-
-                    Server.uialHRForWrite.Add(new UInt16[2] {(UInt16) e.RowIndex, index });
-                    gridHRTable.Rows[e.RowIndex].Cells[2].Value = index;
+                    UInt16 data = Convert.ToUInt16(paramNames[e.RowIndex].Options[index][1]);
+                    Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)e.RowIndex, data});
+                    gridHRTable.Rows[e.RowIndex].Cells[2].Value = data;
                     gridHRTable.Rows[e.RowIndex].Cells[2].Style.BackColor = Color.Red;
-
-                    //  Debug.WriteLine(gridHRTable.Rows[e.RowIndex].Cells[3].Value.ToString()+data);
-            }
+                }
         }
 
         private void btn_Run_Click(object sender, EventArgs e)
@@ -717,97 +789,88 @@ namespace WindowsFormsApp4
         {
             vSetComandForDev(eDev_cmd.RESET);
         }
+
+        static int spdpos = 0;
+        static int portpos = 0;
+        static bool bs_flg = false;
+        
+
         private void btn_Cnct_Click(object sender, EventArgs e)
         {
+
+            if (bs_flg) return;
+            con_start:
+            bs_flg = true;
+            Int32[] bds = new Int32[] { 9600, 38400, 115200, 128000, 230400, 406000 };
+            List<String> ports = SerialPort.GetPortNames().ToList();
+
+            if (ports.Count == 0) { Debug.WriteLine("No port found"); return; }
 
             if (Server.spPort.IsOpen)
             {
                 try { Server.spPort.Close(); } catch (Exception ex) { };
-              //  btnCnct.Text = "Connect";
+                bool tmp = Server.blDevCnctd;
                 Server.vReset();
                 if (bloader != null) bloader.Reset();
-               // vIndi_Clear();
-                return;
+                if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
+                if (portpos == ports.Count || tmp)
+                {
+                    spdpos = 0;
+                    portpos = 0;
+                    Server.logger.Add("Сброс соединения ");
+                    bs_flg = false;
+                    return;
+                };
             };
 
-            if (String.IsNullOrEmpty(cmbBoxPortList.SelectedItem?.ToString())) return;
-            if (String.IsNullOrEmpty(cmbBoxBaudRate.SelectedItem?.ToString())) return;
 
-            Server.spPort.BaudRate = Convert.ToInt32(cmbBoxBaudRate.SelectedItem?.ToString());
-            Server.spPort.PortName = cmbBoxPortList.SelectedItem?.ToString();
+            Server.spPort.BaudRate = bds[spdpos];
+            Server.spPort.PortName = ports[portpos];
             Server.spPort.Parity = Parity.None;
             Server.spPort.DataBits = 8;
             Server.spPort.ReadTimeout = 500;
-            Server.btDevAdr = Convert.ToByte(txtBoxModbusAdr.Text);
+            Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
+
+
 
             try
-            { Server.spPort.Open(); }
-            catch (Exception ex) { Server.logger.Add(ex.Message.ToString()); Server.vReset(); btnCnct.Text = "Отключить"; return; };
+            {
+                Server.spPort.Open();
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                Server.logger.Add(ports[portpos].ToString() + " порт занят");
+                portpos++;
+                spdpos = 0;
+                goto con_start;
 
-           // txtBoxLog.Text= "Открытие порта";
+            }
+            catch (Exception ex)
+            {
+                Server.logger.Add(ex.Message.ToString());
+                Server.vReset();
+                ToolStripMenuItem_Connect.Text = "Отключить";
+                bs_flg = false;
+                Server.logger.Add(ports[portpos].ToString() + " ошибка доступа");
+                return;
+            };
 
-            if (!Updater.IsAlive) Updater.Start();
-
-        }
-
-     
-        private void clearChartItem_Click(object sender, EventArgs e)
-        {
-            foreach (Series el in chart1.Series)  el.Points.Clear();
-            foreach (Series el in chart2.Series)  el.Points.Clear();
+            // txtBoxLog.Text= "Открытие порта";
+            bs_flg = false;
+            if (!Updater.IsAlive) { Updater.Start(); return; };
         }
 
 
         private void tbFREQ_ref_KeyPress(object sender, KeyPressEventArgs e)
         {
             char number = e.KeyChar;
-            if (!Char.IsDigit(number) && number != 8 && number != 44 )
+            if (!Char.IsDigit(number) && number != 8 && number != 44)
             {
                 e.Handled = true;
                 return;
             }
 
-           if (((TextBox)sender).Text.IndexOf("Г") != -1) ((TextBox)sender).Text = "";
-
-        }
-
-
-        private void tbFREQ_ref_KeyUp(object sender, KeyEventArgs e)
-        {
-           switch (e.KeyCode )
-            {
-                case Keys.Enter:
-                if (Server.blDevCnctd)
-                {
-                        UInt16 temp;
-                        
-                        try
-                        {
-                            temp = (UInt16) (Convert.ToDouble(tbFREQ_ref.Text) * 10);
-                            trackBar1.Value = temp;
-                        }
-                        catch (Exception e2) { return; };
-
-                        if (Server.blDevCnctd)
-                        {
-                            gridHRTable.Rows[3].Cells[2].Value = temp;
-                            gridHRTable.Rows[3].Cells[2].Style.BackColor = Color.Red;
-
-                            Server.uialHRForWrite.Add(new UInt16[2] { 3, temp });
-
-                        }
-                      
-
-
-                    }
-                return;
-
-                case Keys.Escape:
-                        tbFREQ_ref.Text = (Convert.ToDouble(trackBar1.Value.ToString()) / 10).ToString() + " Гц";
-                return;
-            }
-
-
+            if (((TextBox)sender).Text.IndexOf("Г") != -1) ((TextBox)sender).Text = "";
 
         }
 
@@ -920,15 +983,15 @@ namespace WindowsFormsApp4
         {
             if (!Server.blDevCnctd) return;
 
-                vSetComandForDev(eDev_cmd.LOADPRM);
-                foreach (DataGridViewRow row in gridHRTable.Rows)
-                {
-                    row.Cells[2].Style.BackColor = Color.Pink;
-                }
-                Application.DoEvents();
-                Thread.Sleep(500);
-                Server.uilHRadrForRead.Add(0);
-                Server.uilHRadrForRead.Add(256);
+            vSetComandForDev(eDev_cmd.LOADPRM);
+            foreach (DataGridViewRow row in gridHRTable.Rows)
+            {
+                row.Cells[2].Style.BackColor = Color.Pink;
+            }
+            Application.DoEvents();
+            Thread.Sleep(500);
+            Server.uilHRadrForRead.Add(0);
+            Server.uilHRadrForRead.Add(256);
         }
 
         private void MenuItem_About_Click(object sender, EventArgs e)
@@ -937,7 +1000,7 @@ namespace WindowsFormsApp4
         }
 
         private void MenuItem_Refresh_State_Click(object sender, EventArgs e)
-        {           
+        {
             if (!Server.blDevCnctd) return;
             tabForm.SelectTab(0);
             Server.blReadIRreq = true;
@@ -989,7 +1052,7 @@ namespace WindowsFormsApp4
 
             if (bloader.ProcBisy) return;
 
-            tabForm.SelectTab(3);
+            tabForm.SelectTab(2);
 
             Server.suspend = true;
             Server.blUpdGridHR = false;
@@ -1018,7 +1081,7 @@ namespace WindowsFormsApp4
 
             if (bloader.ProcBisy) return;
 
-            tabForm.SelectTab(3);
+            tabForm.SelectTab(2);
 
             Server.suspend = true;
             Server.blUpdGridHR = false;
@@ -1046,7 +1109,11 @@ namespace WindowsFormsApp4
             if (!bloader.port.IsOpen) { bloader.logger.Add(new string[] { "Ошибка открытия порта" }); return; }
             bloader.port.Write("R");
             System.Threading.Thread.Sleep(100);
-            if (bloader.port.ReadExisting() == "R") { bloader.logger.Add(new string[] { "Перезагрузка ... ок" }); return; }
+            if (bloader.port.ReadExisting() == "R") {
+                bloader.logger.Add(new string[] { "Перезагрузка ... ок" });
+                this.btn_Cnct_Click(this,null);
+                this.btn_Cnct_Click(this, null);
+                return; }
             bloader.logger.Add(new string[] { "нет ответа" });
         }
 
@@ -1062,7 +1129,6 @@ namespace WindowsFormsApp4
 
             if (!Server.blnScpEnbl && Server.blDevCnctd)
             {
-              
                 ScopeForm = new FormScope(Server);
                 ScopeForm.Show();
             };
@@ -1079,6 +1145,20 @@ namespace WindowsFormsApp4
             if (SetupForm1 != null) if (SetupForm1.Created) { SetupForm1.BringToFront(); return; };
             SetupForm1 = new SetupForm(Server);
             SetupForm1.Show();
+        }
+
+        private void toolStripTextBox_adr_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8) // цифры и клавиша BackSpace
+            {
+
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+
         }
     }
 }

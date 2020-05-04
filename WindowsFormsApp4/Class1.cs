@@ -53,7 +53,7 @@ namespace WindowsFormsApp4
         public List<UInt16> uilHRadrForRead = new List<UInt16>();
         public List<UInt16[]> uialHRForWrite = new List<UInt16[]>();
 
-        public int iFail = 0;
+        public double iFail = 0;
         public int iScpChNum = 3;
         public int scp_cntmax = 1200;
         public int scp_cnt = 0;
@@ -195,14 +195,14 @@ namespace WindowsFormsApp4
             {
                 Debug.WriteLine("Device is not connected");
 
-                logger.Add("Поиск устройства по адресу " + btDevAdr.ToString());
+                logger.Add("Поиск: " + btDevAdr.ToString()+"-"+ spPort.PortName+"-"+ spPort.BaudRate);
 
                 List<byte> cmdGetID = new List<byte>() { btDevAdr, 0x2B, 0xE, 0x1, 0x1 };
                 vMBCRC16(cmdGetID);
                 try
                 {
                     if(spPort.IsOpen)spPort.Write(cmdGetID.ToArray(), 0, cmdGetID.ToArray().Length);
-                    Thread.Sleep(500);
+                    Thread.Sleep(100);
                     mes = spPort.ReadExisting();
                 }
                 catch (Exception e) { Debug.WriteLine("сбой" + e.ToString()); };
@@ -228,7 +228,7 @@ namespace WindowsFormsApp4
                 strDevID = mes.Substring(10, 8) + " " + mes.Substring(20, 10) + " " + mes.Substring(32, 10) + " " + mes.Substring(44, 9);
                 logger.Add(strDevID);
  
-                Thread.Sleep(500);
+                Thread.Sleep(100);
                 if (intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
                 if (this.uiInputReg[0] == 0 || this.uiInputReg[0] > 255 || this.uiInputReg[0] == 0 || this.uiInputReg[1] > 255)
                 {
@@ -280,7 +280,7 @@ namespace WindowsFormsApp4
                     {
                         if (uilHRadrForRead[0] > uiInputReg[1] - 1) uilHRadrForRead[0] = (ushort)(uiInputReg[1] - 1);
 
-                        if (intReadData(uilHRadrForRead[0], 2, comand.RD_HOLDING) < 0) iFail++;
+                        if (intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
                         uilHRadrForRead.RemoveAt(0);
                         if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
                         blUpdGridHR = true;
@@ -299,13 +299,24 @@ namespace WindowsFormsApp4
                     //Пишем все РХ
                     if (blnWriteAllHR)
                     {
-                        ushort[] temp = new ushort[256];
-
-                        for (int i = 0; i < uialHRForWrite.Count; i++)
+                        ushort tempAdrForWrite = 0;
+                        while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
                         {
-                           temp[i] = (uialHRForWrite[i])[0];
+                            iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
+                            tempAdrForWrite++;
+                            uialHRForWrite.RemoveAt(0);
+
                         }
-                        unsafe { fixed (ushort* p = temp) { iWriteData( 0, uiInputReg[1], p); }; };
+
+                        //List<ushort> temp = new List<ushort>();
+
+                        //foreach (var el in uialHRForWrite)
+                        //{
+                        //   if(el.Length ==1) temp.Add(el[0]);
+                        //}
+                        //iWriteData(0,temp);
+
+
                         uialHRForWrite.Clear();
                         blnWriteAllHR = false;
                     }
@@ -353,8 +364,9 @@ namespace WindowsFormsApp4
 #if DEBUG
             if (cmd == comand.RD_HOLDING)
             {
-                Debug.WriteLine(cmd.ToString() + " adr=" + adr.ToString() + " count=" + count.ToString());
-                Debug.WriteLine("<-" + sBtoS(buff, 8));
+                //Debug.WriteLine(cmd.ToString() + " adr=" + adr.ToString() + " count=" + count.ToString());
+                //Debug.WriteLine("<-" + sBtoS(buff, 8));
+                logger.Add(cmd.ToString() + " adr=" + adr.ToString() + " count=" + count.ToString());
             }
 #endif
             try
@@ -394,13 +406,19 @@ namespace WindowsFormsApp4
                 {
                     UInt16 temp = (UInt16)(buff[i + 1] + (buff[i] << 8));
 
-                    if (cmd == comand.RD_HOLDING) {uiHoldingReg[adr+k] = temp;}
+                    if (cmd == comand.RD_HOLDING) {
+                        uiHoldingReg[adr+k] = temp;
+                    };
                     if (cmd == comand.RD_INPUT) uiInputReg[adr+k] = temp;
                     k++;
                 }
 #if DEBUG
-                if (cmd == comand.RD_HOLDING) Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
-#endif          
+                if (cmd == comand.RD_HOLDING) {
+                    logger.Add("-> " + sBtoS(buff, (UInt16)buff.Length));
+                }
+                
+
+#endif
             }
             else { logger.Add("ModBus ошибка команды чтения. Код" + buff[1].ToString()); return -1; };
 
@@ -415,8 +433,10 @@ namespace WindowsFormsApp4
             buff[7] = (byte)(crc >> 8);
             buff[6] = (byte)(crc & 0xFF);
 #if DEBUG
-            Debug.WriteLine( "WRITE SINGLE HR" + " adr=" + adr.ToString()+ " data=" +data.ToString() );
-            Debug.WriteLine("<-" + sBtoS(buff, 8));
+            //Debug.WriteLine( "WRITE SINGLE HR" + " adr=" + adr.ToString()+ " data=" +data.ToString() );
+            //Debug.WriteLine("<-" + sBtoS(buff, 8));
+            logger.Add("WRITE SINGLE HR" + " adr=" + adr.ToString() + " data=" + data.ToString());
+
 #endif
             int size = 0;
 
@@ -444,7 +464,8 @@ namespace WindowsFormsApp4
             catch (Exception ex) { Debug.WriteLine("Ошибка записи в порт"); return -1; };
 
 #if DEBUG
-            Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
+            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
+            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
 #endif       
             if (size < 3) return -1;
             crc = chMBCRC16(buff, (ushort)(size - 2));
@@ -463,16 +484,20 @@ namespace WindowsFormsApp4
             return 0;
         }
 
-        unsafe int iWriteData  (UInt16 adrW, UInt16 cntW, UInt16* data)
-        {
 
-            byte* bdata = (byte*)data;
+        //write multiply register
+        unsafe int iWriteData  (UInt16 adrW, List <ushort> data)
+        {
+ 
             List<byte> buf = new List<byte>();
+            int cntW = data.Count;  
+
+
             byte dsize = (byte)(cntW * 2);
 
             buf.AddRange
                (
-               new byte[] { btDevAdr, 0x10, 
+               new byte[] { btDevAdr, 0x10,
                                             ((byte *) &adrW  )[1], ((byte*)&adrW  )[0],
                                             ((byte *) &cntW  )[1], ((byte*)&cntW  )[0],
                                             dsize
@@ -481,13 +506,15 @@ namespace WindowsFormsApp4
 
             for (int i = 0; i < cntW; i++)
             {
-                buf.AddRange(new byte[] { ((byte*)&data[i])[1], ((byte*)&data[i])[0], });
+                ushort temp = data[i];
+                buf.AddRange(new byte[] { ((byte*)&temp)[1], ((byte*)&temp)[0]});
             }
             vMBCRC16(buf);
 
 #if DEBUG
-            Debug.WriteLine("WRITE MULTI HR" + " adr=" + adrW.ToString()+ " count=" + cntW.ToString());
-            Debug.WriteLine("<-" + sBtoS(buf.ToArray(),(UInt16) buf.Count));
+            //Debug.WriteLine("WRITE MULTI HR" + " adr=" + adrW.ToString()+ " count=" + cntW.ToString());
+            Debug.WriteLine("<-" + sBtoS(buf.ToArray(), (UInt16)buf.Count));
+            logger.Add("WRITE MULTI HR" + " adr=" + adrW.ToString() + " count=" + cntW.ToString());
 #endif
 
             byte[] buff = new byte[10];
@@ -497,27 +524,26 @@ namespace WindowsFormsApp4
                 if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
                 spPort.ReadExisting();
                 spPort.Write(buf.ToArray(), 0, buf.Count);
-                // System.Threading.Thread.Sleep(200);
-                //while (spPort.BytesToRead != 8)  { if (!spPort.IsOpen) break; };
                 int i = 0;
                 while (spPort.BytesToRead < 8)
                 {
                     i++;
                     if (!spPort.IsOpen) break;
-                    if (i > 500) break;
+                    if (i > 1500) break;
                     Thread.Sleep(1);
                 };
                 size = spPort.BytesToRead;
                 buff = new byte[size];
                 try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("Нет ответа"); iFail++; return -1; };
+                catch (TimeoutException ex) { logger.Add("Нет ответа1"); iFail++; return -1; };
             }
             catch (Exception ex) { Debug.WriteLine("Ошибка записи в порт"); return -1; };
-
-            if (size < 3) { logger.Add("Нет ответа"); ; return -1; }
+            if (size < 3) { logger.Add("Нет ответа2"); ; return -1; }
 #if DEBUG
-            Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
-#endif  
+            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
+            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
+#endif
+
             UInt16 crc = chMBCRC16(buff, (ushort)(size - 2));
             if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) { logger.Add("Ошибка CRC"); iFail++; return 0; }
 
@@ -559,8 +585,9 @@ namespace WindowsFormsApp4
 
             vMBCRC16(buf);
 #if DEBUG
-            Debug.WriteLine("READ WRITE MULTI HR" + "; adrR=" + adrW.ToString() + "; count=" + cntW.ToString() + "; adrW=" + adrW.ToString() + "; count=" + cntW.ToString());
-            Debug.WriteLine("<-" + sBtoS(buf.ToArray(), 8));
+            //Debug.WriteLine("READ WRITE MULTI HR" + "; adrR=" + adrW.ToString() + "; count=" + cntW.ToString() + "; adrW=" + adrW.ToString() + "; count=" + cntW.ToString());
+            //Debug.WriteLine("<-" + sBtoS(buf.ToArray(), 8));
+            logger.Add("READ WRITE MULTI HR" + "; adrR=" + adrW.ToString() + "; count=" + cntW.ToString() + "; adrW=" + adrW.ToString() + "; count=" + cntW.ToString());
 #endif
 
             byte[] buff = new byte[10];
@@ -583,7 +610,8 @@ namespace WindowsFormsApp4
             if (size < 3) { Debug.WriteLine("no ans"); return -1;  }
 
 #if DEBUG
-            Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
+            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
+            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
 #endif  
 
             UInt16 crc = chMBCRC16(buff, (ushort)(size - 2));
@@ -776,7 +804,7 @@ namespace WindowsFormsApp4
             this.spPort.Close();
             this.uilHRadrForRead.Clear();
             this.uialHRForWrite.Clear();
-            this.logger.Clear();
+            //this.logger.Clear();
             this.suspend = false;
 
 
