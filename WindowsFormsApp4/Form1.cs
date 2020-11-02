@@ -27,7 +27,7 @@ namespace WindowsFormsApp4
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
         Thread Updater;
-        string[] saRazmForInd = new string[] { " Гц", " В", " В", " В", "А", " С", "", "", "", "", "", "", "", "", "" };
+        string[] saRazmForInd = new string[] { " Гц", " В", " В", " В", " А", " С", "", "", "", "", "", "", "", "", "","","","","","" };
         int[][] iaLevelForInd = new int[][] {
             new int[] {0,600},
             new int[] {2000,2300},
@@ -35,6 +35,10 @@ namespace WindowsFormsApp4
             new int[] {2100,5400},
             new int[] {0,400},
             new int[] {20,50},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
+            new int[] {0,65536},
             new int[] {0,65536},
             new int[] {0,65536},
             new int[] {0,65536},
@@ -94,6 +98,10 @@ namespace WindowsFormsApp4
 
         public class ParamNames
         {
+
+            [JsonProperty("Device")]
+            public string Device { get; set; }
+
             [JsonProperty("Name")]
             public string Name { get; set; }
 
@@ -111,6 +119,9 @@ namespace WindowsFormsApp4
 
             [JsonProperty("Adr")]
             public int Adr { get; set; }
+
+            [JsonProperty("Descript")]
+            public string Descript { get; set; }
         }
 
         public Form1()
@@ -130,9 +141,9 @@ namespace WindowsFormsApp4
 
 
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            this.Text = "БУОП01 " + version;
+            this.Text = "Сервер МПЧ " + version;
 
-            lstIndIR.AddRange(new TextBox[] { tbOutFreq, tbOutVolt, tbBusDc, tbGrid, tbOutCur, tbFcTmp, tbRdioState, tbPosMotor, tbMotorTemp,  tbPosVirt, tbPosPhys,  tbHR10, tbHR11, tbHR12, tbHR13 });
+            lstIndIR.AddRange(new TextBox[] { tbOutFreq, tbOutVolt, tbBusDc, tbGrid, tbOutCur, tbFcTmp, tbRdioState, tbPosMotor, tbMotorTemp,  tbPosVirt, tbPosPhys,  tbHR10, tbHR11, tbHR12, tbHR13, tbReg18, tbReg19, tbReg20 });
             foreach (TextBox el in lstIndIR)
             {
                 el.Click += new System.EventHandler((s, e) => {
@@ -161,20 +172,21 @@ namespace WindowsFormsApp4
                 fs.Close();
             }
             catch (Exception ex) { };
-            // читаю файл с именами параметров
-            try
-            {
-                string str = "";
-                FileStream fs = new FileStream("PRM.mpch", FileMode.Open, FileAccess.Read);
-                StreamReader sr = new StreamReader(fs, Encoding.Default);
-                while ((str = sr.ReadLine()) != null)
-                {
-                    slPrmNam.Add(str);
-                }
-                sr.Close();
-                fs.Close();
-            }
-            catch (Exception ex) { };
+
+            //// читаю файл с именами параметров
+            //try
+            //{
+            //    string str = "";
+            //    FileStream fs = new FileStream("PRM.mpch", FileMode.Open, FileAccess.Read);
+            //    StreamReader sr = new StreamReader(fs, Encoding.Default);
+            //    while ((str = sr.ReadLine()) != null)
+            //    {
+            //        slPrmNam.Add(str);
+            //    }
+            //    sr.Close();
+            //    fs.Close();
+            //}
+            //catch (Exception ex) { };
 
    
 
@@ -307,7 +319,7 @@ namespace WindowsFormsApp4
             i = 0; while (i < 100)
             {
                 if ((i + 3) == Server.uiInputReg.Length) break;
-                if (i == 12) break;
+               // if (i == 12) break;
 
                 Int16 mes = (Int16)Server.uiInputReg[i + 3];
                 float temp = ((float)mes * 10 / 100);
@@ -483,7 +495,7 @@ namespace WindowsFormsApp4
                     tbState.ForeColor = Color.Blue; tbState.Text = "Нет связи ";
                     break;
                 case 0x100:
-                    tbState.ForeColor = Color.YellowGreen; tbState.Text = "Ожидание - ";
+                    tbState.ForeColor = Color.YellowGreen; tbState.Text = "Инициализация - ";
                     break;
                 case 0x200:
                     tbState.ForeColor = Color.Blue; tbState.Text = "Готов - ";
@@ -504,7 +516,7 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text = "Соединен с [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
+            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
 
 
         }
@@ -562,6 +574,9 @@ namespace WindowsFormsApp4
                         row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
                 }
                 else { paramNames.Add(new ParamNames()); };
+
+
+                
 
                 // custom controls
                 if (paramNames[i].Control != false) {
@@ -697,9 +712,13 @@ namespace WindowsFormsApp4
                 str = "";
                 if (i < paramNames.Count) str = paramNames[i].Name;
                 row.SetValues(new object[] { i, str, Server.uiHoldingReg[i] });
+                if(paramNames[i].Descript != null) row.Cells[1].ToolTipText = paramNames[i].Descript;
                 gridHRTable.Rows.Add(row);
+
                 i++;
             }
+
+            if (paramNames[0].Device != null) { this.tabForm.TabPages[0].Text = "Параметры [ " + paramNames[0].Device + " ]"; } else { this.tabForm.TabPages[0].Text = "Параметры [ ]"; };
         }
 
         private void txtBox_ModbusAdr_TextChanged(object sender, EventArgs e)
@@ -1052,7 +1071,7 @@ namespace WindowsFormsApp4
 
             if (bloader.ProcBisy) return;
 
-            tabForm.SelectTab(2);
+            tabForm.SelectTab(3);
 
             Server.suspend = true;
             Server.blUpdGridHR = false;
@@ -1081,7 +1100,7 @@ namespace WindowsFormsApp4
 
             if (bloader.ProcBisy) return;
 
-            tabForm.SelectTab(2);
+            tabForm.SelectTab(3);
 
             Server.suspend = true;
             Server.blUpdGridHR = false;
@@ -1147,6 +1166,42 @@ namespace WindowsFormsApp4
             SetupForm1.Show();
         }
 
+        private void MenuItem_SetParamDescriptFile_Click(object sender, EventArgs e)
+        {
+            if (!Server.blDevCnctd) return;
+
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Файл описания параметров|*.json";
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            // получаем выбранный файл
+            string filename = openFileDialog1.FileName;
+
+            try
+            {
+                string jsonString = File.ReadAllText(filename, Encoding.Default);
+                paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+                customControlsList.Clear();
+                tableLayoutPanel_customControl.Controls.Clear();
+                vIndi_HRGrid_init(Server.uiInputReg[1]);
+            }
+            catch (Newtonsoft.Json.JsonReaderException ex)
+            {
+                Debug.WriteLine(ex);
+
+                MessageBox.Show(
+                    "Файл не содержит описания настроек",
+                    "Ошибка чтения файла описания настроек ",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly);
+
+            }
+
+
+        }
+
         private void toolStripTextBox_adr_KeyPress(object sender, KeyPressEventArgs e)
         {
             char number = e.KeyChar;
@@ -1157,6 +1212,21 @@ namespace WindowsFormsApp4
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tbHR13_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }

@@ -546,11 +546,17 @@ namespace WindowsFormsApp4
             if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
             // получаем выбранный файл
-            string filename = openFileDialog2.FileName; 
-            logger.Add(new string[] { "Чтение файла ... " });
-            String readres = ReadHexFromFile(filename);
-            if (string.IsNullOrEmpty(readres)) { readres = "Чтение файла ...  ok  [" + Convert.ToString((FileHexData.Count * 256), 10) + " байт]"; };
-            logger.Add(new string[] { readres , "true"} );
+            string filename = openFileDialog2.FileName;
+
+            String readres;
+            readres = "Читаю файл: ";
+            logger.Add(new string[] { readres});
+            readres = filename;
+            logger.Add(new string[] { readres });
+
+            readres = ReadHexFromFile(filename);
+            if (string.IsNullOrEmpty(readres)) { readres = "Ok. Считано " + Convert.ToString((FileHexData.Count * 256), 10) + " байт"; };
+            logger.Add(new string[] { readres} );
             ProcBisy = false;
 
         }

@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.flowLayoutPanel_Indic = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -101,6 +101,7 @@
             this.MenuItem_Param_Load_FromFile = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Param_Load_FromDev = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Param_MotorSel = new System.Windows.Forms.ToolStripMenuItem();
+            this.выбратьФайлОписанияНастроекToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Loader = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Loader_Flash = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Loader_Verify = new System.Windows.Forms.ToolStripMenuItem();
@@ -128,6 +129,14 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtBoxLog = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel_main = new System.Windows.Forms.TableLayoutPanel();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.tbReg18 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tbReg19 = new System.Windows.Forms.TextBox();
+            this.tbReg20 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.flowLayoutPanel_Indic.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -147,6 +156,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridRelayIO)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel_main.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuForChart
@@ -258,9 +268,9 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label6.Location = new System.Drawing.Point(3, 120);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(91, 17);
+            this.label6.Size = new System.Drawing.Size(143, 17);
             this.label6.TabIndex = 5;
-            this.label6.Text = "Напряжение";
+            this.label6.Text = "Напряжение (Рег. 4)";
             // 
             // tbOutCur
             // 
@@ -285,9 +295,9 @@
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label7.Location = new System.Drawing.Point(3, 60);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(32, 17);
+            this.label7.Size = new System.Drawing.Size(84, 17);
             this.label7.TabIndex = 7;
-            this.label7.Text = "Ток";
+            this.label7.Text = "Ток (Рег. 7)";
             // 
             // tbOutFreq
             // 
@@ -313,9 +323,9 @@
             this.label4.Location = new System.Drawing.Point(1, 1);
             this.label4.Margin = new System.Windows.Forms.Padding(1);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(63, 17);
+            this.label4.Size = new System.Drawing.Size(115, 17);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Частота";
+            this.label4.Text = "Частота (Рег. 3)";
             // 
             // tbRdioState
             // 
@@ -340,9 +350,9 @@
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label9.Location = new System.Drawing.Point(3, 360);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(75, 17);
+            this.label9.Size = new System.Drawing.Size(127, 17);
             this.label9.TabIndex = 11;
-            this.label9.Text = "Релейные";
+            this.label9.Text = "Релейные (Рег. 9)";
             // 
             // tbFcTmp
             // 
@@ -367,9 +377,9 @@
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label8.Location = new System.Drawing.Point(3, 300);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(96, 17);
+            this.label8.Size = new System.Drawing.Size(148, 17);
             this.label8.TabIndex = 9;
-            this.label8.Text = "Температура";
+            this.label8.Text = "Температура (Рег. 8)";
             // 
             // label5
             // 
@@ -377,9 +387,9 @@
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label5.Location = new System.Drawing.Point(3, 240);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(39, 17);
+            this.label5.Size = new System.Drawing.Size(91, 17);
             this.label5.TabIndex = 3;
-            this.label5.Text = "Сеть";
+            this.label5.Text = "Сеть (Рег. 6)";
             // 
             // tbGrid
             // 
@@ -404,9 +414,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label1.Location = new System.Drawing.Point(3, 180);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 17);
+            this.label1.Size = new System.Drawing.Size(118, 17);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Шина DC";
+            this.label1.Text = "Шина DC (Рег. 5)";
             // 
             // groupBox2
             // 
@@ -467,9 +477,9 @@
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label15.Location = new System.Drawing.Point(3, 120);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(90, 17);
+            this.label15.Size = new System.Drawing.Size(150, 17);
             this.label15.TabIndex = 11;
-            this.label15.Text = "Физический";
+            this.label15.Text = "Физический (Рег. 13)";
             // 
             // tbPosVirt
             // 
@@ -494,9 +504,9 @@
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label14.Location = new System.Drawing.Point(3, 60);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(96, 17);
+            this.label14.Size = new System.Drawing.Size(156, 17);
             this.label14.TabIndex = 11;
-            this.label14.Text = "Виртуальный";
+            this.label14.Text = "Виртуальный (Рег. 12)";
             // 
             // tbPosMotor
             // 
@@ -522,9 +532,9 @@
             this.label13.Location = new System.Drawing.Point(3, 3);
             this.label13.Margin = new System.Windows.Forms.Padding(3);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(50, 17);
+            this.label13.Size = new System.Drawing.Size(110, 17);
             this.label13.TabIndex = 11;
-            this.label13.Text = "Мотор";
+            this.label13.Text = "Мотор (Рег. 10)";
             // 
             // groupBox1
             // 
@@ -584,6 +594,7 @@
             this.tbHR13.TabIndex = 10;
             this.tbHR13.Text = "0";
             this.tbHR13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tbHR13.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
             // 
             // label19
             // 
@@ -591,9 +602,9 @@
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label19.Location = new System.Drawing.Point(3, 240);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(54, 17);
+            this.label19.Size = new System.Drawing.Size(175, 17);
             this.label19.TabIndex = 11;
-            this.label19.Text = "Рег. 13";
+            this.label19.Text = "Набор настроек (Рег. 17)";
             // 
             // tbHR12
             // 
@@ -618,9 +629,9 @@
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label18.Location = new System.Drawing.Point(3, 180);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(54, 17);
+            this.label18.Size = new System.Drawing.Size(168, 17);
             this.label18.TabIndex = 11;
-            this.label18.Text = "Рег. 12";
+            this.label18.Text = "Ошибка позиц. (Рег. 16)";
             // 
             // tbHR11
             // 
@@ -647,7 +658,7 @@
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(54, 17);
             this.label17.TabIndex = 11;
-            this.label17.Text = "Рег. 11";
+            this.label17.Text = "Рег. 15";
             // 
             // tbHR10
             // 
@@ -674,7 +685,7 @@
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(54, 17);
             this.label16.TabIndex = 11;
-            this.label16.Text = "Рег. 10";
+            this.label16.Text = "Рег. 14";
             // 
             // tbMotorTemp
             // 
@@ -700,9 +711,9 @@
             this.label12.Location = new System.Drawing.Point(3, 3);
             this.label12.Margin = new System.Windows.Forms.Padding(3);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(86, 14);
+            this.label12.Size = new System.Drawing.Size(146, 14);
             this.label12.TabIndex = 11;
-            this.label12.Text = "Темп мотор";
+            this.label12.Text = "Темп мотор (Рег. 11)";
             // 
             // statusStrip1
             // 
@@ -924,7 +935,8 @@
             this.MenuItem_Param.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_Param_Save,
             this.MenuItem_Param_Load,
-            this.MenuItem_Param_MotorSel});
+            this.MenuItem_Param_MotorSel,
+            this.выбратьФайлОписанияНастроекToolStripMenuItem});
             this.MenuItem_Param.Image = global::WindowsFormsApp4.Properties.Resources.no_translate_detected_318_46670;
             this.MenuItem_Param.Name = "MenuItem_Param";
             this.MenuItem_Param.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -938,7 +950,7 @@
             this.MenuItem_Param_Save_ToDev});
             this.MenuItem_Param_Save.Image = global::WindowsFormsApp4.Properties.Resources.save;
             this.MenuItem_Param_Save.Name = "MenuItem_Param_Save";
-            this.MenuItem_Param_Save.Size = new System.Drawing.Size(190, 26);
+            this.MenuItem_Param_Save.Size = new System.Drawing.Size(322, 26);
             this.MenuItem_Param_Save.Text = "Сохранить";
             // 
             // MenuItem_Param_Save_ToFile
@@ -962,7 +974,7 @@
             this.MenuItem_Param_Load_FromDev});
             this.MenuItem_Param_Load.Image = global::WindowsFormsApp4.Properties.Resources.load;
             this.MenuItem_Param_Load.Name = "MenuItem_Param_Load";
-            this.MenuItem_Param_Load.Size = new System.Drawing.Size(190, 26);
+            this.MenuItem_Param_Load.Size = new System.Drawing.Size(322, 26);
             this.MenuItem_Param_Load.Text = "Загрузить";
             // 
             // MenuItem_Param_Load_FromFile
@@ -982,9 +994,16 @@
             // MenuItem_Param_MotorSel
             // 
             this.MenuItem_Param_MotorSel.Name = "MenuItem_Param_MotorSel";
-            this.MenuItem_Param_MotorSel.Size = new System.Drawing.Size(190, 26);
+            this.MenuItem_Param_MotorSel.Size = new System.Drawing.Size(322, 26);
             this.MenuItem_Param_MotorSel.Text = "Выбрать мотор";
             this.MenuItem_Param_MotorSel.Click += new System.EventHandler(this.MenuItem_Param_MotorSel_Click);
+            // 
+            // выбратьФайлОписанияНастроекToolStripMenuItem
+            // 
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Name = "выбратьФайлОписанияНастроекToolStripMenuItem";
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Size = new System.Drawing.Size(322, 26);
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Text = "Выбрать файл описания настроек";
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Click += new System.EventHandler(this.MenuItem_SetParamDescriptFile_Click);
             // 
             // MenuItem_Loader
             // 
@@ -1088,6 +1107,7 @@
             this.tabForm.Controls.Add(this.tabPage4);
             this.tabForm.Controls.Add(this.tabPage3);
             this.tabForm.Controls.Add(this.tabPage2);
+            this.tabForm.Controls.Add(this.tabPage5);
             this.tabForm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabForm.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
@@ -1135,9 +1155,9 @@
             // adr
             // 
             this.adr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.adr.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.adr.DefaultCellStyle = dataGridViewCellStyle7;
             this.adr.FillWeight = 60F;
             this.adr.HeaderText = "Адрес";
             this.adr.Name = "adr";
@@ -1147,8 +1167,8 @@
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle8;
             this.name.HeaderText = "Параметр";
             this.name.Name = "name";
             this.name.Width = 99;
@@ -1156,8 +1176,8 @@
             // value
             // 
             this.value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.value.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.value.DefaultCellStyle = dataGridViewCellStyle9;
             this.value.HeaderText = "Значение";
             this.value.Name = "value";
             this.value.Width = 98;
@@ -1171,8 +1191,8 @@
             // 
             // read
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.read.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.read.DefaultCellStyle = dataGridViewCellStyle10;
             this.read.HeaderText = "";
             this.read.Name = "read";
             this.read.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -1240,8 +1260,8 @@
             // 
             // Ivalue
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle11;
             this.Ivalue.DividerWidth = 10;
             this.Ivalue.HeaderText = "";
             this.Ivalue.Name = "Ivalue";
@@ -1255,8 +1275,8 @@
             // 
             // Ovalue
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle12;
             this.Ovalue.HeaderText = "";
             this.Ovalue.Name = "Ovalue";
             this.Ovalue.ReadOnly = true;
@@ -1297,6 +1317,109 @@
             this.tableLayoutPanel_main.Size = new System.Drawing.Size(907, 547);
             this.tableLayoutPanel_main.TabIndex = 32;
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.tbReg20);
+            this.tabPage5.Controls.Add(this.tbReg19);
+            this.tabPage5.Controls.Add(this.tbReg18);
+            this.tabPage5.Controls.Add(this.label10);
+            this.tabPage5.Controls.Add(this.label3);
+            this.tabPage5.Controls.Add(this.label2);
+            this.tabPage5.Location = new System.Drawing.Point(4, 25);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(667, 398);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Debug";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // tbReg18
+            // 
+            this.tbReg18.BackColor = System.Drawing.SystemColors.MenuText;
+            this.tbReg18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbReg18.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbReg18.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.tbReg18.HideSelection = false;
+            this.tbReg18.Location = new System.Drawing.Point(9, 38);
+            this.tbReg18.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
+            this.tbReg18.MaximumSize = new System.Drawing.Size(1000, 1000);
+            this.tbReg18.Name = "tbReg18";
+            this.tbReg18.ReadOnly = true;
+            this.tbReg18.Size = new System.Drawing.Size(150, 33);
+            this.tbReg18.TabIndex = 10;
+            this.tbReg18.Text = "0";
+            this.tbReg18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tbReg18.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label2.Location = new System.Drawing.Point(6, 18);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(145, 17);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Ошибки МТ (Рег. 18)";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.Location = new System.Drawing.Point(8, 134);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(171, 17);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Код ошибки МТ (Рег. 19)";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // tbReg19
+            // 
+            this.tbReg19.BackColor = System.Drawing.SystemColors.MenuText;
+            this.tbReg19.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbReg19.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbReg19.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.tbReg19.HideSelection = false;
+            this.tbReg19.Location = new System.Drawing.Point(9, 94);
+            this.tbReg19.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
+            this.tbReg19.MaximumSize = new System.Drawing.Size(1000, 1000);
+            this.tbReg19.Name = "tbReg19";
+            this.tbReg19.ReadOnly = true;
+            this.tbReg19.Size = new System.Drawing.Size(150, 33);
+            this.tbReg19.TabIndex = 10;
+            this.tbReg19.Text = "0";
+            this.tbReg19.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tbReg19.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
+            // 
+            // tbReg20
+            // 
+            this.tbReg20.BackColor = System.Drawing.SystemColors.MenuText;
+            this.tbReg20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbReg20.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbReg20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.tbReg20.HideSelection = false;
+            this.tbReg20.Location = new System.Drawing.Point(10, 150);
+            this.tbReg20.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
+            this.tbReg20.MaximumSize = new System.Drawing.Size(1000, 1000);
+            this.tbReg20.Name = "tbReg20";
+            this.tbReg20.ReadOnly = true;
+            this.tbReg20.Size = new System.Drawing.Size(150, 33);
+            this.tbReg20.TabIndex = 10;
+            this.tbReg20.Text = "0";
+            this.tbReg20.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tbReg20.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label10.Location = new System.Drawing.Point(9, 77);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(142, 17);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Пакеты МТ (Рег. 20)";
+            this.label10.Click += new System.EventHandler(this.label3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1334,6 +1457,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tableLayoutPanel_main.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1433,6 +1558,15 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button btn_Reset;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_customControl;
+        private System.Windows.Forms.ToolStripMenuItem выбратьФайлОписанияНастроекToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TextBox tbReg19;
+        private System.Windows.Forms.TextBox tbReg18;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbReg20;
+        private System.Windows.Forms.Label label10;
     }
 }
 

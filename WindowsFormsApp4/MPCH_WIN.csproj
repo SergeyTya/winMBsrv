@@ -48,6 +48,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Ver|AnyCPU'">
+    <OutputPath>bin\Ver\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Version_2|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Version_2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="disnet">
       <HintPath>dislin\disnet.dll</HintPath>
@@ -190,6 +203,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\connect.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\IconRes.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\IconMain.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\IconRes.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
