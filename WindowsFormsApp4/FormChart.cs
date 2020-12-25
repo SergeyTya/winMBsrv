@@ -75,9 +75,16 @@ namespace WindowsFormsApp4
                 el.BorderColor = Color.DarkBlue;
             }
 
-            label1.Text = lables[ind];
-            this.Text = lables[ind];
+            if (ind < lables.Length) {
+                label1.Text = lables[ind];
+                this.Text = lables[ind];
+            }
 
+        }
+
+        public string Label {
+
+            set {label1.Text = value;}
         }
 
         

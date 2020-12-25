@@ -16,6 +16,7 @@ using System.Threading;
 using System.Diagnostics;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WindowsFormsApp4
 {
@@ -27,28 +28,6 @@ namespace WindowsFormsApp4
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
         Thread Updater;
-        string[] saRazmForInd = new string[] { " Гц", " В", " В", " В", " А", " С", "", "", "", "", "", "", "", "", "","","","","","" };
-        int[][] iaLevelForInd = new int[][] {
-            new int[] {0,600},
-            new int[] {2000,2300},
-            new int[] {2100,5400},
-            new int[] {2100,5400},
-            new int[] {0,400},
-            new int[] {20,50},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536},
-            new int[] {0,65536}
-        };
 
         public enum eDev_cmd
         {
@@ -79,7 +58,6 @@ namespace WindowsFormsApp4
 
         public FormScope ScopeForm = null;
         SetupForm SetupForm1 = null;
-        List<FormChart> ListOfCharts = new List<FormChart>();
         private string sTempForCell = null;
         UInt16 uiServerDelay = 10;
         private List<ParamNames> paramNames;
@@ -92,7 +70,93 @@ namespace WindowsFormsApp4
 
         }
 
+        private class InputRegisterIndicator
+        {
+
+            public Label label;
+            public TextBox indicator;
+            public FormChart chart;
+
+            public string Name { // name of input register
+                get { return label.Text; }
+                set {
+                    label.Text = "Рег. " + Adr.ToString() + " " + value;
+                    chart.Label = label.Text;
+                }
+            }
+
+            private int scale;
+            public int Scale
+            {
+                get { return scale; }
+                set { scale = value; if (scale <= 0) scale = 1; }
+            }
+
+            public int Adr { get; set; }
+            public int Min { get; set; }
+            public int Max { get; set; }
+            public string Dimension { get; set; }
+
+            public int value {
+                get { return 0; }
+                set {
+                    float temp =(float) value / Scale;
+                    if (Scale == 1) { indicator.Text = value.ToString(); } else {
+                        indicator.Text = temp.ToString("#####0.0") + " " + Dimension;
+                    }
+
+                    chart.AddPoint(value);
+                    indicator.ForeColor = Color.LightGreen;
+                    if (temp < Min) indicator.ForeColor = Color.Cyan;
+                    if (temp > Max) indicator.ForeColor = Color.LightCoral;
+                }
+            }
+
+
+           public  InputRegisterIndicator(int pos) {
+
+                Adr = pos;
+                chart =new FormChart(Adr - 3);
+                Scale = 1;
+                Min = -1;
+                Max =  1;
+               
+
+                label = new Label();
+                label.Dock = DockStyle.Fill;
+                label.Margin = new System.Windows.Forms.Padding(1, 10, 1, 0);
+                label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+                Name = "";
+
+                indicator = new TextBox();
+                indicator.Name = "IRTextBox_" + Adr.ToString("D2");
+                indicator.Dock = DockStyle.Fill;
+                indicator.BackColor = System.Drawing.SystemColors.MenuText;
+                indicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+                indicator.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+                indicator.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+                indicator.HideSelection = false;
+                indicator.Location = new System.Drawing.Point(15, 203);
+                indicator.Margin = new System.Windows.Forms.Padding(15, 3,50, 3);
+                indicator.MaximumSize = new System.Drawing.Size(1000, 1000);
+                indicator.ReadOnly = false;
+                indicator.Size = new System.Drawing.Size(100, 33);
+                indicator.TabIndex = 6;
+                indicator.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+
+                indicator.Click += new System.EventHandler((s, e) =>
+                {
+                    this.chart.Show();
+                    this.chart.BringToFront();
+                });
+
+            }
+
+        }
+
         private List<CustomControlTyple> customControlsList = new List<CustomControlTyple>();
+        private List<InputRegisterIndicator> IrIndicList = new List<InputRegisterIndicator>();
 
         public delegate void MyDelegate();
 
@@ -117,12 +181,19 @@ namespace WindowsFormsApp4
             [JsonProperty("Min")]
             public int Min { get; set; }
 
+            [JsonProperty("Scl")]
+            public int Scl { get; set; }
+
             [JsonProperty("Adr")]
             public int Adr { get; set; }
 
             [JsonProperty("Descript")]
             public string Descript { get; set; }
+
+            [JsonProperty("Dim")]
+            public string Dim { get; set; }
         }
+
 
         public Form1()
         {
@@ -143,16 +214,6 @@ namespace WindowsFormsApp4
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = "Сервер МПЧ " + version;
 
-            lstIndIR.AddRange(new TextBox[] { tbOutFreq, tbOutVolt, tbBusDc, tbGrid, tbOutCur, tbFcTmp, tbRdioState, tbPosMotor, tbMotorTemp,  tbPosVirt, tbPosPhys,  tbHR10, tbHR11, tbHR12, tbHR13, tbReg18, tbReg19, tbReg20 });
-            foreach (TextBox el in lstIndIR)
-            {
-                el.Click += new System.EventHandler((s, e) => {
-                    this.ListOfCharts[lstIndIR.IndexOf(el)].Show();
-                    this.ListOfCharts[lstIndIR.IndexOf(el)].BringToFront();
-                });
-                ListOfCharts.Add(new FormChart(lstIndIR.IndexOf(el)));
-            }
-
             var dsdf = new FormChart(1);
 
             string[] ports = SerialPort.GetPortNames();
@@ -172,24 +233,6 @@ namespace WindowsFormsApp4
                 fs.Close();
             }
             catch (Exception ex) { };
-
-            //// читаю файл с именами параметров
-            //try
-            //{
-            //    string str = "";
-            //    FileStream fs = new FileStream("PRM.mpch", FileMode.Open, FileAccess.Read);
-            //    StreamReader sr = new StreamReader(fs, Encoding.Default);
-            //    while ((str = sr.ReadLine()) != null)
-            //    {
-            //        slPrmNam.Add(str);
-            //    }
-            //    sr.Close();
-            //    fs.Close();
-            //}
-            //catch (Exception ex) { };
-
-   
-
 
             //Заполняю таблицу RIO
             for (int i = 0; i < 8; i++)
@@ -240,6 +283,9 @@ namespace WindowsFormsApp4
                             btn_Cnct_Click(this, null);
                             continue;
                         }
+
+                        BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
+
                     }
 
                     Server.blReadIRreq = true;
@@ -259,6 +305,54 @@ namespace WindowsFormsApp4
             }
         }
 
+        private void vSearchDeviceDescriptionFile() {
+            // поиск файлов настройки
+            string[] allFoundFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.json", SearchOption.AllDirectories);
+
+            foreach (var file in allFoundFiles)
+            {
+ 
+                try
+                {
+                    string jsonString = File.ReadAllText(file, Encoding.Default);
+                    List<ParamNames> temp = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+
+                    if (Server.strDevID.IndexOf(temp[0].Device) >= 0)
+                    {
+
+
+                        DialogResult result = MessageBox.Show(
+                            "Найден файл описания настроек для устройства \n [" + temp[0].Device + " ]",
+                            "Внимание",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1
+                            );
+
+                        if (result == DialogResult.OK)
+                        {
+                           
+                        }
+
+                        paramNames = temp;
+
+                        customControlsList.Clear();
+                        tableLayoutPanel_IR.RowCount = 0;
+                        tableLayoutPanel_IR.Controls.Clear();
+
+                        tableLayoutPanel_customControl.Controls.Clear();
+                        vIndi_HRGrid_init(Server.uiInputReg[1]);
+                    }
+                }
+                catch (Newtonsoft.Json.JsonReaderException ex) {
+
+                }
+
+
+            }
+
+        }
+
         private void vSetComandForDev(eDev_cmd cmd)
         {
             if (Server.blDevCnctd)
@@ -267,13 +361,6 @@ namespace WindowsFormsApp4
                 gridHRTable.Rows[0].Cells[2].Value = (UInt16)cmd;
                 gridHRTable.Rows[0].Cells[2].Style.BackColor = Color.Red;
             }
-        }
-        // Обновление цвета индикатора
-        private void vIndi_SetColor(TextBox tb, int mes, int[] Level)
-        {
-            tb.ForeColor = Color.Cyan;
-            if (mes < Level[0]) tb.ForeColor = Color.LightGreen;
-            if (mes > Level[1]) tb.ForeColor = Color.LightCoral;
         }
 
         private void vLog_Update()
@@ -313,34 +400,42 @@ namespace WindowsFormsApp4
             //проверяем актуальность размера таблиц
             if (gridHRTable.Rows.Count < Server.uiInputReg[1]) vIndi_HRGrid_init(Server.uiInputReg[1]);
 
-            //обновляю индикаторы
+            //Input Registers table
+            if (tableLayoutPanel_IR.RowCount < Server.uiInputReg[0]) {
 
-            //  foreach (TextBox element in lstIndIR) //update indicators
-            i = 0; while (i < 100)
+                tableLayoutPanel_IR.Controls.Clear();
+                IrIndicList.Clear();
+                tableLayoutPanel_IR.RowCount = 1;
+                tableLayoutPanel_IR.ColumnCount = 1;
+
+                i = 2; while (i++ < Server.uiInputReg[0]) {
+
+                    InputRegisterIndicator ir = new InputRegisterIndicator(i);
+
+                    foreach (var el in paramNames) if (el.Adr == 1000 + i) {
+
+                            ir.Name = el.Name;
+                            ir.Scale = el.Scl;
+                            ir.Max = el.Max;
+                            ir.Min = el.Min;
+                            ir.Dimension = el.Dim;
+                    }
+
+                    tableLayoutPanel_IR.Controls.Add(ir.label, 0, tableLayoutPanel_IR.RowCount - 1);
+                    tableLayoutPanel_IR.RowCount++;
+
+                    tableLayoutPanel_IR.Controls.Add(ir.indicator, 0, tableLayoutPanel_IR.RowCount - 1);
+                    tableLayoutPanel_IR.RowCount++;
+
+                    IrIndicList.Add(ir);
+
+                };
+
+            }
+
+            foreach (var el in IrIndicList)
             {
-                if ((i + 3) == Server.uiInputReg.Length) break;
-               // if (i == 12) break;
-
-                Int16 mes = (Int16)Server.uiInputReg[i + 3];
-                float temp = ((float)mes * 10 / 100);
-                if (i < lstIndIR.Count)
-                {
-                    string temp_str = mes.ToString();
-
-                    if (i < 5)
-                    {
-                        temp_str = temp.ToString("#####0.0") + saRazmForInd[i];
-                        vIndi_SetColor(lstIndIR[i], mes, iaLevelForInd[i]);
-                        ListOfCharts[i].AddPoint(temp);
-                    }
-                    else
-                    {
-                        ListOfCharts[i].AddPoint(mes);
-                    }
-
-                    lstIndIR[i].Text = temp_str;
-                }
-                i++;
+                el.value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
             }
 
             //Осциллограф
@@ -482,9 +577,6 @@ namespace WindowsFormsApp4
                 Server.blUpdGridHR = false;
             }
 
-            // пределы по току
-            iaLevelForInd[4][0] = (int)((float)Server.uiHoldingReg[8] * 0.10);
-            iaLevelForInd[4][1] = (int)((float)Server.uiHoldingReg[8] * 0.95);
 
             // обновляю поле статуса
             // tbState.Text = "0x0" + Convert.ToString(Server.uiInputReg[2], 16) + Environment.NewLine;
@@ -573,10 +665,8 @@ namespace WindowsFormsApp4
                     if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
                         row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
                 }
-                else { paramNames.Add(new ParamNames()); };
+                else { paramNames.Add(new ParamNames()); }
 
-
-                
 
                 // custom controls
                 if (paramNames[i].Control != false) {
@@ -876,7 +966,10 @@ namespace WindowsFormsApp4
 
             // txtBoxLog.Text= "Открытие порта";
             bs_flg = false;
-            if (!Updater.IsAlive) { Updater.Start(); return; };
+            if (!Updater.IsAlive) { 
+                Updater.Start(); return;
+            };
+
         }
 
 
@@ -1182,8 +1275,12 @@ namespace WindowsFormsApp4
                 string jsonString = File.ReadAllText(filename, Encoding.Default);
                 paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
                 customControlsList.Clear();
+                tableLayoutPanel_IR.RowCount = 0;
+                tableLayoutPanel_IR.Controls.Clear();               
+
                 tableLayoutPanel_customControl.Controls.Clear();
                 vIndi_HRGrid_init(Server.uiInputReg[1]);
+               
             }
             catch (Newtonsoft.Json.JsonReaderException ex)
             {
@@ -1227,6 +1324,11 @@ namespace WindowsFormsApp4
         }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e)
         {
 
         }

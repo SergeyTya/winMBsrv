@@ -29,50 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.flowLayoutPanel_Indic = new System.Windows.Forms.FlowLayoutPanel();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tbBusDc = new System.Windows.Forms.TextBox();
-            this.tbOutVolt = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.tbOutCur = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.tbOutFreq = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tbRdioState = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.tbFcTmp = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tbGrid = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tbPosPhys = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.tbPosVirt = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.tbPosMotor = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.tbHR13 = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.tbHR12 = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.tbHR11 = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.tbHR10 = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.tbMotorTemp = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbState = new System.Windows.Forms.TextBox();
@@ -128,22 +91,11 @@
             this.Ovalue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtBoxLog = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel_main = new System.Windows.Forms.TableLayoutPanel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel_main = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel_IR = new System.Windows.Forms.TableLayoutPanel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.tbReg18 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tbReg19 = new System.Windows.Forms.TextBox();
-            this.tbReg20 = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel_Indic.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel_Controls.SuspendLayout();
@@ -156,7 +108,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridRelayIO)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel_main.SuspendLayout();
-            this.tabPage5.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuForChart
@@ -164,564 +116,13 @@
             this.contextMenuForChart.Name = "contextMenuForChart";
             this.contextMenuForChart.Size = new System.Drawing.Size(61, 4);
             // 
-            // flowLayoutPanel_Indic
-            // 
-            this.flowLayoutPanel_Indic.AutoScroll = true;
-            this.flowLayoutPanel_Indic.Controls.Add(this.groupBox4);
-            this.flowLayoutPanel_Indic.Controls.Add(this.groupBox2);
-            this.flowLayoutPanel_Indic.Controls.Add(this.groupBox1);
-            this.flowLayoutPanel_Indic.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel_Indic.Location = new System.Drawing.Point(1, 1);
-            this.flowLayoutPanel_Indic.Margin = new System.Windows.Forms.Padding(1, 1, 0, 1);
-            this.flowLayoutPanel_Indic.Name = "flowLayoutPanel_Indic";
-            this.flowLayoutPanel_Indic.Size = new System.Drawing.Size(219, 545);
-            this.flowLayoutPanel_Indic.TabIndex = 24;
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.groupBox4.Location = new System.Drawing.Point(3, 10);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(188, 442);
-            this.groupBox4.TabIndex = 31;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Индикаторы";
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.tbBusDc, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.tbOutVolt, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.tbOutCur, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.tbOutFreq, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.tbRdioState, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 12);
-            this.tableLayoutPanel1.Controls.Add(this.tbFcTmp, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 10);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.tbGrid, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 6);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 22);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 14;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(182, 417);
-            this.tableLayoutPanel1.TabIndex = 32;
-            // 
-            // tbBusDc
-            // 
-            this.tbBusDc.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbBusDc.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbBusDc.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbBusDc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbBusDc.HideSelection = false;
-            this.tbBusDc.Location = new System.Drawing.Point(15, 203);
-            this.tbBusDc.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbBusDc.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbBusDc.Name = "tbBusDc";
-            this.tbBusDc.ReadOnly = true;
-            this.tbBusDc.Size = new System.Drawing.Size(150, 33);
-            this.tbBusDc.TabIndex = 6;
-            this.tbBusDc.Text = "0";
-            this.tbBusDc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // tbOutVolt
-            // 
-            this.tbOutVolt.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbOutVolt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbOutVolt.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbOutVolt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbOutVolt.HideSelection = false;
-            this.tbOutVolt.Location = new System.Drawing.Point(15, 143);
-            this.tbOutVolt.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbOutVolt.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbOutVolt.Name = "tbOutVolt";
-            this.tbOutVolt.ReadOnly = true;
-            this.tbOutVolt.Size = new System.Drawing.Size(150, 33);
-            this.tbOutVolt.TabIndex = 4;
-            this.tbOutVolt.Text = "0";
-            this.tbOutVolt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(3, 120);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(143, 17);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Напряжение (Рег. 4)";
-            // 
-            // tbOutCur
-            // 
-            this.tbOutCur.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbOutCur.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbOutCur.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbOutCur.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbOutCur.HideSelection = false;
-            this.tbOutCur.Location = new System.Drawing.Point(15, 83);
-            this.tbOutCur.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbOutCur.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbOutCur.Name = "tbOutCur";
-            this.tbOutCur.ReadOnly = true;
-            this.tbOutCur.Size = new System.Drawing.Size(150, 33);
-            this.tbOutCur.TabIndex = 2;
-            this.tbOutCur.Text = "0";
-            this.tbOutCur.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(3, 60);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(84, 17);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "Ток (Рег. 7)";
-            // 
-            // tbOutFreq
-            // 
-            this.tbOutFreq.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbOutFreq.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbOutFreq.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbOutFreq.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbOutFreq.HideSelection = false;
-            this.tbOutFreq.Location = new System.Drawing.Point(15, 22);
-            this.tbOutFreq.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbOutFreq.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbOutFreq.Name = "tbOutFreq";
-            this.tbOutFreq.ReadOnly = true;
-            this.tbOutFreq.Size = new System.Drawing.Size(150, 33);
-            this.tbOutFreq.TabIndex = 0;
-            this.tbOutFreq.Text = "0";
-            this.tbOutFreq.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(1, 1);
-            this.label4.Margin = new System.Windows.Forms.Padding(1);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(115, 17);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Частота (Рег. 3)";
-            // 
-            // tbRdioState
-            // 
-            this.tbRdioState.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbRdioState.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbRdioState.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbRdioState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbRdioState.HideSelection = false;
-            this.tbRdioState.Location = new System.Drawing.Point(15, 383);
-            this.tbRdioState.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbRdioState.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbRdioState.Name = "tbRdioState";
-            this.tbRdioState.ReadOnly = true;
-            this.tbRdioState.Size = new System.Drawing.Size(150, 33);
-            this.tbRdioState.TabIndex = 10;
-            this.tbRdioState.Text = "0";
-            this.tbRdioState.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label9.Location = new System.Drawing.Point(3, 360);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(127, 17);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "Релейные (Рег. 9)";
-            // 
-            // tbFcTmp
-            // 
-            this.tbFcTmp.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbFcTmp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFcTmp.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbFcTmp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbFcTmp.HideSelection = false;
-            this.tbFcTmp.Location = new System.Drawing.Point(15, 323);
-            this.tbFcTmp.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbFcTmp.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbFcTmp.Name = "tbFcTmp";
-            this.tbFcTmp.ReadOnly = true;
-            this.tbFcTmp.Size = new System.Drawing.Size(150, 33);
-            this.tbFcTmp.TabIndex = 8;
-            this.tbFcTmp.Text = "0";
-            this.tbFcTmp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label8.Location = new System.Drawing.Point(3, 300);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(148, 17);
-            this.label8.TabIndex = 9;
-            this.label8.Text = "Температура (Рег. 8)";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.Location = new System.Drawing.Point(3, 240);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(91, 17);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Сеть (Рег. 6)";
-            // 
-            // tbGrid
-            // 
-            this.tbGrid.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbGrid.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbGrid.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbGrid.HideSelection = false;
-            this.tbGrid.Location = new System.Drawing.Point(15, 263);
-            this.tbGrid.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbGrid.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbGrid.Name = "tbGrid";
-            this.tbGrid.ReadOnly = true;
-            this.tbGrid.Size = new System.Drawing.Size(150, 33);
-            this.tbGrid.TabIndex = 8;
-            this.tbGrid.Text = "0";
-            this.tbGrid.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(3, 180);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(118, 17);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Шина DC (Рег. 5)";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox2.Controls.Add(this.tableLayoutPanel2);
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.groupBox2.Location = new System.Drawing.Point(3, 458);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(187, 211);
-            this.groupBox2.TabIndex = 31;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "ДПР";
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.Controls.Add(this.tbPosPhys, 0, 5);
-            this.tableLayoutPanel2.Controls.Add(this.label15, 0, 4);
-            this.tableLayoutPanel2.Controls.Add(this.tbPosVirt, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.label14, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.tbPosMotor, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label13, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 22);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 6;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 37F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(181, 186);
-            this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // tbPosPhys
-            // 
-            this.tbPosPhys.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbPosPhys.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbPosPhys.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbPosPhys.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbPosPhys.HideSelection = false;
-            this.tbPosPhys.Location = new System.Drawing.Point(15, 143);
-            this.tbPosPhys.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbPosPhys.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbPosPhys.Name = "tbPosPhys";
-            this.tbPosPhys.ReadOnly = true;
-            this.tbPosPhys.Size = new System.Drawing.Size(150, 33);
-            this.tbPosPhys.TabIndex = 10;
-            this.tbPosPhys.Text = "0";
-            this.tbPosPhys.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label15.Location = new System.Drawing.Point(3, 120);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(150, 17);
-            this.label15.TabIndex = 11;
-            this.label15.Text = "Физический (Рег. 13)";
-            // 
-            // tbPosVirt
-            // 
-            this.tbPosVirt.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbPosVirt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbPosVirt.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbPosVirt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbPosVirt.HideSelection = false;
-            this.tbPosVirt.Location = new System.Drawing.Point(15, 83);
-            this.tbPosVirt.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbPosVirt.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbPosVirt.Name = "tbPosVirt";
-            this.tbPosVirt.ReadOnly = true;
-            this.tbPosVirt.Size = new System.Drawing.Size(150, 33);
-            this.tbPosVirt.TabIndex = 10;
-            this.tbPosVirt.Text = "0";
-            this.tbPosVirt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label14.Location = new System.Drawing.Point(3, 60);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(156, 17);
-            this.label14.TabIndex = 11;
-            this.label14.Text = "Виртуальный (Рег. 12)";
-            // 
-            // tbPosMotor
-            // 
-            this.tbPosMotor.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbPosMotor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbPosMotor.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbPosMotor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbPosMotor.HideSelection = false;
-            this.tbPosMotor.Location = new System.Drawing.Point(15, 26);
-            this.tbPosMotor.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbPosMotor.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbPosMotor.Name = "tbPosMotor";
-            this.tbPosMotor.ReadOnly = true;
-            this.tbPosMotor.Size = new System.Drawing.Size(150, 33);
-            this.tbPosMotor.TabIndex = 10;
-            this.tbPosMotor.Text = "0";
-            this.tbPosMotor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label13.Location = new System.Drawing.Point(3, 3);
-            this.label13.Margin = new System.Windows.Forms.Padding(3);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(110, 17);
-            this.label13.TabIndex = 11;
-            this.label13.Text = "Мотор (Рег. 10)";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.groupBox1.Location = new System.Drawing.Point(3, 675);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(187, 331);
-            this.groupBox1.TabIndex = 31;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Регистры";
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 1;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.tbHR13, 0, 9);
-            this.tableLayoutPanel3.Controls.Add(this.label19, 0, 8);
-            this.tableLayoutPanel3.Controls.Add(this.tbHR12, 0, 7);
-            this.tableLayoutPanel3.Controls.Add(this.label18, 0, 6);
-            this.tableLayoutPanel3.Controls.Add(this.tbHR11, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.label17, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.tbHR10, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.label16, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.tbMotorTemp, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label12, 0, 0);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 22);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 10;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(181, 306);
-            this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // tbHR13
-            // 
-            this.tbHR13.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbHR13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbHR13.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbHR13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbHR13.HideSelection = false;
-            this.tbHR13.Location = new System.Drawing.Point(15, 263);
-            this.tbHR13.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbHR13.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbHR13.Name = "tbHR13";
-            this.tbHR13.ReadOnly = true;
-            this.tbHR13.Size = new System.Drawing.Size(150, 33);
-            this.tbHR13.TabIndex = 10;
-            this.tbHR13.Text = "0";
-            this.tbHR13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.tbHR13.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label19.Location = new System.Drawing.Point(3, 240);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(175, 17);
-            this.label19.TabIndex = 11;
-            this.label19.Text = "Набор настроек (Рег. 17)";
-            // 
-            // tbHR12
-            // 
-            this.tbHR12.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbHR12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbHR12.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbHR12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbHR12.HideSelection = false;
-            this.tbHR12.Location = new System.Drawing.Point(15, 203);
-            this.tbHR12.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbHR12.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbHR12.Name = "tbHR12";
-            this.tbHR12.ReadOnly = true;
-            this.tbHR12.Size = new System.Drawing.Size(150, 33);
-            this.tbHR12.TabIndex = 10;
-            this.tbHR12.Text = "0";
-            this.tbHR12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label18.Location = new System.Drawing.Point(3, 180);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(168, 17);
-            this.label18.TabIndex = 11;
-            this.label18.Text = "Ошибка позиц. (Рег. 16)";
-            // 
-            // tbHR11
-            // 
-            this.tbHR11.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbHR11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbHR11.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbHR11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbHR11.HideSelection = false;
-            this.tbHR11.Location = new System.Drawing.Point(15, 143);
-            this.tbHR11.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbHR11.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbHR11.Name = "tbHR11";
-            this.tbHR11.ReadOnly = true;
-            this.tbHR11.Size = new System.Drawing.Size(150, 33);
-            this.tbHR11.TabIndex = 10;
-            this.tbHR11.Text = "0";
-            this.tbHR11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label17.Location = new System.Drawing.Point(3, 120);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(54, 17);
-            this.label17.TabIndex = 11;
-            this.label17.Text = "Рег. 15";
-            // 
-            // tbHR10
-            // 
-            this.tbHR10.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbHR10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbHR10.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbHR10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbHR10.HideSelection = false;
-            this.tbHR10.Location = new System.Drawing.Point(15, 83);
-            this.tbHR10.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbHR10.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbHR10.Name = "tbHR10";
-            this.tbHR10.ReadOnly = true;
-            this.tbHR10.Size = new System.Drawing.Size(150, 33);
-            this.tbHR10.TabIndex = 10;
-            this.tbHR10.Text = "0";
-            this.tbHR10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label16.Location = new System.Drawing.Point(3, 60);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(54, 17);
-            this.label16.TabIndex = 11;
-            this.label16.Text = "Рег. 14";
-            // 
-            // tbMotorTemp
-            // 
-            this.tbMotorTemp.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbMotorTemp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbMotorTemp.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbMotorTemp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbMotorTemp.HideSelection = false;
-            this.tbMotorTemp.Location = new System.Drawing.Point(15, 23);
-            this.tbMotorTemp.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbMotorTemp.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbMotorTemp.Name = "tbMotorTemp";
-            this.tbMotorTemp.ReadOnly = true;
-            this.tbMotorTemp.Size = new System.Drawing.Size(150, 33);
-            this.tbMotorTemp.TabIndex = 10;
-            this.tbMotorTemp.Text = "0";
-            this.tbMotorTemp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label12.Location = new System.Drawing.Point(3, 3);
-            this.label12.Margin = new System.Windows.Forms.Padding(3);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(146, 14);
-            this.label12.TabIndex = 11;
-            this.label12.Text = "Темп мотор (Рег. 11)";
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 576);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 584);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(907, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(952, 22);
             this.statusStrip1.TabIndex = 26;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -741,7 +142,7 @@
             this.tbState.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbState.Location = new System.Drawing.Point(3, 3);
             this.tbState.Name = "tbState";
-            this.tbState.Size = new System.Drawing.Size(675, 31);
+            this.tbState.Size = new System.Drawing.Size(690, 31);
             this.tbState.TabIndex = 27;
             this.tbState.Text = "\nНет соединения";
             this.tbState.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -791,7 +192,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.menuStrip1.Size = new System.Drawing.Size(907, 29);
+            this.menuStrip1.Size = new System.Drawing.Size(952, 29);
             this.menuStrip1.TabIndex = 29;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1056,13 +457,13 @@
             this.tableLayoutPanel_Controls.Controls.Add(this.tableLayoutPanel_Button, 0, 2);
             this.tableLayoutPanel_Controls.Controls.Add(this.tabForm, 0, 1);
             this.tableLayoutPanel_Controls.Controls.Add(this.tbState, 0, 0);
-            this.tableLayoutPanel_Controls.Location = new System.Drawing.Point(223, 3);
+            this.tableLayoutPanel_Controls.Location = new System.Drawing.Point(253, 3);
             this.tableLayoutPanel_Controls.Name = "tableLayoutPanel_Controls";
             this.tableLayoutPanel_Controls.RowCount = 3;
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
-            this.tableLayoutPanel_Controls.Size = new System.Drawing.Size(681, 541);
+            this.tableLayoutPanel_Controls.Size = new System.Drawing.Size(696, 549);
             this.tableLayoutPanel_Controls.TabIndex = 31;
             // 
             // tableLayoutPanel_Button
@@ -1079,11 +480,11 @@
             this.tableLayoutPanel_Button.Controls.Add(this.btn_Reset, 3, 0);
             this.tableLayoutPanel_Button.Controls.Add(this.btn_Stop, 1, 0);
             this.tableLayoutPanel_Button.Controls.Add(this.btnRun, 0, 0);
-            this.tableLayoutPanel_Button.Location = new System.Drawing.Point(3, 486);
+            this.tableLayoutPanel_Button.Location = new System.Drawing.Point(3, 494);
             this.tableLayoutPanel_Button.Name = "tableLayoutPanel_Button";
             this.tableLayoutPanel_Button.RowCount = 1;
             this.tableLayoutPanel_Button.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel_Button.Size = new System.Drawing.Size(675, 52);
+            this.tableLayoutPanel_Button.Size = new System.Drawing.Size(690, 52);
             this.tableLayoutPanel_Button.TabIndex = 24;
             // 
             // btn_Reset
@@ -1114,7 +515,7 @@
             this.tabForm.Location = new System.Drawing.Point(3, 53);
             this.tabForm.Name = "tabForm";
             this.tabForm.SelectedIndex = 0;
-            this.tabForm.Size = new System.Drawing.Size(675, 427);
+            this.tabForm.Size = new System.Drawing.Size(690, 435);
             this.tabForm.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabForm.TabIndex = 23;
             // 
@@ -1125,7 +526,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(667, 398);
+            this.tabPage1.Size = new System.Drawing.Size(682, 406);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Параметры";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1145,7 +546,7 @@
             this.gridHRTable.Location = new System.Drawing.Point(3, 3);
             this.gridHRTable.Name = "gridHRTable";
             this.gridHRTable.RowHeadersVisible = false;
-            this.gridHRTable.Size = new System.Drawing.Size(661, 392);
+            this.gridHRTable.Size = new System.Drawing.Size(676, 400);
             this.gridHRTable.TabIndex = 22;
             this.gridHRTable.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.GridView_CellBeginEdit);
             this.gridHRTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridView_CellContentClick);
@@ -1155,9 +556,9 @@
             // adr
             // 
             this.adr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.adr.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.adr.DefaultCellStyle = dataGridViewCellStyle1;
             this.adr.FillWeight = 60F;
             this.adr.HeaderText = "Адрес";
             this.adr.Name = "adr";
@@ -1167,8 +568,8 @@
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle2;
             this.name.HeaderText = "Параметр";
             this.name.Name = "name";
             this.name.Width = 99;
@@ -1176,8 +577,8 @@
             // value
             // 
             this.value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.value.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.value.DefaultCellStyle = dataGridViewCellStyle3;
             this.value.HeaderText = "Значение";
             this.value.Name = "value";
             this.value.Width = 98;
@@ -1191,8 +592,8 @@
             // 
             // read
             // 
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.read.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.read.DefaultCellStyle = dataGridViewCellStyle4;
             this.read.HeaderText = "";
             this.read.Name = "read";
             this.read.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -1203,7 +604,7 @@
             this.tabPage4.Controls.Add(this.tableLayoutPanel_customControl);
             this.tabPage4.Location = new System.Drawing.Point(4, 25);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(667, 398);
+            this.tabPage4.Size = new System.Drawing.Size(682, 406);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Управление";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1220,7 +621,7 @@
             this.tableLayoutPanel_customControl.Name = "tableLayoutPanel_customControl";
             this.tableLayoutPanel_customControl.RowCount = 1;
             this.tableLayoutPanel_customControl.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_customControl.Size = new System.Drawing.Size(667, 398);
+            this.tableLayoutPanel_customControl.Size = new System.Drawing.Size(682, 406);
             this.tableLayoutPanel_customControl.TabIndex = 0;
             // 
             // tabPage3
@@ -1228,7 +629,7 @@
             this.tabPage3.Controls.Add(this.gridRelayIO);
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(667, 398);
+            this.tabPage3.Size = new System.Drawing.Size(682, 406);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Релейные сигналы";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1260,8 +661,8 @@
             // 
             // Ivalue
             // 
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle5;
             this.Ivalue.DividerWidth = 10;
             this.Ivalue.HeaderText = "";
             this.Ivalue.Name = "Ivalue";
@@ -1275,8 +676,8 @@
             // 
             // Ovalue
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle6;
             this.Ovalue.HeaderText = "";
             this.Ovalue.Name = "Ovalue";
             this.Ovalue.ReadOnly = true;
@@ -1287,7 +688,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(667, 398);
+            this.tabPage2.Size = new System.Drawing.Size(682, 406);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Лог";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1299,148 +700,77 @@
             this.txtBoxLog.Multiline = true;
             this.txtBoxLog.Name = "txtBoxLog";
             this.txtBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtBoxLog.Size = new System.Drawing.Size(661, 392);
+            this.txtBoxLog.Size = new System.Drawing.Size(676, 400);
             this.txtBoxLog.TabIndex = 19;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 25);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(682, 406);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Debug";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel_main
             // 
             this.tableLayoutPanel_main.ColumnCount = 2;
-            this.tableLayoutPanel_main.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+            this.tableLayoutPanel_main.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
             this.tableLayoutPanel_main.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel_main.Controls.Add(this.flowLayoutPanel_Indic, 0, 0);
             this.tableLayoutPanel_main.Controls.Add(this.tableLayoutPanel_Controls, 1, 0);
+            this.tableLayoutPanel_main.Controls.Add(this.tableLayoutPanel4, 0, 0);
             this.tableLayoutPanel_main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel_main.Location = new System.Drawing.Point(0, 29);
             this.tableLayoutPanel_main.Name = "tableLayoutPanel_main";
             this.tableLayoutPanel_main.RowCount = 1;
             this.tableLayoutPanel_main.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel_main.Size = new System.Drawing.Size(907, 547);
+            this.tableLayoutPanel_main.Size = new System.Drawing.Size(952, 555);
             this.tableLayoutPanel_main.TabIndex = 32;
             // 
-            // tabPage5
+            // tableLayoutPanel4
             // 
-            this.tabPage5.Controls.Add(this.tbReg20);
-            this.tabPage5.Controls.Add(this.tbReg19);
-            this.tabPage5.Controls.Add(this.tbReg18);
-            this.tabPage5.Controls.Add(this.label10);
-            this.tabPage5.Controls.Add(this.label3);
-            this.tabPage5.Controls.Add(this.label2);
-            this.tabPage5.Location = new System.Drawing.Point(4, 25);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(667, 398);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Debug";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.tableLayoutPanel4.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel_IR, 0, 1);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.639344F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 98.36066F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(244, 549);
+            this.tableLayoutPanel4.TabIndex = 32;
+            this.tableLayoutPanel4.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel4_Paint);
             // 
-            // tbReg18
+            // tableLayoutPanel_IR
             // 
-            this.tbReg18.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbReg18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbReg18.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbReg18.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbReg18.HideSelection = false;
-            this.tbReg18.Location = new System.Drawing.Point(9, 38);
-            this.tbReg18.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbReg18.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbReg18.Name = "tbReg18";
-            this.tbReg18.ReadOnly = true;
-            this.tbReg18.Size = new System.Drawing.Size(150, 33);
-            this.tbReg18.TabIndex = 10;
-            this.tbReg18.Text = "0";
-            this.tbReg18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.tbReg18.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(6, 18);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(145, 17);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Ошибки МТ (Рег. 18)";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(8, 134);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(171, 17);
-            this.label3.TabIndex = 11;
-            this.label3.Text = "Код ошибки МТ (Рег. 19)";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // tbReg19
-            // 
-            this.tbReg19.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbReg19.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbReg19.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbReg19.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbReg19.HideSelection = false;
-            this.tbReg19.Location = new System.Drawing.Point(9, 94);
-            this.tbReg19.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbReg19.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbReg19.Name = "tbReg19";
-            this.tbReg19.ReadOnly = true;
-            this.tbReg19.Size = new System.Drawing.Size(150, 33);
-            this.tbReg19.TabIndex = 10;
-            this.tbReg19.Text = "0";
-            this.tbReg19.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.tbReg19.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
-            // 
-            // tbReg20
-            // 
-            this.tbReg20.BackColor = System.Drawing.SystemColors.MenuText;
-            this.tbReg20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbReg20.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbReg20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.tbReg20.HideSelection = false;
-            this.tbReg20.Location = new System.Drawing.Point(10, 150);
-            this.tbReg20.Margin = new System.Windows.Forms.Padding(15, 3, 10, 3);
-            this.tbReg20.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.tbReg20.Name = "tbReg20";
-            this.tbReg20.ReadOnly = true;
-            this.tbReg20.Size = new System.Drawing.Size(150, 33);
-            this.tbReg20.TabIndex = 10;
-            this.tbReg20.Text = "0";
-            this.tbReg20.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.tbReg20.TextChanged += new System.EventHandler(this.tbHR13_TextChanged);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label10.Location = new System.Drawing.Point(9, 77);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(142, 17);
-            this.label10.TabIndex = 11;
-            this.label10.Text = "Пакеты МТ (Рег. 20)";
-            this.label10.Click += new System.EventHandler(this.label3_Click);
+            this.tableLayoutPanel_IR.AutoScroll = true;
+            this.tableLayoutPanel_IR.ColumnCount = 1;
+            this.tableLayoutPanel_IR.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel_IR.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel_IR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_IR.Location = new System.Drawing.Point(10, 18);
+            this.tableLayoutPanel_IR.Margin = new System.Windows.Forms.Padding(10);
+            this.tableLayoutPanel_IR.Name = "tableLayoutPanel_IR";
+            this.tableLayoutPanel_IR.RowCount = 1;
+            this.tableLayoutPanel_IR.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 521);
+            this.tableLayoutPanel_IR.TabIndex = 34;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(907, 598);
+            this.ClientSize = new System.Drawing.Size(952, 606);
             this.Controls.Add(this.tableLayoutPanel_main);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "Form1";
             this.Text = "Form1";
-            this.flowLayoutPanel_Indic.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1457,27 +787,13 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tableLayoutPanel_main.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage5.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel_Indic;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox tbOutFreq;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tbOutCur;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox tbOutVolt;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox tbBusDc;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox tbFcTmp;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox tbRdioState;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tsStatus;
         private System.Windows.Forms.TextBox tbState;
@@ -1506,28 +822,20 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Scope_Start;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Scope_Stop;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Param_MotorSel;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox tbPosMotor;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox tbPosVirt;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox tbPosPhys;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox tbMotorTemp;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox tbHR10;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox tbHR11;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox tbHR12;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox tbHR13;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Controls;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_main;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Button;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Connect;
+        private System.Windows.Forms.ToolStripMenuItem адресToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_adr;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_RefrTime;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_RefTime;
+        protected System.Windows.Forms.ToolStripMenuItem MenuItem_Connect;
+        private System.Windows.Forms.Button btn_Reset;
+        private System.Windows.Forms.ToolStripMenuItem выбратьФайлОписанияНастроекToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_IR;
         private System.Windows.Forms.TabControl tabForm;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView gridHRTable;
@@ -1536,6 +844,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn value;
         private System.Windows.Forms.DataGridViewTextBoxColumn set;
         private System.Windows.Forms.DataGridViewTextBoxColumn read;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_customControl;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView gridRelayIO;
         private System.Windows.Forms.DataGridViewTextBoxColumn input;
@@ -1544,29 +854,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Ovalue;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox txtBoxLog;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Connect;
-        private System.Windows.Forms.ToolStripMenuItem адресToolStripMenuItem;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_adr;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_RefrTime;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_RefTime;
-        protected System.Windows.Forms.ToolStripMenuItem MenuItem_Connect;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox tbGrid;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Button btn_Reset;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_customControl;
-        private System.Windows.Forms.ToolStripMenuItem выбратьФайлОписанияНастроекToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.TextBox tbReg19;
-        private System.Windows.Forms.TextBox tbReg18;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tbReg20;
-        private System.Windows.Forms.Label label10;
     }
 }
 

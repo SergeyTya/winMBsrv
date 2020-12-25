@@ -275,12 +275,14 @@ namespace WindowsFormsApp4
             int adrcount = 0;
             int count = 0;
             int baseadr = 0;
+            bool baseadrIsSet = false;
             FileHexData.Clear();
             FValid = false;
             ProcBisy = true;
             byte[] tempbt = new byte[256];
             bool endfile = false;
             bool endrecord = false;
+
 
             FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             StreamReader sr = new StreamReader(fs);
@@ -319,7 +321,12 @@ namespace WindowsFormsApp4
                     if (type == 4)
                     {
                         baseadr = (fulldata[4] << 24) + (fulldata[5] << 16);
-                        if (bAdrForSend == 0) bAdrForSend = baseadr;
+                       
+                        if (!baseadrIsSet && adrcount==0 ) {
+                            baseadrIsSet = true;
+                            bAdrForSend = baseadr;
+                            logger.Add(new string[] { "Базовый адрес в файле 0x" + Convert.ToString(baseadr, 16) });
+                        };
                         adrcount = 0;
                         continue;
                     };
@@ -479,6 +486,9 @@ namespace WindowsFormsApp4
                 try
                 {
                     port.Write("A");
+
+                   // logger.Add(new string[] { "base adr send 0x" + Convert.ToString(bAdrForSend, 16) });
+
                     port.Write(new byte[] { 0x0, 0x0, (byte)(bAdrForSend >> 16), (byte)(bAdrForSend >> 24) }, 0, 4);
                     if (!String.IsNullOrEmpty(ReadPort(new byte[1], 1))) return "неверный базовый адрес (bAdrForSend)";
                 }
