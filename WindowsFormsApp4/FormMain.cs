@@ -21,7 +21,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace WindowsFormsApp4
 {
 
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
 
         MODBUS_srv Server = new MODBUS_srv();
@@ -59,7 +59,7 @@ namespace WindowsFormsApp4
         public FormScope ScopeForm = null;
         SetupForm SetupForm1 = null;
         private string sTempForCell = null;
-        UInt16 uiServerDelay = 10;
+        private UInt16 uiServerDelay = 10;
         private List<ParamNames> paramNames;
 
         private class CustomControlTyple
@@ -105,7 +105,7 @@ namespace WindowsFormsApp4
                         indicator.Text = temp.ToString("#####0.0") + " " + Dimension;
                     }
 
-                    chart.AddPoint(value);
+                    chart.AddPoint(value);                    
                     indicator.ForeColor = Color.LightGreen;
                     if (temp < Min) indicator.ForeColor = Color.Cyan;
                     if (temp > Max) indicator.ForeColor = Color.LightCoral;
@@ -195,7 +195,9 @@ namespace WindowsFormsApp4
         }
 
 
-        public Form1()
+        FormGensig FormGenSig = new FormGensig();
+
+        public FormMain()
         {
 
             InitializeComponent();
@@ -251,8 +253,14 @@ namespace WindowsFormsApp4
             ToolStripMenuItem_Connect.Text = "Соединить";
             this.toolStripComboBox_RefTime.SelectedIndex = 3;
 
+            
+          //  FormGenSig.Show();
+
         }
         //основной поток
+
+        private Stopwatch startTime = Stopwatch.StartNew();
+        private double timeStep ;
         private void updater()
         {
 
@@ -288,9 +296,23 @@ namespace WindowsFormsApp4
 
                     }
 
+                    startTime.Stop();
+                    timeStep = (double)startTime.ElapsedMilliseconds / 1000;
+                    startTime.Restart();
+
                     Server.blReadIRreq = true;
-               
                     Server.vPoll();
+
+                    //Генератор сигналов
+                    if (FormGenSig.GetState())
+                    {
+                        UInt16 point = FormGenSig.GetReference();
+                        UInt16 target = FormGenSig.GetTargetHR();
+                        FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
+                        FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
+                        if(Server.uiHoldingReg[target]!= point)
+                            Server.uialHRForWrite.Add(new UInt16[2] { target, point });
+                    }
 
                 }
                 else
@@ -608,10 +630,12 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
+            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString() + " TimeStep=" + timeStep;
 
-
+          
         }
+
+
         //Процедура сброса интерфейса при обрыве связи
         private void vIndi_Clear()
         {
@@ -838,6 +862,7 @@ namespace WindowsFormsApp4
         {
             e.CellStyle.BackColor = Color.Aquamarine;
         }
+
         private void GridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
 
@@ -1308,29 +1333,12 @@ namespace WindowsFormsApp4
             }
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void ToolStripMenuItem_ToolGen_Click(object sender, EventArgs e)
         {
+            if (FormGenSig != null) if (FormGenSig.Created) { FormGenSig.BringToFront(); return; };
 
-        }
-
-        private void tbHR13_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e)
-        {
-
+            FormGenSig = new FormGensig();
+            FormGenSig.Show();
         }
     }
 }

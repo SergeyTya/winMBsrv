@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApp4
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -42,34 +42,6 @@
             this.btnRun = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.MenuItem_Refresh = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Refresh_State = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Refresh_Dev = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Refresh_Prog = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolStripMenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
-            this.адресToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox_adr = new System.Windows.Forms.ToolStripTextBox();
-            this.MenuItem_RefrTime = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox_RefTime = new System.Windows.Forms.ToolStripComboBox();
-            this.MenuItem_About = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Scope = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Scope_Start = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Scope_Stop = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Save = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Save_ToFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Save_ToDev = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Load = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Load_FromFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_Load_FromDev = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Param_MotorSel = new System.Windows.Forms.ToolStripMenuItem();
-            this.выбратьФайлОписанияНастроекToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Loader = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Loader_Flash = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Loader_Verify = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Loader_Reset = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Loader_Stop = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel_Controls = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel_Button = new System.Windows.Forms.TableLayoutPanel();
             this.btn_Reset = new System.Windows.Forms.Button();
@@ -96,6 +68,35 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel_IR = new System.Windows.Forms.TableLayoutPanel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.MenuItem_Refresh = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Refresh_State = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Refresh_Dev = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Refresh_Prog = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
+            this.адресToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_adr = new System.Windows.Forms.ToolStripTextBox();
+            this.MenuItem_RefrTime = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox_RefTime = new System.Windows.Forms.ToolStripComboBox();
+            this.MenuItem_Param = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Save_ToFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Save_ToDev = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Load = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Load_FromFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_Load_FromDev = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Param_MotorSel = new System.Windows.Forms.ToolStripMenuItem();
+            this.выбратьФайлОписанияНастроекToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Tools = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_ToolGen = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_ToolScope = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_ScopeStart = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_ScopeStop = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_ToolLoader = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_LoaderFlash = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_LoaderVerify = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_LoaderReset = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_LoaderCancle = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel_Controls.SuspendLayout();
@@ -184,10 +185,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_Refresh,
             this.MenuItem_Connect,
-            this.MenuItem_About,
-            this.MenuItem_Scope,
             this.MenuItem_Param,
-            this.MenuItem_Loader});
+            this.MenuItem_Tools});
             this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -195,257 +194,6 @@
             this.menuStrip1.Size = new System.Drawing.Size(952, 29);
             this.menuStrip1.TabIndex = 29;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // MenuItem_Refresh
-            // 
-            this.MenuItem_Refresh.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Refresh_State,
-            this.MenuItem_Refresh_Dev,
-            this.MenuItem_Refresh_Prog});
-            this.MenuItem_Refresh.Image = global::WindowsFormsApp4.Properties.Resources.available_updates_32;
-            this.MenuItem_Refresh.Name = "MenuItem_Refresh";
-            this.MenuItem_Refresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_Refresh.Size = new System.Drawing.Size(109, 25);
-            this.MenuItem_Refresh.Text = "Обновить";
-            // 
-            // MenuItem_Refresh_State
-            // 
-            this.MenuItem_Refresh_State.Name = "MenuItem_Refresh_State";
-            this.MenuItem_Refresh_State.Size = new System.Drawing.Size(325, 26);
-            this.MenuItem_Refresh_State.Text = "Обновить статус";
-            this.MenuItem_Refresh_State.Click += new System.EventHandler(this.MenuItem_Refresh_State_Click);
-            // 
-            // MenuItem_Refresh_Dev
-            // 
-            this.MenuItem_Refresh_Dev.Name = "MenuItem_Refresh_Dev";
-            this.MenuItem_Refresh_Dev.Size = new System.Drawing.Size(325, 26);
-            this.MenuItem_Refresh_Dev.Text = "Обновить регистры на устройстве";
-            this.MenuItem_Refresh_Dev.Click += new System.EventHandler(this.MenuItem_Refresh_Dev_Click);
-            // 
-            // MenuItem_Refresh_Prog
-            // 
-            this.MenuItem_Refresh_Prog.Name = "MenuItem_Refresh_Prog";
-            this.MenuItem_Refresh_Prog.Size = new System.Drawing.Size(325, 26);
-            this.MenuItem_Refresh_Prog.Text = "Обновить регистры в программе";
-            this.MenuItem_Refresh_Prog.Click += new System.EventHandler(this.MenuItem_Refresh_Prog_Click);
-            // 
-            // MenuItem_Connect
-            // 
-            this.MenuItem_Connect.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.MenuItem_Connect.CheckOnClick = true;
-            this.MenuItem_Connect.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolStripMenuItem_Connect,
-            this.адресToolStripMenuItem,
-            this.MenuItem_RefrTime});
-            this.MenuItem_Connect.Image = global::WindowsFormsApp4.Properties.Resources.connect;
-            this.MenuItem_Connect.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.MenuItem_Connect.Name = "MenuItem_Connect";
-            this.MenuItem_Connect.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_Connect.Size = new System.Drawing.Size(126, 25);
-            this.MenuItem_Connect.Text = "Соединение";
-            // 
-            // ToolStripMenuItem_Connect
-            // 
-            this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
-            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(190, 26);
-            this.ToolStripMenuItem_Connect.Text = "Соединить";
-            this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
-            // 
-            // адресToolStripMenuItem
-            // 
-            this.адресToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripTextBox_adr});
-            this.адресToolStripMenuItem.Name = "адресToolStripMenuItem";
-            this.адресToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
-            this.адресToolStripMenuItem.Text = "ModBus адрес";
-            // 
-            // toolStripTextBox_adr
-            // 
-            this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
-            this.toolStripTextBox_adr.Size = new System.Drawing.Size(100, 23);
-            this.toolStripTextBox_adr.Text = "1";
-            this.toolStripTextBox_adr.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolStripTextBox_adr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox_adr_KeyPress);
-            this.toolStripTextBox_adr.TextChanged += new System.EventHandler(this.txtBox_ModbusAdr_TextChanged);
-            // 
-            // MenuItem_RefrTime
-            // 
-            this.MenuItem_RefrTime.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripComboBox_RefTime});
-            this.MenuItem_RefrTime.Name = "MenuItem_RefrTime";
-            this.MenuItem_RefrTime.Size = new System.Drawing.Size(190, 26);
-            this.MenuItem_RefrTime.Text = "Период опроса";
-            // 
-            // toolStripComboBox_RefTime
-            // 
-            this.toolStripComboBox_RefTime.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripComboBox_RefTime.Items.AddRange(new object[] {
-            "5",
-            "10",
-            "50",
-            "100",
-            "150",
-            "200",
-            "500",
-            "1000"});
-            this.toolStripComboBox_RefTime.Name = "toolStripComboBox_RefTime";
-            this.toolStripComboBox_RefTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.toolStripComboBox_RefTime.Size = new System.Drawing.Size(121, 23);
-            this.toolStripComboBox_RefTime.SelectedIndexChanged += new System.EventHandler(this.cmbBoxServerDelay_SelectedIndexChanged);
-            // 
-            // MenuItem_About
-            // 
-            this.MenuItem_About.Enabled = false;
-            this.MenuItem_About.Image = global::WindowsFormsApp4.Properties.Resources.inf;
-            this.MenuItem_About.Name = "MenuItem_About";
-            this.MenuItem_About.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_About.Size = new System.Drawing.Size(134, 25);
-            this.MenuItem_About.Text = "О программе";
-            this.MenuItem_About.Visible = false;
-            this.MenuItem_About.Click += new System.EventHandler(this.MenuItem_About_Click);
-            // 
-            // MenuItem_Scope
-            // 
-            this.MenuItem_Scope.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Scope_Start,
-            this.MenuItem_Scope_Stop});
-            this.MenuItem_Scope.Image = global::WindowsFormsApp4.Properties.Resources.scope;
-            this.MenuItem_Scope.Name = "MenuItem_Scope";
-            this.MenuItem_Scope.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_Scope.Size = new System.Drawing.Size(135, 25);
-            this.MenuItem_Scope.Text = "Осциллограф";
-            // 
-            // MenuItem_Scope_Start
-            // 
-            this.MenuItem_Scope_Start.Image = global::WindowsFormsApp4.Properties.Resources.play;
-            this.MenuItem_Scope_Start.Name = "MenuItem_Scope_Start";
-            this.MenuItem_Scope_Start.Size = new System.Drawing.Size(121, 26);
-            this.MenuItem_Scope_Start.Text = "Старт";
-            this.MenuItem_Scope_Start.Click += new System.EventHandler(this.MenuItem_Scope_Start_Click);
-            // 
-            // MenuItem_Scope_Stop
-            // 
-            this.MenuItem_Scope_Stop.Image = global::WindowsFormsApp4.Properties.Resources.stop;
-            this.MenuItem_Scope_Stop.Name = "MenuItem_Scope_Stop";
-            this.MenuItem_Scope_Stop.Size = new System.Drawing.Size(121, 26);
-            this.MenuItem_Scope_Stop.Text = "Стоп";
-            this.MenuItem_Scope_Stop.Click += new System.EventHandler(this.MenuItem_Scope_Stop_Click);
-            // 
-            // MenuItem_Param
-            // 
-            this.MenuItem_Param.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Param_Save,
-            this.MenuItem_Param_Load,
-            this.MenuItem_Param_MotorSel,
-            this.выбратьФайлОписанияНастроекToolStripMenuItem});
-            this.MenuItem_Param.Image = global::WindowsFormsApp4.Properties.Resources.no_translate_detected_318_46670;
-            this.MenuItem_Param.Name = "MenuItem_Param";
-            this.MenuItem_Param.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_Param.Size = new System.Drawing.Size(120, 25);
-            this.MenuItem_Param.Text = "Параметры";
-            // 
-            // MenuItem_Param_Save
-            // 
-            this.MenuItem_Param_Save.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Param_Save_ToFile,
-            this.MenuItem_Param_Save_ToDev});
-            this.MenuItem_Param_Save.Image = global::WindowsFormsApp4.Properties.Resources.save;
-            this.MenuItem_Param_Save.Name = "MenuItem_Param_Save";
-            this.MenuItem_Param_Save.Size = new System.Drawing.Size(322, 26);
-            this.MenuItem_Param_Save.Text = "Сохранить";
-            // 
-            // MenuItem_Param_Save_ToFile
-            // 
-            this.MenuItem_Param_Save_ToFile.Name = "MenuItem_Param_Save_ToFile";
-            this.MenuItem_Param_Save_ToFile.Size = new System.Drawing.Size(184, 26);
-            this.MenuItem_Param_Save_ToFile.Text = "В файл";
-            this.MenuItem_Param_Save_ToFile.Click += new System.EventHandler(this.MenuItem_Param_Save_ToFile_Click);
-            // 
-            // MenuItem_Param_Save_ToDev
-            // 
-            this.MenuItem_Param_Save_ToDev.Name = "MenuItem_Param_Save_ToDev";
-            this.MenuItem_Param_Save_ToDev.Size = new System.Drawing.Size(184, 26);
-            this.MenuItem_Param_Save_ToDev.Text = "В память МПЧ";
-            this.MenuItem_Param_Save_ToDev.Click += new System.EventHandler(this.MenuItem_Param_Save_ToDev_Click);
-            // 
-            // MenuItem_Param_Load
-            // 
-            this.MenuItem_Param_Load.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Param_Load_FromFile,
-            this.MenuItem_Param_Load_FromDev});
-            this.MenuItem_Param_Load.Image = global::WindowsFormsApp4.Properties.Resources.load;
-            this.MenuItem_Param_Load.Name = "MenuItem_Param_Load";
-            this.MenuItem_Param_Load.Size = new System.Drawing.Size(322, 26);
-            this.MenuItem_Param_Load.Text = "Загрузить";
-            // 
-            // MenuItem_Param_Load_FromFile
-            // 
-            this.MenuItem_Param_Load_FromFile.Name = "MenuItem_Param_Load_FromFile";
-            this.MenuItem_Param_Load_FromFile.Size = new System.Drawing.Size(195, 26);
-            this.MenuItem_Param_Load_FromFile.Text = "Из файла";
-            this.MenuItem_Param_Load_FromFile.Click += new System.EventHandler(this.MenuItem_Param_Load_FromFile_Click);
-            // 
-            // MenuItem_Param_Load_FromDev
-            // 
-            this.MenuItem_Param_Load_FromDev.Name = "MenuItem_Param_Load_FromDev";
-            this.MenuItem_Param_Load_FromDev.Size = new System.Drawing.Size(195, 26);
-            this.MenuItem_Param_Load_FromDev.Text = "Из памяти МПЧ";
-            this.MenuItem_Param_Load_FromDev.Click += new System.EventHandler(this.MenuItem_Param_Load_FromDev_Click);
-            // 
-            // MenuItem_Param_MotorSel
-            // 
-            this.MenuItem_Param_MotorSel.Name = "MenuItem_Param_MotorSel";
-            this.MenuItem_Param_MotorSel.Size = new System.Drawing.Size(322, 26);
-            this.MenuItem_Param_MotorSel.Text = "Выбрать мотор";
-            this.MenuItem_Param_MotorSel.Click += new System.EventHandler(this.MenuItem_Param_MotorSel_Click);
-            // 
-            // выбратьФайлОписанияНастроекToolStripMenuItem
-            // 
-            this.выбратьФайлОписанияНастроекToolStripMenuItem.Name = "выбратьФайлОписанияНастроекToolStripMenuItem";
-            this.выбратьФайлОписанияНастроекToolStripMenuItem.Size = new System.Drawing.Size(322, 26);
-            this.выбратьФайлОписанияНастроекToolStripMenuItem.Text = "Выбрать файл описания настроек";
-            this.выбратьФайлОписанияНастроекToolStripMenuItem.Click += new System.EventHandler(this.MenuItem_SetParamDescriptFile_Click);
-            // 
-            // MenuItem_Loader
-            // 
-            this.MenuItem_Loader.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Loader_Flash,
-            this.MenuItem_Loader_Verify,
-            this.MenuItem_Loader_Reset,
-            this.MenuItem_Loader_Stop});
-            this.MenuItem_Loader.Image = global::WindowsFormsApp4.Properties.Resources.Loader;
-            this.MenuItem_Loader.Name = "MenuItem_Loader";
-            this.MenuItem_Loader.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.MenuItem_Loader.Size = new System.Drawing.Size(111, 25);
-            this.MenuItem_Loader.Text = "Загрузчик";
-            // 
-            // MenuItem_Loader_Flash
-            // 
-            this.MenuItem_Loader_Flash.Name = "MenuItem_Loader_Flash";
-            this.MenuItem_Loader_Flash.Size = new System.Drawing.Size(151, 26);
-            this.MenuItem_Loader_Flash.Text = "Прошить";
-            this.MenuItem_Loader_Flash.Click += new System.EventHandler(this.MenuItem_Loader_Flash_Click);
-            // 
-            // MenuItem_Loader_Verify
-            // 
-            this.MenuItem_Loader_Verify.Name = "MenuItem_Loader_Verify";
-            this.MenuItem_Loader_Verify.Size = new System.Drawing.Size(151, 26);
-            this.MenuItem_Loader_Verify.Text = "Сравнить";
-            this.MenuItem_Loader_Verify.Click += new System.EventHandler(this.MenuItem_Loader_Verify_Click);
-            // 
-            // MenuItem_Loader_Reset
-            // 
-            this.MenuItem_Loader_Reset.Name = "MenuItem_Loader_Reset";
-            this.MenuItem_Loader_Reset.Size = new System.Drawing.Size(151, 26);
-            this.MenuItem_Loader_Reset.Text = "Сброс МК";
-            this.MenuItem_Loader_Reset.Click += new System.EventHandler(this.MenuItem_Loader_Reset_Click);
-            // 
-            // MenuItem_Loader_Stop
-            // 
-            this.MenuItem_Loader_Stop.Name = "MenuItem_Loader_Stop";
-            this.MenuItem_Loader_Stop.Size = new System.Drawing.Size(151, 26);
-            this.MenuItem_Loader_Stop.Text = "Отмена";
-            this.MenuItem_Loader_Stop.Click += new System.EventHandler(this.MenuItem_Loader_Stop_Click);
             // 
             // tableLayoutPanel_Controls
             // 
@@ -743,7 +491,6 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 98.36066F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(244, 549);
             this.tableLayoutPanel4.TabIndex = 32;
-            this.tableLayoutPanel4.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel4_Paint);
             // 
             // tableLayoutPanel_IR
             // 
@@ -760,7 +507,265 @@
             this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 521);
             this.tableLayoutPanel_IR.TabIndex = 34;
             // 
-            // Form1
+            // MenuItem_Refresh
+            // 
+            this.MenuItem_Refresh.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Refresh_State,
+            this.MenuItem_Refresh_Dev,
+            this.MenuItem_Refresh_Prog});
+            this.MenuItem_Refresh.Image = global::WindowsFormsApp4.Properties.Resources.available_updates_32;
+            this.MenuItem_Refresh.Name = "MenuItem_Refresh";
+            this.MenuItem_Refresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.MenuItem_Refresh.Size = new System.Drawing.Size(109, 25);
+            this.MenuItem_Refresh.Text = "Обновить";
+            // 
+            // MenuItem_Refresh_State
+            // 
+            this.MenuItem_Refresh_State.Name = "MenuItem_Refresh_State";
+            this.MenuItem_Refresh_State.Size = new System.Drawing.Size(325, 26);
+            this.MenuItem_Refresh_State.Text = "Обновить статус";
+            this.MenuItem_Refresh_State.Click += new System.EventHandler(this.MenuItem_Refresh_State_Click);
+            // 
+            // MenuItem_Refresh_Dev
+            // 
+            this.MenuItem_Refresh_Dev.Name = "MenuItem_Refresh_Dev";
+            this.MenuItem_Refresh_Dev.Size = new System.Drawing.Size(325, 26);
+            this.MenuItem_Refresh_Dev.Text = "Обновить регистры на устройстве";
+            this.MenuItem_Refresh_Dev.Click += new System.EventHandler(this.MenuItem_Refresh_Dev_Click);
+            // 
+            // MenuItem_Refresh_Prog
+            // 
+            this.MenuItem_Refresh_Prog.Name = "MenuItem_Refresh_Prog";
+            this.MenuItem_Refresh_Prog.Size = new System.Drawing.Size(325, 26);
+            this.MenuItem_Refresh_Prog.Text = "Обновить регистры в программе";
+            this.MenuItem_Refresh_Prog.Click += new System.EventHandler(this.MenuItem_Refresh_Prog_Click);
+            // 
+            // MenuItem_Connect
+            // 
+            this.MenuItem_Connect.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.MenuItem_Connect.CheckOnClick = true;
+            this.MenuItem_Connect.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_Connect,
+            this.адресToolStripMenuItem,
+            this.MenuItem_RefrTime});
+            this.MenuItem_Connect.Image = global::WindowsFormsApp4.Properties.Resources.connect;
+            this.MenuItem_Connect.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.MenuItem_Connect.Name = "MenuItem_Connect";
+            this.MenuItem_Connect.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.MenuItem_Connect.Size = new System.Drawing.Size(126, 25);
+            this.MenuItem_Connect.Text = "Соединение";
+            // 
+            // ToolStripMenuItem_Connect
+            // 
+            this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
+            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(190, 26);
+            this.ToolStripMenuItem_Connect.Text = "Соединить";
+            this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
+            // 
+            // адресToolStripMenuItem
+            // 
+            this.адресToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox_adr});
+            this.адресToolStripMenuItem.Name = "адресToolStripMenuItem";
+            this.адресToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
+            this.адресToolStripMenuItem.Text = "ModBus адрес";
+            // 
+            // toolStripTextBox_adr
+            // 
+            this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
+            this.toolStripTextBox_adr.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox_adr.Text = "1";
+            this.toolStripTextBox_adr.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolStripTextBox_adr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox_adr_KeyPress);
+            this.toolStripTextBox_adr.TextChanged += new System.EventHandler(this.txtBox_ModbusAdr_TextChanged);
+            // 
+            // MenuItem_RefrTime
+            // 
+            this.MenuItem_RefrTime.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripComboBox_RefTime});
+            this.MenuItem_RefrTime.Name = "MenuItem_RefrTime";
+            this.MenuItem_RefrTime.Size = new System.Drawing.Size(190, 26);
+            this.MenuItem_RefrTime.Text = "Период опроса";
+            // 
+            // toolStripComboBox_RefTime
+            // 
+            this.toolStripComboBox_RefTime.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripComboBox_RefTime.Items.AddRange(new object[] {
+            "5",
+            "10",
+            "50",
+            "100",
+            "150",
+            "200",
+            "500",
+            "1000"});
+            this.toolStripComboBox_RefTime.Name = "toolStripComboBox_RefTime";
+            this.toolStripComboBox_RefTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.toolStripComboBox_RefTime.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox_RefTime.SelectedIndexChanged += new System.EventHandler(this.cmbBoxServerDelay_SelectedIndexChanged);
+            // 
+            // MenuItem_Param
+            // 
+            this.MenuItem_Param.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Param_Save,
+            this.MenuItem_Param_Load,
+            this.MenuItem_Param_MotorSel,
+            this.выбратьФайлОписанияНастроекToolStripMenuItem});
+            this.MenuItem_Param.Image = global::WindowsFormsApp4.Properties.Resources.no_translate_detected_318_46670;
+            this.MenuItem_Param.Name = "MenuItem_Param";
+            this.MenuItem_Param.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.MenuItem_Param.Size = new System.Drawing.Size(120, 25);
+            this.MenuItem_Param.Text = "Параметры";
+            // 
+            // MenuItem_Param_Save
+            // 
+            this.MenuItem_Param_Save.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Param_Save_ToFile,
+            this.MenuItem_Param_Save_ToDev});
+            this.MenuItem_Param_Save.Image = global::WindowsFormsApp4.Properties.Resources.save;
+            this.MenuItem_Param_Save.Name = "MenuItem_Param_Save";
+            this.MenuItem_Param_Save.Size = new System.Drawing.Size(322, 26);
+            this.MenuItem_Param_Save.Text = "Сохранить";
+            // 
+            // MenuItem_Param_Save_ToFile
+            // 
+            this.MenuItem_Param_Save_ToFile.Name = "MenuItem_Param_Save_ToFile";
+            this.MenuItem_Param_Save_ToFile.Size = new System.Drawing.Size(184, 26);
+            this.MenuItem_Param_Save_ToFile.Text = "В файл";
+            this.MenuItem_Param_Save_ToFile.Click += new System.EventHandler(this.MenuItem_Param_Save_ToFile_Click);
+            // 
+            // MenuItem_Param_Save_ToDev
+            // 
+            this.MenuItem_Param_Save_ToDev.Name = "MenuItem_Param_Save_ToDev";
+            this.MenuItem_Param_Save_ToDev.Size = new System.Drawing.Size(184, 26);
+            this.MenuItem_Param_Save_ToDev.Text = "В память МПЧ";
+            this.MenuItem_Param_Save_ToDev.Click += new System.EventHandler(this.MenuItem_Param_Save_ToDev_Click);
+            // 
+            // MenuItem_Param_Load
+            // 
+            this.MenuItem_Param_Load.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Param_Load_FromFile,
+            this.MenuItem_Param_Load_FromDev});
+            this.MenuItem_Param_Load.Image = global::WindowsFormsApp4.Properties.Resources.load;
+            this.MenuItem_Param_Load.Name = "MenuItem_Param_Load";
+            this.MenuItem_Param_Load.Size = new System.Drawing.Size(322, 26);
+            this.MenuItem_Param_Load.Text = "Загрузить";
+            // 
+            // MenuItem_Param_Load_FromFile
+            // 
+            this.MenuItem_Param_Load_FromFile.Name = "MenuItem_Param_Load_FromFile";
+            this.MenuItem_Param_Load_FromFile.Size = new System.Drawing.Size(195, 26);
+            this.MenuItem_Param_Load_FromFile.Text = "Из файла";
+            this.MenuItem_Param_Load_FromFile.Click += new System.EventHandler(this.MenuItem_Param_Load_FromFile_Click);
+            // 
+            // MenuItem_Param_Load_FromDev
+            // 
+            this.MenuItem_Param_Load_FromDev.Name = "MenuItem_Param_Load_FromDev";
+            this.MenuItem_Param_Load_FromDev.Size = new System.Drawing.Size(195, 26);
+            this.MenuItem_Param_Load_FromDev.Text = "Из памяти МПЧ";
+            this.MenuItem_Param_Load_FromDev.Click += new System.EventHandler(this.MenuItem_Param_Load_FromDev_Click);
+            // 
+            // MenuItem_Param_MotorSel
+            // 
+            this.MenuItem_Param_MotorSel.Name = "MenuItem_Param_MotorSel";
+            this.MenuItem_Param_MotorSel.Size = new System.Drawing.Size(322, 26);
+            this.MenuItem_Param_MotorSel.Text = "Выбрать мотор";
+            this.MenuItem_Param_MotorSel.Click += new System.EventHandler(this.MenuItem_Param_MotorSel_Click);
+            // 
+            // выбратьФайлОписанияНастроекToolStripMenuItem
+            // 
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Name = "выбратьФайлОписанияНастроекToolStripMenuItem";
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Size = new System.Drawing.Size(322, 26);
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Text = "Выбрать файл описания настроек";
+            this.выбратьФайлОписанияНастроекToolStripMenuItem.Click += new System.EventHandler(this.MenuItem_SetParamDescriptFile_Click);
+            // 
+            // MenuItem_Tools
+            // 
+            this.MenuItem_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_ToolGen,
+            this.ToolStripMenuItem_ToolScope,
+            this.ToolStripMenuItem_ToolLoader});
+            this.MenuItem_Tools.Image = global::WindowsFormsApp4.Properties.Resources.tools;
+            this.MenuItem_Tools.Name = "MenuItem_Tools";
+            this.MenuItem_Tools.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.MenuItem_Tools.Size = new System.Drawing.Size(136, 25);
+            this.MenuItem_Tools.Text = "Инструменты";
+            // 
+            // ToolStripMenuItem_ToolGen
+            // 
+            this.ToolStripMenuItem_ToolGen.Image = global::WindowsFormsApp4.Properties.Resources.gen2;
+            this.ToolStripMenuItem_ToolGen.Name = "ToolStripMenuItem_ToolGen";
+            this.ToolStripMenuItem_ToolGen.Size = new System.Drawing.Size(235, 26);
+            this.ToolStripMenuItem_ToolGen.Text = "Генератор сигналов   ";
+            this.ToolStripMenuItem_ToolGen.Click += new System.EventHandler(this.ToolStripMenuItem_ToolGen_Click);
+            // 
+            // ToolStripMenuItem_ToolScope
+            // 
+            this.ToolStripMenuItem_ToolScope.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_ScopeStart,
+            this.ToolStripMenuItem_ScopeStop});
+            this.ToolStripMenuItem_ToolScope.Image = global::WindowsFormsApp4.Properties.Resources.scope;
+            this.ToolStripMenuItem_ToolScope.Name = "ToolStripMenuItem_ToolScope";
+            this.ToolStripMenuItem_ToolScope.Size = new System.Drawing.Size(235, 26);
+            this.ToolStripMenuItem_ToolScope.Text = "Осциллограф";
+            // 
+            // ToolStripMenuItem_ScopeStart
+            // 
+            this.ToolStripMenuItem_ScopeStart.Image = global::WindowsFormsApp4.Properties.Resources.play;
+            this.ToolStripMenuItem_ScopeStart.Name = "ToolStripMenuItem_ScopeStart";
+            this.ToolStripMenuItem_ScopeStart.Size = new System.Drawing.Size(121, 26);
+            this.ToolStripMenuItem_ScopeStart.Text = "Старт";
+            this.ToolStripMenuItem_ScopeStart.Click += new System.EventHandler(this.MenuItem_Scope_Start_Click);
+            // 
+            // ToolStripMenuItem_ScopeStop
+            // 
+            this.ToolStripMenuItem_ScopeStop.Image = global::WindowsFormsApp4.Properties.Resources.stop;
+            this.ToolStripMenuItem_ScopeStop.Name = "ToolStripMenuItem_ScopeStop";
+            this.ToolStripMenuItem_ScopeStop.Size = new System.Drawing.Size(121, 26);
+            this.ToolStripMenuItem_ScopeStop.Text = "Стоп";
+            this.ToolStripMenuItem_ScopeStop.Click += new System.EventHandler(this.MenuItem_Scope_Stop_Click);
+            // 
+            // ToolStripMenuItem_ToolLoader
+            // 
+            this.ToolStripMenuItem_ToolLoader.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_LoaderFlash,
+            this.ToolStripMenuItem_LoaderVerify,
+            this.ToolStripMenuItem_LoaderReset,
+            this.ToolStripMenuItem_LoaderCancle});
+            this.ToolStripMenuItem_ToolLoader.Image = global::WindowsFormsApp4.Properties.Resources.Loader;
+            this.ToolStripMenuItem_ToolLoader.Name = "ToolStripMenuItem_ToolLoader";
+            this.ToolStripMenuItem_ToolLoader.Size = new System.Drawing.Size(235, 26);
+            this.ToolStripMenuItem_ToolLoader.Text = "Загрузчик";
+            // 
+            // ToolStripMenuItem_LoaderFlash
+            // 
+            this.ToolStripMenuItem_LoaderFlash.Name = "ToolStripMenuItem_LoaderFlash";
+            this.ToolStripMenuItem_LoaderFlash.Size = new System.Drawing.Size(148, 26);
+            this.ToolStripMenuItem_LoaderFlash.Text = "Прошить";
+            this.ToolStripMenuItem_LoaderFlash.Click += new System.EventHandler(this.MenuItem_Loader_Flash_Click);
+            // 
+            // ToolStripMenuItem_LoaderVerify
+            // 
+            this.ToolStripMenuItem_LoaderVerify.Name = "ToolStripMenuItem_LoaderVerify";
+            this.ToolStripMenuItem_LoaderVerify.Size = new System.Drawing.Size(148, 26);
+            this.ToolStripMenuItem_LoaderVerify.Text = "Сравнить";
+            this.ToolStripMenuItem_LoaderVerify.Click += new System.EventHandler(this.MenuItem_Loader_Verify_Click);
+            // 
+            // ToolStripMenuItem_LoaderReset
+            // 
+            this.ToolStripMenuItem_LoaderReset.Name = "ToolStripMenuItem_LoaderReset";
+            this.ToolStripMenuItem_LoaderReset.Size = new System.Drawing.Size(148, 26);
+            this.ToolStripMenuItem_LoaderReset.Text = "Сброс";
+            this.ToolStripMenuItem_LoaderReset.Click += new System.EventHandler(this.MenuItem_Loader_Reset_Click);
+            // 
+            // ToolStripMenuItem_LoaderCancle
+            // 
+            this.ToolStripMenuItem_LoaderCancle.Name = "ToolStripMenuItem_LoaderCancle";
+            this.ToolStripMenuItem_LoaderCancle.Size = new System.Drawing.Size(148, 26);
+            this.ToolStripMenuItem_LoaderCancle.Text = "Отмена";
+            this.ToolStripMenuItem_LoaderCancle.Click += new System.EventHandler(this.MenuItem_Loader_Stop_Click);
+            // 
+            // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -769,7 +774,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Name = "Form1";
+            this.Name = "FormMain";
             this.Text = "Form1";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -812,15 +817,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Param_Load;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Param_Load_FromFile;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Param_Load_FromDev;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_About;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Scope;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Loader;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Loader_Flash;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Loader_Verify;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Loader_Reset;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Loader_Stop;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Scope_Start;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Scope_Stop;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Param_MotorSel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Controls;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_main;
@@ -855,6 +851,16 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox txtBoxLog;
         private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Tools;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_ToolGen;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_ToolScope;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_ScopeStart;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_ScopeStop;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_ToolLoader;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderFlash;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderVerify;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderReset;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderCancle;
     }
 }
 

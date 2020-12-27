@@ -54,6 +54,7 @@ namespace WindowsFormsApp4
           //  chart1.ChartAreas[0].AxisX.Interval = 0.01;
             //art1.ChartAreas[0].AxisX.LabelStyle.Format = "mm:ss";
             chart1.ChartAreas[0].AxisX.Maximum = 1000;
+            chart1.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.0}";
 
 
 
@@ -88,25 +89,55 @@ namespace WindowsFormsApp4
         }
 
         
-        private int cnt = 0;
+        private double time = 0;
+        private Stopwatch startTime = Stopwatch.StartNew();
+
         public void AddPoint(float point) {
+
+            // if (chart1 == null) return;
+            // DateTime baseDate = DateTime.Today;
+            //// var x = baseDate.AddSeconds((double)cnt);
+            // var x = DateTime.Now;
+            // try
+            // {
+            //     //this.chart1.Series[0].Points.AddXY(cnt, point);
+            //     this.chart1.Series[0].Points.Add(point);
+            //     cnt++;
+            // }
+            // catch (System.NullReferenceException) { Debug.WriteLine("oops"); };
+
+            // if (cnt >= chart1.ChartAreas[0].AxisX.Maximum)
+            // {
+            //     cnt = 0;
+            //     foreach (var sr in chart1.Series) sr.Points.Clear();
+            // }
+
+            double scale = 30;
             if (chart1 == null) return;
-            DateTime baseDate = DateTime.Today;
-           // var x = baseDate.AddSeconds((double)cnt);
-            var x = DateTime.Now;
+            startTime.Stop();
+            double timeStep = (double) startTime.ElapsedMilliseconds / 1000;
+            startTime.Restart();
+
+            if (timeStep == 0) timeStep = 0.1;
             try
             {
-                //this.chart1.Series[0].Points.AddXY(cnt, point);
-                this.chart1.Series[0].Points.Add(point);
-                cnt++;
+                
+                double xAxisMaximum = Math.Round(time, 1);
+                this.chart1.Series[0].Points.AddXY(time, point);
+
+                if (xAxisMaximum < scale) xAxisMaximum = scale;
+
+                if (this.chart1.Series[0].Points.Count > scale / timeStep) chart1.Series[0].Points.RemoveAt(0);
+
+                chart1.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
+
+                if (chart1.Series.Count > 0 && chart1.Series[0].Points.Count > 0)
+                    chart1.ChartAreas[0].AxisX.Minimum = Math.Round(chart1.Series[0].Points[0].XValue, 1);
+
+                time += timeStep;
             }
             catch (System.NullReferenceException) { Debug.WriteLine("oops"); };
 
-            if (cnt >= chart1.ChartAreas[0].AxisX.Maximum)
-            {
-                cnt = 0;
-                foreach (var sr in chart1.Series) sr.Points.Clear();
-            }
 
         }
 

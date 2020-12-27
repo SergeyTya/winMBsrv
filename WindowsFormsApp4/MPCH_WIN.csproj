@@ -89,13 +89,19 @@
       <DependentUpon>AdrSelForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Bootloader.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="modbus.cs" />
     <Compile Include="Complex.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGensig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGensig.Designer.cs">
+      <DependentUpon>FormGensig.cs</DependentUpon>
     </Compile>
     <Compile Include="FormChart.cs">
       <SubType>Form</SubType>
@@ -120,11 +126,14 @@
     <EmbeddedResource Include="AdrSelForm.resx">
       <DependentUpon>AdrSelForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormChart.resx">
       <DependentUpon>FormChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGensig.resx">
+      <DependentUpon>FormGensig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormScope.resx">
       <DependentUpon>FormScope.cs</DependentUpon>
@@ -212,6 +221,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\IconRes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png-transparent-car-maintenance-encapsulated-postscript-computer-icons-tools-angle-truck-car.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png-transparent-electric-generator-electricity-standby-generator-alternating-current-generated-miscellaneous-angle-text.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\478-4784804_signal-generator-comments-fast-forward-icon-white.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
