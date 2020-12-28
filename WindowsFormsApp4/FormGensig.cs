@@ -22,10 +22,9 @@ namespace WindowsFormsApp4
         private static class ParamNames {
            public static string Enable = "Выход Разрешен";
             public static string Type = "Тип сигнала";
-            public static string Target = "РХ для записи";
+            public static string Target = "РХ задание";
             public static string ResEnable = "Выводить отклик";
-            public static string Responce = "РВ для отклика";
-            public static string ErrEnable = "Выводить ошибку";
+            public static string Responce = "РВ отклик";
             public static string Scale = "Развертка, с";
             public static string Period =  "Период, с";
             public static string Amplitude = "Aмплитуда";
@@ -42,6 +41,7 @@ namespace WindowsFormsApp4
             public double Max { set; get; }
             private double min;
             public double Min { set; get; }
+            public bool Checkedbox;
 
             private double val;
             public double Value {
@@ -60,14 +60,14 @@ namespace WindowsFormsApp4
 
             } 
 
-            public Control(string name, string[] range = null, double max = 32768, double min =-32768, double def = 0)
+            public Control(string name, string[] range = null, double max = 32768, double min =-32768, double def = 0, bool checkedbox = false)
             {
                 Name = name;
                 Range = range;
                 Max = max;
                 Min = min;
                 Value = def;
-               
+                Checkedbox = checkedbox;
             }
 
         }
@@ -83,26 +83,12 @@ namespace WindowsFormsApp4
                 Table = table;
                 Controls = new Dictionary<String, Control>();
 
-                Controls.Add(ParamNames.Enable,      new Control(
-                    ParamNames.Enable, new string[2] { "Нет", "Да" }, max: 1, min: 0)
-                    );
+                Controls.Add(ParamNames.Enable,      new Control( ParamNames.Enable, checkedbox: true, max: 1, min: 0));
+                Controls.Add(ParamNames.ResEnable, new Control(ParamNames.ResEnable, checkedbox: true, max: 1, min: 0));
                 Controls.Add(ParamNames.Target, new Control(ParamNames.Target, def: 3));
-
-                Controls.Add(ParamNames.ResEnable, new Control(
-                    ParamNames.ResEnable, new string[2] { "Нет", "Да" }, max: 1, min: 0)
-                    );
-
                 Controls.Add(ParamNames.Responce, new Control(ParamNames.Responce, def: 3));
-
-                Controls.Add(ParamNames.ErrEnable, new Control(
-                      ParamNames.ErrEnable, new string[2] { "Нет", "Да" }, max: 1, min: 0)
-                    );
-
                 Controls.Add(ParamNames.Scale, new Control(ParamNames.Scale, min: 0.1, def: 10));
-
-                Controls.Add(ParamNames.Type,        new Control(
-                    ParamNames.Type, new string[3] { "Синус", "Меандр", "Треугольник" }, max: 2, min: 0)
-                    );
+                Controls.Add(ParamNames.Type,        new Control( ParamNames.Type, range: new string[3] { "Синус", "Меандр", "Треугольник" }, max: 2, min: 0));
                 Controls.Add(ParamNames.Period,      new Control(ParamNames.Period, min: 0.1, def: 6));
                 Controls.Add(ParamNames.Amplitude,   new Control(ParamNames.Amplitude, min: 1, def: 2000));
                 Controls.Add(ParamNames.Offset,      new Control(ParamNames.Offset, min: 0));
@@ -129,6 +115,16 @@ namespace WindowsFormsApp4
                     combo.Value = combo.Items[0];
                     row.Cells[1] = combo;
                 }
+
+                if (control.Checkedbox) {
+
+                    var checkedBox = new DataGridViewCheckBoxCell();
+                    checkedBox.Value = false;
+                    row.Cells[1] = checkedBox;
+
+                }
+
+                
                 Table.Rows.Add(row);
             }
         }
@@ -138,13 +134,10 @@ namespace WindowsFormsApp4
         {
             InitializeComponent();
             chart1.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-            chart1.Series[0].Color = Color.Black;
+            chart1.Series[0].Color = Color.Gray;
             chart1.Series[1].Color = Color.Green;
             chart1.Series[2].Color = Color.Blue;
-            chart1.Series[3].Color = Color.Red;
-
             chart1.MouseWheel += new MouseEventHandler(chData_MouseWheel);
-            // настройка параметров зума
             chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
             chart1.ChartAreas[0].CursorX.Interval = 0.005;
             chart1.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
@@ -152,6 +145,18 @@ namespace WindowsFormsApp4
             chart1.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
             chart1.ChartAreas[0].CursorX.AutoScroll = true;
             chart1.ChartAreas[0].CursorY.AutoScroll = true;
+
+            chart2.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+            chart2.Series[0].Color = Color.Red;
+            chart2.MouseWheel += new MouseEventHandler(chData_MouseWheel);
+            chart2.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            chart2.ChartAreas[0].CursorX.Interval = 0.005;
+            chart2.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
+            chart2.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            chart2.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
+            chart2.ChartAreas[0].CursorX.AutoScroll = true;
+            chart2.ChartAreas[0].CursorY.AutoScroll = true;
+
 
             ToolStripMenuItem clearMenuItem = new ToolStripMenuItem("Очистить");
             ToolStripMenuItem zoomMenuItem = new ToolStripMenuItem("Масштаб");
@@ -161,10 +166,14 @@ namespace WindowsFormsApp4
 
             clearMenuItem.Click += new System.EventHandler((s, e) => {
                 foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart1.Series) el.Points.Clear();
+                foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart2.Series) el.Points.Clear();
+                time = 0;
             });
             zoomMenuItem.Click += new System.EventHandler((s, e) => {
                 chart1.ChartAreas[0].AxisY.Minimum = -1;
                 chart1.ChartAreas[0].AxisY.Maximum =  1;
+                chart2.ChartAreas[0].AxisY.Minimum = -1;
+                chart2.ChartAreas[0].AxisY.Maximum = 1;
             });
 
             // chart1.ChartAreas[0].CursorY.AutoScroll = true;
@@ -179,13 +188,14 @@ namespace WindowsFormsApp4
         {
           
             if (e.ColumnIndex != 1) return;
-            if (dataGridView1.Rows[e.RowIndex].Cells[1].GetType() != typeof(DataGridViewTextBoxCell) ) return;
-
-            double num = 0;
-            if (!double.TryParse(e.FormattedValue.ToString(), out num))
+            if (dataGridView1.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewTextBoxCell))
             {
-                e.Cancel = true;
-                return;
+                double num = 0;
+                if (!double.TryParse(e.FormattedValue.ToString(), out num))
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
 
         }
@@ -214,8 +224,22 @@ namespace WindowsFormsApp4
                         dataGridView1.Rows[e.RowIndex].Cells[1].Value = this.controlTable.Controls[name].Value;
 
                 }
+                return;
             };
- 
+
+            if (dataGridView1.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewCheckBoxCell))
+            {
+
+                bool res = (bool)(dataGridView1.Rows[e.RowIndex].Cells[1] as DataGridViewCheckBoxCell).Value;
+
+                this.controlTable.Controls[name].Value = 0;
+                if (res) this.controlTable.Controls[name].Value = 1;
+
+                return;
+            }
+
+
+
         }
 
         private double time = 0;
@@ -235,6 +259,7 @@ namespace WindowsFormsApp4
             if (scale != controlTable.Controls[ParamNames.Scale].Value) {
                 scale = controlTable.Controls[ParamNames.Scale].Value;
                 foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart1.Series) el.Points.Clear();
+                foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart2.Series) el.Points.Clear();
             }
 
 
@@ -264,24 +289,35 @@ namespace WindowsFormsApp4
             if (chart1.ChartAreas[0].AxisY.Minimum > point) chart1.ChartAreas[0].AxisY.Minimum = Math.Round(point - 5, 0);
             if (chart1.ChartAreas[0].AxisY.Maximum < point) chart1.ChartAreas[0].AxisY.Maximum = Math.Round(point + 5, 0);
 
+            if (chart2.ChartAreas[0].AxisY.Minimum > targetRef - responce) chart2.ChartAreas[0].AxisY.Minimum = Math.Round(targetRef - responce - 5, 0);
+            if (chart2.ChartAreas[0].AxisY.Maximum < targetRef - responce) chart2.ChartAreas[0].AxisY.Maximum = Math.Round(targetRef - responce + 5, 0);
+
+
             if (xAxisMaximum < scale) xAxisMaximum = scale;
 
             this.chart1.Series[0].Points.AddXY(time, point);
             this.chart1.Series[1].Points.AddXY(time, targetRef);
             this.chart1.Series[2].Points.AddXY(time, responce);
-            this.chart1.Series[3].Points.AddXY(time, targetRef - responce);
+
+            this.chart2.Series[0].Points.AddXY(time, targetRef - responce);
 
 
             this.chart1.Series[2].Enabled = controlTable.Controls[ParamNames.ResEnable].Value == 1;
-            this.chart1.Series[3].Enabled = controlTable.Controls[ParamNames.ErrEnable].Value == 1;
 
             if (this.chart1.Series[0].Points.Count > scale / time_step)
+            {
                 foreach (Series el in chart1.Series) el.Points.RemoveAt(0);
+                foreach (Series el in chart2.Series) el.Points.RemoveAt(0);
+            }
 
 
             chart1.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
             chart1.ChartAreas[0].AxisX.Minimum = Math.Round(chart1.Series[0].Points[0].XValue, 3);
-           
+
+            chart2.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
+            chart2.ChartAreas[0].AxisX.Minimum = Math.Round(chart2.Series[0].Points[0].XValue, 3);
+
+
 
             this.time += time_step;
 
@@ -353,6 +389,11 @@ namespace WindowsFormsApp4
             if (enable == 1) return true;
 
             return false;
+        }
+
+        private void chart2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
