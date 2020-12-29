@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -95,8 +95,9 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel_main = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel_IR = new System.Windows.Forms.TableLayoutPanel();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.tableLayoutPanel_debug = new System.Windows.Forms.TableLayoutPanel();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel_Controls.SuspendLayout();
@@ -108,6 +109,7 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridRelayIO)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.tableLayoutPanel_main.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
@@ -291,6 +293,7 @@
             this.toolStripComboBox_RefTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.toolStripComboBox_RefTime.Size = new System.Drawing.Size(121, 23);
             this.toolStripComboBox_RefTime.SelectedIndexChanged += new System.EventHandler(this.cmbBoxServerDelay_SelectedIndexChanged);
+            this.toolStripComboBox_RefTime.Click += new System.EventHandler(this.toolStripComboBox_RefTime_Click);
             // 
             // MenuItem_Param
             // 
@@ -562,9 +565,9 @@
             // adr
             // 
             this.adr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.adr.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.adr.DefaultCellStyle = dataGridViewCellStyle13;
             this.adr.FillWeight = 60F;
             this.adr.HeaderText = "Адрес";
             this.adr.Name = "adr";
@@ -574,8 +577,8 @@
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle14;
             this.name.HeaderText = "Параметр";
             this.name.Name = "name";
             this.name.Width = 99;
@@ -583,8 +586,8 @@
             // value
             // 
             this.value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.value.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.value.DefaultCellStyle = dataGridViewCellStyle15;
             this.value.HeaderText = "Значение";
             this.value.Name = "value";
             this.value.Width = 98;
@@ -598,8 +601,8 @@
             // 
             // read
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.read.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.read.DefaultCellStyle = dataGridViewCellStyle16;
             this.read.HeaderText = "";
             this.read.Name = "read";
             this.read.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -667,8 +670,8 @@
             // 
             // Ivalue
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle17;
             this.Ivalue.DividerWidth = 10;
             this.Ivalue.HeaderText = "";
             this.Ivalue.Name = "Ivalue";
@@ -682,8 +685,8 @@
             // 
             // Ovalue
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle18;
             this.Ovalue.HeaderText = "";
             this.Ovalue.Name = "Ovalue";
             this.Ovalue.ReadOnly = true;
@@ -711,6 +714,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.tableLayoutPanel_debug);
             this.tabPage5.Location = new System.Drawing.Point(4, 25);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -764,6 +768,21 @@
             this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 529);
             this.tableLayoutPanel_IR.TabIndex = 35;
             // 
+            // tableLayoutPanel_debug
+            // 
+            this.tableLayoutPanel_debug.ColumnCount = 3;
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_debug.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel_debug.Name = "tableLayoutPanel_debug";
+            this.tableLayoutPanel_debug.RowCount = 2;
+            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel_debug.Size = new System.Drawing.Size(676, 400);
+            this.tableLayoutPanel_debug.TabIndex = 0;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -790,6 +809,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridRelayIO)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
             this.tableLayoutPanel_main.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -860,6 +880,7 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderReset;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderCancle;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_IR;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_debug;
     }
 }
 

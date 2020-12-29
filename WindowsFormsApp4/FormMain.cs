@@ -61,6 +61,8 @@ namespace WindowsFormsApp4
         private string sTempForCell = null;
         private UInt16 uiServerDelay = 10;
         private List<ParamNames> paramNames;
+        private InputRegisterIndicator timeStepInd;
+        FormGensig FormGenSig = new FormGensig();
 
         private class CustomControlTyple
         {
@@ -77,11 +79,21 @@ namespace WindowsFormsApp4
             public TextBox indicator;
             public FormChart chart;
 
+            private string RegSing = " ";
+
             public string Name { // name of input register
                 get { return label.Text; }
                 set {
-                    label.Text = "Рег. " + Adr.ToString() + " " + value;
+                    label.Text = RegSing  + " " + value;
                     chart.Label = label.Text;
+                }
+            }
+
+            public bool RegSingEnable {
+
+                set {
+                    if( value) RegSing="Рег. " + Adr.ToString();
+                    if (!value) RegSing = "";
                 }
             }
 
@@ -120,7 +132,8 @@ namespace WindowsFormsApp4
                 Scale = 1;
                 Min = -1;
                 Max =  1;
-               
+                RegSingEnable = true;
+
 
                 label = new Label();
                 label.Dock = DockStyle.Fill;
@@ -195,7 +208,7 @@ namespace WindowsFormsApp4
         }
 
 
-        FormGensig FormGenSig = new FormGensig();
+
 
         public FormMain()
         {
@@ -251,16 +264,25 @@ namespace WindowsFormsApp4
             Updater.IsBackground = true;
 
             ToolStripMenuItem_Connect.Text = "Соединить";
-            this.toolStripComboBox_RefTime.SelectedIndex = 3;
+            this.toolStripComboBox_RefTime.SelectedIndex = 2;
 
-            
-          //  FormGenSig.Show();
+
+            //debug TimeStep
+            timeStepInd = new InputRegisterIndicator(100);
+            timeStepInd.RegSingEnable = false;
+            timeStepInd.Name = "TimeStep, msec";
+            this.tableLayoutPanel_debug.Controls.Add(timeStepInd.label, 0 , 0);
+            this.tableLayoutPanel_debug.RowCount++;
+            this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
+            this.tableLayoutPanel_debug.RowCount++;
 
         }
         //основной поток
 
+
         private Stopwatch startTime = Stopwatch.StartNew();
         private double timeStep ;
+
         private void updater()
         {
 
@@ -312,7 +334,14 @@ namespace WindowsFormsApp4
                         FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
                         if(Server.uiHoldingReg[target]!= point)
                             Server.uialHRForWrite.Add(new UInt16[2] { target, point });
+
+                        
                     }
+
+
+                    try { BeginInvoke(new MyDelegate( () => { FormGenSig.proc(timeStep); })); }
+                    catch (Exception) { }
+                    
 
                 }
                 else
@@ -630,9 +659,10 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString() + " TimeStep=" + timeStep;
+            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
+            timeStepInd.value =(int) (timeStep*1000);
 
-          
+
         }
 
 
@@ -1335,10 +1365,19 @@ namespace WindowsFormsApp4
 
         private void ToolStripMenuItem_ToolGen_Click(object sender, EventArgs e)
         {
-            if (FormGenSig != null) if (FormGenSig.Created) { FormGenSig.BringToFront(); return; };
+            if (FormGenSig != null) if (FormGenSig.Created) {
+                    FormGenSig.Show();
+                    FormGenSig.BringToFront();
+                    return;
+            };
 
             FormGenSig = new FormGensig();
             FormGenSig.Show();
+        }
+
+        private void toolStripComboBox_RefTime_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -60,7 +60,15 @@ namespace WindowsFormsApp4
 
             ToolStripMenuItem clearMenuItem = new ToolStripMenuItem("Очистить");
             ToolStripMenuItem zoomMenuItem = new ToolStripMenuItem("Масштаб");
-            contextMenuForChart.Items.AddRange(new[] { zoomMenuItem, clearMenuItem });
+            ToolStripMenuItem PoinStyle = new ToolStripMenuItem("Тип графика");
+
+            ToolStripMenuItem PoinStyle_Point = new ToolStripMenuItem("Точки");
+            ToolStripMenuItem PoinStyle_Line = new ToolStripMenuItem("Линия");
+
+            contextMenuForChart.Items.AddRange(new[] { zoomMenuItem, clearMenuItem, PoinStyle });
+            PoinStyle.DropDownItems.Add(PoinStyle_Point);
+            PoinStyle.DropDownItems.Add(PoinStyle_Line);
+
             chart1.ContextMenuStrip = contextMenuForChart;
 
             clearMenuItem.Click += new System.EventHandler((s, e) => {
@@ -68,7 +76,19 @@ namespace WindowsFormsApp4
             }); 
             zoomMenuItem.Click += new System.EventHandler((s, e) => {
                 chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-            }); 
+            });
+
+            PoinStyle_Point.Click += new System.EventHandler((s, e) =>
+            {
+                chart1.Series[0].ChartType = SeriesChartType.Point;
+            });
+
+            PoinStyle_Line.Click += new System.EventHandler((s, e) =>
+            {
+                chart1.Series[0].ChartType = SeriesChartType.FastLine;
+            });
+
+
 
             foreach (Series el in chart1.Series)
             {
