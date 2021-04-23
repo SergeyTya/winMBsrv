@@ -29,12 +29,15 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -93,11 +96,13 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtBoxLog = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel_debug = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel_main = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel_IR = new System.Windows.Forms.TableLayoutPanel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.tableLayoutPanel_debug = new System.Windows.Forms.TableLayoutPanel();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel_Controls.SuspendLayout();
@@ -112,6 +117,8 @@
             this.tabPage5.SuspendLayout();
             this.tableLayoutPanel_main.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tabPage6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuForChart
@@ -518,6 +525,7 @@
             this.tabForm.Controls.Add(this.tabPage3);
             this.tabForm.Controls.Add(this.tabPage2);
             this.tabForm.Controls.Add(this.tabPage5);
+            this.tabForm.Controls.Add(this.tabPage6);
             this.tabForm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabForm.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
@@ -565,9 +573,9 @@
             // adr
             // 
             this.adr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.adr.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.adr.DefaultCellStyle = dataGridViewCellStyle1;
             this.adr.FillWeight = 60F;
             this.adr.HeaderText = "Адрес";
             this.adr.Name = "adr";
@@ -577,8 +585,8 @@
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle2;
             this.name.HeaderText = "Параметр";
             this.name.Name = "name";
             this.name.Width = 99;
@@ -586,8 +594,8 @@
             // value
             // 
             this.value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.value.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.value.DefaultCellStyle = dataGridViewCellStyle3;
             this.value.HeaderText = "Значение";
             this.value.Name = "value";
             this.value.Width = 98;
@@ -601,8 +609,8 @@
             // 
             // read
             // 
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.read.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.read.DefaultCellStyle = dataGridViewCellStyle4;
             this.read.HeaderText = "";
             this.read.Name = "read";
             this.read.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -670,8 +678,8 @@
             // 
             // Ivalue
             // 
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle5;
             this.Ivalue.DividerWidth = 10;
             this.Ivalue.HeaderText = "";
             this.Ivalue.Name = "Ivalue";
@@ -685,8 +693,8 @@
             // 
             // Ovalue
             // 
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle6;
             this.Ovalue.HeaderText = "";
             this.Ovalue.Name = "Ovalue";
             this.Ovalue.ReadOnly = true;
@@ -722,6 +730,21 @@
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Debug";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel_debug
+            // 
+            this.tableLayoutPanel_debug.ColumnCount = 3;
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel_debug.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_debug.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel_debug.Name = "tableLayoutPanel_debug";
+            this.tableLayoutPanel_debug.RowCount = 2;
+            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel_debug.Size = new System.Drawing.Size(676, 400);
+            this.tableLayoutPanel_debug.TabIndex = 0;
             // 
             // tableLayoutPanel_main
             // 
@@ -768,20 +791,33 @@
             this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 529);
             this.tableLayoutPanel_IR.TabIndex = 35;
             // 
-            // tableLayoutPanel_debug
+            // tabPage6
             // 
-            this.tableLayoutPanel_debug.ColumnCount = 3;
-            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel_debug.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel_debug.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel_debug.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel_debug.Name = "tableLayoutPanel_debug";
-            this.tableLayoutPanel_debug.RowCount = 2;
-            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_debug.Size = new System.Drawing.Size(676, 400);
-            this.tableLayoutPanel_debug.TabIndex = 0;
+            this.tabPage6.Controls.Add(this.chart1);
+            this.tabPage6.Location = new System.Drawing.Point(4, 25);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(682, 406);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "tabPage6";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // chart1
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(0, 0);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(676, 400);
+            this.chart1.TabIndex = 0;
+            this.chart1.Text = "chart1";
             // 
             // FormMain
             // 
@@ -812,6 +848,8 @@
             this.tabPage5.ResumeLayout(false);
             this.tableLayoutPanel_main.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -881,6 +919,8 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_LoaderCancle;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_IR;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_debug;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 

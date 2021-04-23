@@ -10,6 +10,10 @@ using System.IO.Ports;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
+using Modbus.Data;
+using Modbus.Device;
+using Modbus.Utility;
+
 
 namespace WindowsFormsApp4
 {
@@ -128,7 +132,11 @@ namespace WindowsFormsApp4
         0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
         0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
         0x00, 0xC1, 0x81, 0x40};
-        
+
+
+        public IModbusSerialMaster master;
+
+
         public MODBUS_srv()
         {
             btDevAdr = 0;
@@ -148,6 +156,10 @@ namespace WindowsFormsApp4
             lldScopeBuf.Add(new List<double[]>());
             lldScopeBuf.Add(new List<double[]>());
             lldScopeBuf.Add(new List<double[]>());
+
+
+            master = ModbusSerialMaster.CreateRtu(spPort);
+
         }
 
 
@@ -244,407 +256,228 @@ namespace WindowsFormsApp4
 
         }
 
-        public void vPoll()
+        public async void vPoll()
         {
- 
-            if (spPort.IsOpen && blDevCnctd)
-            {
-                if (uiInputReg[0] > 0)
+
+            while (true) {
+                if (spPort.IsOpen && blDevCnctd)
                 {
-                    //читаем все РВ
-                   // blReadIRreq = false;
-                    if (blReadIRreq)
-                        if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
-                        {
-                            for(int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
-                            iFail++; 
-                        }
-                    blReadIRreq = false;
-
-                    
-
-                    //читаем несколько РХ
-                    if (uilHRadrForRead.Count > 1) 
+                    if (uiInputReg[0] > 0)
                     {
-                        int max = uilHRadrForRead.Max();
-                        int min = uilHRadrForRead.Min();
-                        if (max >= uiInputReg[1] ) max = uiInputReg[1] ;
-                        int len = max - min;
-                        if (intReadData((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
-                        blUpdGridHR = true;
-                        uilHRadrForRead.Clear();
-                    }
-
-                    //читаем один РХ
-                    if (uilHRadrForRead.Count > 0 & !blnWriteAllHR)
-                    {
-                        if (uilHRadrForRead[0] > uiInputReg[1] - 1) uilHRadrForRead[0] = (ushort)(uiInputReg[1] - 1);
-
-                        if (intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
-                        uilHRadrForRead.RemoveAt(0);
-                        if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
-                        blUpdGridHR = true;
-                    }
-                   
-
-                    //Пишем один РХ
-                    if (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length==2)
-                    {
-                        iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
-                        uialHRForWrite.RemoveAt(0);
-                        if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
-                    }
-                    
-
-                    //Пишем все РХ
-                    if (blnWriteAllHR)
-                    {
-                        ushort tempAdrForWrite = 0;
-                        while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
-                        {
-                            iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
-                            tempAdrForWrite++;
-                            uialHRForWrite.RemoveAt(0);
-
-                        }
-
-                        //List<ushort> temp = new List<ushort>();
-
-                        //foreach (var el in uialHRForWrite)
-                        //{
-                        //   if(el.Length ==1) temp.Add(el[0]);
-                        //}
-                        //iWriteData(0,temp);
-
-
-                        uialHRForWrite.Clear();
-                        blnWriteAllHR = false;
-                    }
-
-                    //Осциллограф
-                    if (blnScpEnbl)
-                    {
-                        int temp = 2;
-                        int i = 0;
-                        while ((temp = intReadScope(scope_ADC_div)) > 0)
-                        {
-
-                            Thread.Sleep(1);
-                            i++;
-                            if (i > 8)
+                        //читаем все РВ
+                        // blReadIRreq = false;
+                        if (blReadIRreq)
+                            if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
                             {
-                                logger.Add("Осцил - переполнение FIFO");
-                                break;
+                                for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
+                                iFail++;
                             }
-                        };
-                        //если ошибка выключаем окно
-                        if (temp < 0)
+                        blReadIRreq = false;
+
+
+
+                        //читаем несколько РХ
+                        if (uilHRadrForRead.Count > 1)
                         {
-                            blnScpEnbl = false;
+                            int max = uilHRadrForRead.Max();
+                            int min = uilHRadrForRead.Min();
+                            if (max >= uiInputReg[1]) max = uiInputReg[1];
+                            int len = max - min;
+                            if (intReadData((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
+                            blUpdGridHR = true;
+                            uilHRadrForRead.Clear();
                         }
+
+                        //читаем один РХ
+                        if (uilHRadrForRead.Count > 0 & !blnWriteAllHR)
+                        {
+                            if (uilHRadrForRead[0] > uiInputReg[1] - 1) uilHRadrForRead[0] = (ushort)(uiInputReg[1] - 1);
+
+                            if (intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
+                            uilHRadrForRead.RemoveAt(0);
+                            if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
+                            blUpdGridHR = true;
+                        }
+
+
+                        //Пишем один РХ
+                        if (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 2)
+                        {
+                            iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
+                            uialHRForWrite.RemoveAt(0);
+                            if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
+                        }
+
+
+                        //Пишем все РХ
+                        if (blnWriteAllHR)
+                        {
+                            ushort tempAdrForWrite = 0;
+                            while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
+                            {
+                                iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
+                                tempAdrForWrite++;
+                                uialHRForWrite.RemoveAt(0);
+
+                            }
+
+                            //List<ushort> temp = new List<ushort>();
+
+                            //foreach (var el in uialHRForWrite)
+                            //{
+                            //   if(el.Length ==1) temp.Add(el[0]);
+                            //}
+                            //iWriteData(0,temp);
+
+
+                            uialHRForWrite.Clear();
+                            blnWriteAllHR = false;
+                        }
+
+                        //Осциллограф
+                        if (blnScpEnbl)
+                        {
+                            int temp = 2;
+                            int i = 0;
+                            while ((temp =  intReadScopeAsync(scope_ADC_div)) > 0)
+                            {
+
+                                await Task.Delay(10);
+                                i++;
+                                if (i > 8)
+                                {
+                                    logger.Add("Осцил - переполнение FIFO");
+                                    break;
+                                }
+                            };
+                            //если ошибка выключаем окно
+                            //if (temp < 0)
+                            //{
+                            //    blnScpEnbl = false;
+                            //}
+                        };
+
+
+                    }
+                    else
+                    {
+                        if (intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
                     };
+                }
 
-
-                } else
-                {
-                    if (intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
-                };
+                await Task.Delay(10);
             }
 
         }
 
         int intReadData(UInt16 adr, UInt16 count, comand cmd)
         {
-            byte[] buff = new byte[] { btDevAdr, (byte)cmd, (byte)(adr >> 8), (byte)adr, (byte)(count >> 8), (byte)count, 0, 0 };
-            UInt16 crc = chMBCRC16(buff, 6);
-            int size = count * 2 + 6;
 
-            buff[7] = (byte)(crc >> 8);
-            buff[6] = (byte)(crc & 0xFF);
-#if DEBUG
-            if (cmd == comand.RD_HOLDING)
-            {
-                //Debug.WriteLine(cmd.ToString() + " adr=" + adr.ToString() + " count=" + count.ToString());
-                //Debug.WriteLine("<-" + sBtoS(buff, 8));
-                logger.Add(cmd.ToString() + " adr=" + adr.ToString() + " count=" + count.ToString());
-            }
-#endif
             try
             {
-                if (!spPort.IsOpen) { this.blDevCnctd = false;  return -1; }
-                spPort.ReadExisting();
-                spPort.Write(buff, 0, 8);
-
-               // while (spPort.BytesToRead != count * 2 + 5) { if (!spPort.IsOpen) break; };
-
-                int i = 0;
-                while (spPort.BytesToRead < count * 2 + 5)
+                ushort[] temp;
+                if (cmd == comand.RD_HOLDING)
                 {
-                    i++;
-                    if (!spPort.IsOpen) break;
-                    if (i > 500) break;
-                    Thread.Sleep(1);
-                };
+                    temp = master.ReadHoldingRegisters(1, adr, count);
+                    int i = 0;
+                    foreach (var el in temp)
+                    {
+                        uiHoldingReg[adr + i] = el;
+                        i++;
+                    }
 
-                size = spPort.BytesToRead;
-                buff = new byte[size];
-                try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("Нет Ответа");  return -1; };
+
+                }
+                if (cmd == comand.RD_INPUT)
+                {
+
+                    temp = master.ReadInputRegisters(1, adr, count);
+                    int i = 0;
+                    foreach (var el in temp)
+                    {
+                        uiInputReg[adr + i] = el;
+                        i++;
+                    }
+
+
+                }
             }
-            catch (Exception ex) { logger.Add("Ошибка записи в порт");  return -1; };
-
-            if (size < 3) { logger.Add("Нет ответа"); return -1; }
-           
-         //   Debug.WriteLine(sBtoS(buff, size));
-            crc = chMBCRC16(buff, (ushort)(size - 2));
-            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) { logger.Add("Ошибка CRC"); return -1; }
-
-            if (buff[1] == (byte)cmd)
+            catch (Exception e)
             {
-                int k = 0;
-                for (int i = 3; i < buff[2]+2; i += 2)
-                {
-                    UInt16 temp = (UInt16)(buff[i + 1] + (buff[i] << 8));
-
-                    if (cmd == comand.RD_HOLDING) {
-                        uiHoldingReg[adr+k] = temp;
-                    };
-                    if (cmd == comand.RD_INPUT) uiInputReg[adr+k] = temp;
-                    k++;
-                }
-#if DEBUG
-                if (cmd == comand.RD_HOLDING) {
-                    logger.Add("-> " + sBtoS(buff, (UInt16)buff.Length));
-                }
-                
-
-#endif
+                logger.Add(e.Message);
             }
-            else { logger.Add("ModBus ошибка команды чтения. Код" + buff[1].ToString()); return -1; };
 
-            return 0;
+        return 0;
+
         }
 
         int iWriteData  (UInt16 adr, UInt16 data)
         {
-            
-            byte[] buff = new byte[] { btDevAdr, 6, (byte)(adr >> 8), (byte)adr, (byte)(data >> 8), (byte)data, 0, 0 };
-            UInt16 crc = chMBCRC16(buff, 6);
-            buff[7] = (byte)(crc >> 8);
-            buff[6] = (byte)(crc & 0xFF);
-#if DEBUG
-            //Debug.WriteLine( "WRITE SINGLE HR" + " adr=" + adr.ToString()+ " data=" +data.ToString() );
-            //Debug.WriteLine("<-" + sBtoS(buff, 8));
-            logger.Add("WRITE SINGLE HR" + " adr=" + adr.ToString() + " data=" + data.ToString());
-
-#endif
-            int size = 0;
 
             try
             {
-                
-                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
-                spPort.ReadExisting();
-                spPort.Write(buff, 0, 8);
-                //  System.Threading.Thread.Sleep(100);
-                //while (spPort.BytesToRead != 8)  { if (!spPort.IsOpen) break; };
-                int i=0;
-                while (spPort.BytesToRead < 8)
-                {
-                    i++;
-                    if (!spPort.IsOpen) break;
-                    if (i > 500) break;
-                    Thread.Sleep(1);
-                };
-                size = spPort.BytesToRead;
-                buff = new byte[size];
-                try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("Нет овета"); iFail++; return -1; };
-            }
-            catch (Exception ex) { Debug.WriteLine("Ошибка записи в порт"); return -1; };
-
-#if DEBUG
-            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
-            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
-#endif       
-            if (size < 3) return -1;
-            crc = chMBCRC16(buff, (ushort)(size - 2));
-            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) { logger.Add("Ошибка CRC"); iFail++; return 0; }
-
-            if (buff[1] == 6)
-            {
+                master.WriteSingleRegister(1, adr, data);
                 uilHRadrForRead.Add(adr);
             }
-            else
-            {
-                logger.Add("ModBus ошибка команды записи. Код " + buff[1].ToString()); return -1;
+            catch (Exception e){
+                logger.Add(e.Message);
             }
-            if (!blReadIRreq) blReadIRreq = true;
 
             return 0;
-        }
+                   }
 
 
-        //write multiply register
-        unsafe int iWriteData  (UInt16 adrW, List <ushort> data)
+            //write multiply register
+        unsafe int iWriteData(UInt16 adrW, List<ushort> data)
         {
- 
-            List<byte> buf = new List<byte>();
-            int cntW = data.Count;  
-
-
-            byte dsize = (byte)(cntW * 2);
-
-            buf.AddRange
-               (
-               new byte[] { btDevAdr, 0x10,
-                                            ((byte *) &adrW  )[1], ((byte*)&adrW  )[0],
-                                            ((byte *) &cntW  )[1], ((byte*)&cntW  )[0],
-                                            dsize
-               }
-               );
-
-            for (int i = 0; i < cntW; i++)
-            {
-                ushort temp = data[i];
-                buf.AddRange(new byte[] { ((byte*)&temp)[1], ((byte*)&temp)[0]});
-            }
-            vMBCRC16(buf);
-
-#if DEBUG
-            //Debug.WriteLine("WRITE MULTI HR" + " adr=" + adrW.ToString()+ " count=" + cntW.ToString());
-            Debug.WriteLine("<-" + sBtoS(buf.ToArray(), (UInt16)buf.Count));
-            logger.Add("WRITE MULTI HR" + " adr=" + adrW.ToString() + " count=" + cntW.ToString());
-#endif
-
-            byte[] buff = new byte[10];
-            int size = 0;
             try
             {
-                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
-                spPort.ReadExisting();
-                spPort.Write(buf.ToArray(), 0, buf.Count);
-                int i = 0;
-                while (spPort.BytesToRead < 8)
-                {
-                    i++;
-                    if (!spPort.IsOpen) break;
-                    if (i > 1500) break;
-                    Thread.Sleep(1);
-                };
-                size = spPort.BytesToRead;
-                buff = new byte[size];
-                try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("Нет ответа1"); iFail++; return -1; };
-            }
-            catch (Exception ex) { Debug.WriteLine("Ошибка записи в порт"); return -1; };
-            if (size < 3) { logger.Add("Нет ответа2"); ; return -1; }
-#if DEBUG
-            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
-            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
-#endif
-
-            UInt16 crc = chMBCRC16(buff, (ushort)(size - 2));
-            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) { logger.Add("Ошибка CRC"); iFail++; return 0; }
-
-            if (buff[1] == 0x10)
-            {
-
+                master.WriteMultipleRegisters(1, adrW, data.ToArray());
                 uilHRadrForRead.Add(0);
                 uilHRadrForRead.Add(256);
             }
-            else
-            {
-                logger.Add("Ошибка записи нескольких регистров. Код " + buff[1].ToString()); return -1;
+            catch (Exception e) {
+                logger.Add(e.Message);
             }
 
             return 0;
         }
 
-        unsafe int iWriteData  (UInt16 adrR, UInt16 cntR, UInt16 adrW, UInt16 cntW, UInt16* data )
+        /* _______________________________MODBUS SCOPE FRAME________________________________
+         *
+         *       +-----------+---------------+----------------------------+-------------+
+         * index | 0   | 1  | 2 ... 249 |  250  |     251   | 252 253 | 
+         *       +-----------+---------------+----------------------------+-------------+
+         * FRAME | ADR |CMD |    DATA   | chnum | FIFO DATA |   CRC   |     
+         * 
+         */
+
+
+        class ScopData
         {
+            public double X { get; private set; }
+            public double Y { get; private set; }
 
-            byte* bdata = (byte *) data;
-            List<byte> buf = new List<byte>();
-            byte dsize = (byte) (cntW*2);
-
-            buf.AddRange
-               (
-               new byte[] { btDevAdr, 0x17, ((byte *) &adrR  )[1], ((byte*)&adrR  )[0],
-                                            ((byte *) &cntR  )[1], ((byte*)&cntR  )[0],
-                                            ((byte *) &adrW  )[1], ((byte*)&adrW  )[0],
-                                            ((byte *) &cntW  )[1], ((byte*)&cntW  )[0],
-                                            dsize
-               }
-               );
-
-            for (int i = 0; i < cntW; i++)
+            public ScopData(double x, double y)
             {
-                buf.AddRange(new byte[] { ((byte *) &data[i])[1], ((byte*) &data[i])[0], });
+                this.X = x;
+                this.Y = y;
             }
-
-            vMBCRC16(buf);
-#if DEBUG
-            //Debug.WriteLine("READ WRITE MULTI HR" + "; adrR=" + adrW.ToString() + "; count=" + cntW.ToString() + "; adrW=" + adrW.ToString() + "; count=" + cntW.ToString());
-            //Debug.WriteLine("<-" + sBtoS(buf.ToArray(), 8));
-            logger.Add("READ WRITE MULTI HR" + "; adrR=" + adrW.ToString() + "; count=" + cntW.ToString() + "; adrW=" + adrW.ToString() + "; count=" + cntW.ToString());
-#endif
-
-            byte[] buff = new byte[10];
-            int size = 0;
-            try
-            {
-                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
-                spPort.ReadExisting();
-                spPort.Write(buf.ToArray(), 0, buf.Count);
-                System.Threading.Thread.Sleep(100);
-                size = spPort.BytesToRead;
-                buff = new byte[size];
-                try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("Time out 1"); iFail++; return -1; };
-            }
-            catch (Exception ex) { Debug.WriteLine("ex 2"); return -1; };
-
-            Debug.WriteLine(sBtoS(buff, buff.Length));
-
-            if (size < 3) { Debug.WriteLine("no ans"); return -1;  }
-
-#if DEBUG
-            //Debug.WriteLine("->" + sBtoS(buff, (UInt16)buff.Length));
-            logger.Add("->" + sBtoS(buff, (UInt16)buff.Length));
-#endif  
-
-            UInt16 crc = chMBCRC16(buff, (ushort)(size - 2));
-            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) { logger.Add("CRC error"); iFail++; return 0; }
-
-            if (buff[1] == 0x17)
-            {
-               
-             for (int i =0 ; i < buff[2] / 2; i++)
-                {
-                    uiHoldingReg[i] =(UInt16) ( (buff[3 + i * 2]<<8) + buff[4 + i * 2]);
-                }
-
-                uilHRadrForRead.Add(0);
-                uilHRadrForRead.Add(256);
-            }
-            else
-            {
-                logger.Add("Ошибка чтения/записи нескольких регистров. Код " + buff[1].ToString()); return -1;
-            }
-
-            return 0;
         }
-/* _______________________________MODBUS SCOPE FRAME________________________________
- *
- *       +-----------+---------------+----------------------------+-------------+
- * index | 0   | 1  | 2 ... 249 |  250  |     251   | 252 253 | 
- *       +-----------+---------------+----------------------------+-------------+
- * FRAME | ADR |CMD |    DATA   | chnum | FIFO DATA |   CRC   |     
- * 
- */
 
-        unsafe int intReadScope(int div)
+
+
+        public class ScopeData
+        {
+            public double[] X { get; set; }
+            public double[] Y { get; set; }
+
+        }
+
+        public ScopeData scp = new ScopeData();
+
+        // async Task<int> intReadScopeAsync(int div)
+        int intReadScopeAsync(int div)
         {
             List<byte> cmdGetID = new List<byte>() { btDevAdr, 20, 0x1, 0x1, 0x1 };
             vMBCRC16(cmdGetID);
@@ -665,21 +498,21 @@ namespace WindowsFormsApp4
                 {
                     i++;
 
-                    Thread.Sleep(2);
-
-                    if (!spPort.IsOpen || i > 100)
+                    if (!spPort.IsOpen || i > 10000)
                     {
                         if (spPort.BytesToRead == 5) break;
-
-                        logger.Add("Осциллограф таймаут xx "+ spPort.BytesToRead.ToString() );
-                      //  Debug.WriteLine(" SCP TO");
-                        
+                        logger.Add("Осциллограф таймаут xx " + spPort.BytesToRead.ToString());
+                        //  Debug.WriteLine(" SCP TO");
+                        Task.Delay(10).Wait();
                         return -1;
                     }
 
                 };
+
+
+                // if (spPort.BytesToRead < 245 ) return -1;
+
                 // Debug.WriteLine(i + " ms left");
-                Thread.Sleep(5);
                 size = spPort.BytesToRead;
                 buff = new byte[size];
                 try { spPort.Read(buff, 0, size); }
@@ -704,12 +537,16 @@ namespace WindowsFormsApp4
                     logger.Add("Осциллограф не найден");
                     return -1;
                 }
+
+               // await Task.Delay (50);
+                Thread.Sleep(10);
                 return 0;
 
             }
 
 
            // Debug.WriteLine(sBtoS(buff, size));
+
      
             ushort crc = chMBCRC16(buff, (ushort)(size - 2));
            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) {
@@ -718,52 +555,91 @@ namespace WindowsFormsApp4
                 return 0;
             }
 
-           // Debug.WriteLine("Elemnts in FIFO " + buff[size - 3]);
-           // Debug.WriteLine("Ch in SCOPE     " + buff[size - 4]);
-           // Debug.WriteLine("SCOPE  delay    " + buff[size - 5]);
+            // Debug.WriteLine("Elemnts in FIFO " + buff[size - 3]);
+            // Debug.WriteLine("Ch in SCOPE     " + buff[size - 4]);
+            // Debug.WriteLine("SCOPE  delay    " + buff[size - 5]);
 
-            for (int i = 2; i < size-7;)
+          
+            //for (int i = 2; i < size - 7;)
+            //{
+
+            //    if (scp_cnt == scp_cntmax) blnScpRstreq = true;
+
+
+            //    if (blnScpRstreq)
+            //    {
+            //        blnScpRstreq = false;
+            //        scp_cnt = 0;
+            //        if (scp_cntmax == 0) scp_cntmax = 1200;
+            //        if (uialScope[0].Length != scp_cntmax)  //если изменили размер развертки
+            //        {
+            //            uialScope[0] = new double[scp_cntmax];
+            //            uialScope[1] = new double[scp_cntmax];
+            //            uialScope[2] = new double[scp_cntmax];
+            //            uialScope[3] = new double[scp_cntmax];
+            //        }
+
+            //        break;
+            //    }
+
+
+            //    for (int k = 0; k < buff[size - 4]; k++) // для всех каналов во фрейме
+            //    {
+
+            //        uialScope[k][scp_cnt] = (double)(buff[i++] << 8);
+            //        uialScope[k][scp_cnt] += (double)(buff[i++]); // собираем 16 бит
+
+            //        if (uialScope[k][scp_cnt] > (1 << 15)) uialScope[k][scp_cnt] = (uialScope[k][scp_cnt] - (1 << 16)); // делаем инт16
+            //        uialScope[k][scp_cnt] = uialScope[k][scp_cnt] * daGain[k] + daOffset[k]; // смещение усиление
+            //    }
+
+            //    i += buff[size - 4] * 2 * (div - 1); //прореживаем значения если делитель больше 1
+            //    scp_cnt++;
+
+            //    blnScpDataRdy = true;
+            //}
+
+            if (blnScpRstreq)
             {
-
-                if (scp_cnt == scp_cntmax) blnScpRstreq = true; 
-
-
-                if (blnScpRstreq)
+                blnScpRstreq = false;
+                scp_cnt = 0;
+                if (scp_cntmax == 0) scp_cntmax = 1200;
+                if (uialScope[0].Length != scp_cntmax)  //если изменили размер развертки
                 {
-                    blnScpRstreq = false;
-                    scp_cnt = 0;
-                    if (scp_cntmax == 0) scp_cntmax = 1200;
-                    if (uialScope[0].Length != scp_cntmax)  //если изменили размер развертки
-                    {
-                        uialScope[0] = new double[scp_cntmax];  
-                        uialScope[1] = new double[scp_cntmax];
-                        uialScope[2] = new double[scp_cntmax];
-                        uialScope[3] = new double[scp_cntmax];
-                    }
-
-                    break;
+                    
                 }
 
-                for (int k=0; k <buff[size - 4];k++) // для всех каналов во фрейме
-                {
+              //  uialScope[0] = new double[scp_cntmax];
+              //  uialScope[1] = new double[scp_cntmax];
+              //  uialScope[2] = new double[scp_cntmax];
+               // uialScope[3] = new double[scp_cntmax];
 
-                    uialScope[k][scp_cnt] =  (double)(buff[i++] << 8);
-                    uialScope[k][scp_cnt] += (double)(buff[i++]     ); // собираем 16 бит
-
-                    if (uialScope[k][scp_cnt] > (1 << 15)) uialScope[k][scp_cnt] = (uialScope[k][scp_cnt] - (1 << 16)); // делаем инт16
-                    uialScope[k][scp_cnt] = uialScope[k][scp_cnt] * daGain[k] + daOffset[k]; // смещение усиление
-                }
-
-                i+= buff[size - 4]*2*(div-1); //прореживаем значения если делитель больше 1
-                scp_cnt++;
-                blnScpDataRdy = true;
             }
 
-            
+            byte[] buff_data  =new byte[512];
+            //short[] tmp =( buff.ToList().GetRange(2, 248).ToArray()).Select(el => (Int16)el).ToArray();
+
+            double[] tmp =buff.Select(el =>(double) ( (Int16)el) ).ToArray();
+            int counter = 0;
+            int ch_num = buff[size - 4];
+            var b = tmp.GroupBy(_ => ++counter % ch_num).ToArray();
+            counter = 0;
+            foreach (var el in b)
+            {
+                uialScope[counter] = el.ToArray();
+                counter++;
+            }
+
+            scp.Y = uialScope[1];
+
+            blnScpDataRdy = true;
 
             iScpChNum = buff[size - 4]; // количество каналов
             return buff[size-3]; // возвращаю количество фраймов в фифо МК
         }
+
+
+ 
 
         public string sBtoS(byte[] mas, int size)
         {

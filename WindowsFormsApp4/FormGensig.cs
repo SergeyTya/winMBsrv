@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -18,6 +19,7 @@ namespace WindowsFormsApp4
  
         private List<Control> myControl;
         private ControlsTable controlTable;
+        public delegate void MyDelegate();
 
         private static class ParamNames {
            public static string Enable = "Выход Разрешен";
@@ -182,11 +184,10 @@ namespace WindowsFormsApp4
 
             controlTable = new ControlsTable(this.dataGridView1);
             dataGridView1.DataSource = myControl;
-
-
         }
 
-        private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+
+            private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
           
             if (e.ColumnIndex != 1) return;

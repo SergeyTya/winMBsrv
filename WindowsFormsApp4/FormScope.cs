@@ -127,7 +127,6 @@ namespace WindowsFormsApp4
                             if (!checkBoxPause2.Checked) chart2.Series[i].Points.DataBindXY(iaAxisX, value[i]);
                             if (lsaRbEnbl[1][i].Checked == true) { chart2.Series[i].Enabled = true; } else { chart2.Series[i].Enabled = false; };
 
-
                         }
                         else
                         {
@@ -182,13 +181,13 @@ namespace WindowsFormsApp4
             //запрос на сброс точек на сервере
             Server.blnScpRstreq = true;
             int i=0;
-            while (Server.blnScpRstreq)
-            {
-                Thread.Sleep(1);
-                i++;
-                if (i > 1000) return;
-                if (!Server.blnScpEnbl) return;
-            }
+            //while (Server.blnScpRstreq)
+            //{
+            //   // Thread.Sleep(1);
+            //    i++;
+            //    if (i > 1000000) return;
+            //    if (!Server.blnScpEnbl) return;
+            //}
 
             //обновляем пределы по оси х
            // chart1.ChartAreas[0].AxisX.Maximum = Server.scp_cntmax;

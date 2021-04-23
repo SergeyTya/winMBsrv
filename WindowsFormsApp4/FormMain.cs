@@ -27,8 +27,7 @@ namespace WindowsFormsApp4
         MODBUS_srv Server = new MODBUS_srv();
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
-        Thread Updater;
-
+       
         public enum eDev_cmd
         {
             RUN = 0x1,
@@ -66,7 +65,7 @@ namespace WindowsFormsApp4
 
         private class CustomControlTyple
         {
-            public TextBox  textboxIndicator { get; set; }
+            public TextBox textboxIndicator { get; set; }
             public TrackBar trackBarController { get; set; }
             public UInt16 index { get; set; }
 
@@ -84,7 +83,7 @@ namespace WindowsFormsApp4
             public string Name { // name of input register
                 get { return label.Text; }
                 set {
-                    label.Text = RegSing  + " " + value;
+                    label.Text = RegSing + " " + value;
                     chart.Label = label.Text;
                 }
             }
@@ -92,7 +91,7 @@ namespace WindowsFormsApp4
             public bool RegSingEnable {
 
                 set {
-                    if( value) RegSing="Рег. " + Adr.ToString();
+                    if (value) RegSing = "Рег. " + Adr.ToString();
                     if (!value) RegSing = "";
                 }
             }
@@ -112,12 +111,12 @@ namespace WindowsFormsApp4
             public int value {
                 get { return 0; }
                 set {
-                    float temp =(float) value / Scale;
+                    float temp = (float)value / Scale;
                     if (Scale == 1) { indicator.Text = value.ToString(); } else {
                         indicator.Text = temp.ToString("#####0.0") + " " + Dimension;
                     }
 
-                    chart.AddPoint(value);                    
+                    chart.AddPoint(value);
                     indicator.ForeColor = Color.LightGreen;
                     if (temp < Min) indicator.ForeColor = Color.Cyan;
                     if (temp > Max) indicator.ForeColor = Color.LightCoral;
@@ -125,13 +124,13 @@ namespace WindowsFormsApp4
             }
 
 
-           public  InputRegisterIndicator(int pos) {
+            public InputRegisterIndicator(int pos) {
 
                 Adr = pos;
-                chart =new FormChart(Adr - 3);
+                chart = new FormChart(Adr - 3);
                 Scale = 1;
                 Min = -1;
-                Max =  1;
+                Max = 1;
                 RegSingEnable = true;
 
 
@@ -150,7 +149,7 @@ namespace WindowsFormsApp4
                 indicator.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
                 indicator.HideSelection = false;
                 indicator.Location = new System.Drawing.Point(15, 203);
-                indicator.Margin = new System.Windows.Forms.Padding(15, 3,50, 3);
+                indicator.Margin = new System.Windows.Forms.Padding(15, 3, 50, 3);
                 indicator.MaximumSize = new System.Drawing.Size(1000, 1000);
                 indicator.ReadOnly = false;
                 indicator.Size = new System.Drawing.Size(100, 33);
@@ -260,9 +259,6 @@ namespace WindowsFormsApp4
 
             }
 
-            Updater = new Thread(updater);
-            Updater.IsBackground = true;
-
             ToolStripMenuItem_Connect.Text = "Соединить";
             this.toolStripComboBox_RefTime.SelectedIndex = 2;
 
@@ -271,89 +267,164 @@ namespace WindowsFormsApp4
             timeStepInd = new InputRegisterIndicator(100);
             timeStepInd.RegSingEnable = false;
             timeStepInd.Name = "TimeStep, msec";
-            this.tableLayoutPanel_debug.Controls.Add(timeStepInd.label, 0 , 0);
+            this.tableLayoutPanel_debug.Controls.Add(timeStepInd.label, 0, 0);
             this.tableLayoutPanel_debug.RowCount++;
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
+            Task_SlavePoll();
+            Task_IndiRefresh();
+            Task_GensigRefresh();
+            Server.vPoll();
+
+            chart1.Series[0].XValueMember = "X";
+            chart1.Series[0].YValueMembers = "Y";
+            chart1.DataSource = Server.scp;
+            chart1.DataBind();
+
         }
+
+        class MyData
+        {
+            public double X { get; private set; }
+            public double Y { get; private set; }
+
+            public MyData(double x, double y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
+
+        MyData[] list = new MyData[100];
         //основной поток
 
-
         private Stopwatch startTime = Stopwatch.StartNew();
-        private double timeStep ;
+        private double timeStep;
 
-        private void updater()
-        {
-
+        private async void Task_SlavePoll() {
             while (true)
             {
-                try {BeginInvoke(new MyDelegate(vLog_Update));}
-                catch (Exception){}
-                
-                if (Server.spPort.IsOpen)
-                {
-                    try
+                await Task.Run(() => {
+                    if (Server.spPort.IsOpen)
                     {
-                        BeginInvoke(new MyDelegate(vIndi_Update));
-                    }
-                    catch (System.InvalidOperationException e) { };
 
-                    if (Server.suspend) { Thread.Sleep(1000); continue; }
 
-                    if (bloader != null) bloader = null;
+                        if (Server.suspend) { return; }
 
-                    if (!Server.blDevCnctd)
-                    {
-                        Server.vConnectToDev();
+                        if (bloader != null) bloader = null;
+
                         if (!Server.blDevCnctd)
                         {
-                            Server.iFail++;
-                            Server.logger.Add("Нет ответа");
-                            btn_Cnct_Click(this, null);
-                            continue;
+                            Server.vConnectToDev();
+                            if (!Server.blDevCnctd)
+                            {
+                                Server.iFail++;
+                                Server.logger.Add("Нет ответа");
+                                btn_Cnct_Click(this, null);
+                                return;
+                            }
+
+                            BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
+
                         }
 
-                        BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
-
+                       
+                    }
+                    else {
+                        Server.vReset();
+                        bloader = null;
                     }
 
                     startTime.Stop();
                     timeStep = (double)startTime.ElapsedMilliseconds / 1000;
                     startTime.Restart();
 
-                    Server.blReadIRreq = true;
-                    Server.vPoll();
+                });
+                
+                await Task.Delay(200);
+               
+            }
+        }
 
-                    //Генератор сигналов
-                    if (FormGenSig.GetState())
+        private async void Task_IndiRefresh()
+        {
+            double counter = 0.0;
+            int pos = 0;
+
+            while (true)
+            {
+                await Task.Run(() =>
+                {
+
+                    try { BeginInvoke(new MyDelegate(vLog_Update)); }
+                    catch (Exception) { }
+
+                    try
                     {
-                        UInt16 point = FormGenSig.GetReference();
-                        UInt16 target = FormGenSig.GetTargetHR();
-                        FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
-                        FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
-                        if(Server.uiHoldingReg[target]!= point)
-                            Server.uialHRForWrite.Add(new UInt16[2] { target, point });
+                        if (Server.spPort.IsOpen)
+                        {
+                            BeginInvoke(new MyDelegate(vIndi_Update));
+                        }
+                        else
+                        {
 
-                        
+                            BeginInvoke(new MyDelegate(vIndi_Clear));
+                        }
+                    }
+                    catch (System.InvalidOperationException e) { Task.Delay(1000); };
+
+
+                    if (Server.spPort.IsOpen)
+                    {
+                        if (FormGenSig.GetState())
+                        {
+                            UInt16 point = FormGenSig.GetReference();
+                            UInt16 target = FormGenSig.GetTargetHR();
+                            FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
+                            FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
+                            if (Server.uiHoldingReg[target] != point)
+                                Server.uialHRForWrite.Add(new UInt16[2] { target, point });
+                        }
+
+                        try { BeginInvoke(new MyDelegate(() => { FormGenSig.proc(timeStep); })); }
+                        catch (Exception) { }
+
+                        Server.blReadIRreq = true;
                     }
 
 
-                    try { BeginInvoke(new MyDelegate( () => { FormGenSig.proc(timeStep); })); }
-                    catch (Exception) { }
-                    
+                });
 
-                }
-                else
-                {
-                    BeginInvoke(new MyDelegate(vIndi_Clear));
-                    Server.vReset();
-                    bloader = null;
-                }
-
-                Thread.Sleep(uiServerDelay);
-
+                chart1.DataBind();
+             
+                await Task.Delay(uiServerDelay);
             }
+        }
+
+        private async void Task_GensigRefresh() {
+
+            while (true)
+            {
+                await Task.Run(() =>
+                {
+                    //Осциллограф
+                    if (ScopeForm != null)
+                    {
+                        if (Server.blnScpDataRdy)
+                        {
+
+                            BeginInvoke(new MyDelegate(() => { ScopeForm.UpdateCharts(Server.uialScope, Server.iScpChNum); }));
+                            Server.blnScpDataRdy = false;
+
+                        };
+                        if (!Server.blnScpEnbl) ScopeForm.Close();
+                    }
+                });
+
+                await Task.Delay(200);
+            }
+
         }
 
         private void vSearchDeviceDescriptionFile() {
@@ -489,44 +560,38 @@ namespace WindowsFormsApp4
                 el.value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
             }
 
-            //Осциллограф
-            if (ScopeForm != null)
-            {
-                if (Server.blnScpDataRdy)
-                {
-                    ScopeForm.UpdateCharts(Server.uialScope, Server.iScpChNum);
-                    Server.blnScpDataRdy = false;
 
-                };
-                if (!Server.blnScpEnbl) ScopeForm.Close();
-            }
 
             //обновляю таблицу RIO
-            if (tabForm.SelectedTab.Name == "tabPage3")
+            BeginInvoke(new MyDelegate(() =>
             {
 
-                i = 0;
-                gridRelayIO.ClearSelection();
-                foreach (DataGridViewRow row in gridRelayIO.Rows)
+                if (tabForm.SelectedTab.Name == "tabPage3")
                 {
-                    row.Cells[1].Value = 0;
-                    row.Cells[3].Value = 0;
-                    row.Cells[1].Style.BackColor = Color.White;
-                    row.Cells[3].Style.BackColor = Color.White;
-                    if ((Server.uiInputReg[9] & (1 << i + 8)) > 0)
-                    {
-                        row.Cells[1].Value = 1;
-                        row.Cells[1].Style.BackColor = Color.LightGreen;
-                    };
-                    if ((Server.uiInputReg[9] & (1 << i + 0)) > 0)
-                    {
-                        row.Cells[3].Value = 1;
-                        row.Cells[3].Style.BackColor = Color.LightCoral;
-                    };
 
-                    i++;
+                    i = 0;
+                    gridRelayIO.ClearSelection();
+                    foreach (DataGridViewRow row in gridRelayIO.Rows)
+                    {
+                        row.Cells[1].Value = 0;
+                        row.Cells[3].Value = 0;
+                        row.Cells[1].Style.BackColor = Color.White;
+                        row.Cells[3].Style.BackColor = Color.White;
+                        if ((Server.uiInputReg[9] & (1 << i + 8)) > 0)
+                        {
+                            row.Cells[1].Value = 1;
+                            row.Cells[1].Style.BackColor = Color.LightGreen;
+                        };
+                        if ((Server.uiInputReg[9] & (1 << i + 0)) > 0)
+                        {
+                            row.Cells[3].Value = 1;
+                            row.Cells[3].Style.BackColor = Color.LightCoral;
+                        };
+
+                        i++;
+                    }
                 }
-            }
+            }));
 
             //обновляю таблицу параметров
             i = 0;
@@ -1019,11 +1084,11 @@ namespace WindowsFormsApp4
                 return;
             };
 
-            // txtBoxLog.Text= "Открытие порта";
-            bs_flg = false;
-            if (!Updater.IsAlive) { 
-                Updater.Start(); return;
-            };
+        
+             bs_flg = false;
+           // if (!Updater.IsAlive) { 
+           //     Updater.Start(); return;
+           // };
 
         }
 
