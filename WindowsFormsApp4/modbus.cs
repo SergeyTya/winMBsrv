@@ -13,7 +13,8 @@ using System.Diagnostics;
 using Modbus.Data;
 using Modbus.Device;
 using Modbus.Utility;
-
+using System.Net;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WindowsFormsApp4
 {
@@ -58,9 +59,9 @@ namespace WindowsFormsApp4
         public List<UInt16[]> uialHRForWrite = new List<UInt16[]>();
 
         public double iFail = 0;
-        public int iScpChNum = 3;
-        public int scp_cntmax = 1200;
-        public int scp_cnt = 0;
+        //public int iScpChNum = 3;
+        //public int scp_cntmax = 1200;
+        //public int scp_cnt = 0;
 
         public String strDevID = null;
 
@@ -70,12 +71,12 @@ namespace WindowsFormsApp4
         public UInt16[] uiInputReg = new UInt16[256];
         public UInt16[] uiHoldingReg = new UInt16[256];
 
-        public List<double[]> uialScope = new List<double[]>();
-        public List<double[]> uialScopeSHD = new List<double[]>();
-        public double[] daGain   = new double[4] { 1, 1, 1, 1 };
-        public double[] daOffset = new double[4] { 0, 0, 0, 0 };
+        //public List<double[]> uialScope = new List<double[]>();
+        //public List<double[]> uialScopeSHD = new List<double[]>();
+        //public double[] daGain   = new double[4] { 1, 1, 1, 1 };
+        //public double[] daOffset = new double[4] { 0, 0, 0, 0 };
 
-        public List<List<double[]>> lldScopeBuf = new List<List<double[]>>();
+       // public List<List<double[]>> lldScopeBuf = new List<List<double[]>>();
 
         public enum comand
         {
@@ -142,20 +143,20 @@ namespace WindowsFormsApp4
             btDevAdr = 0;
             blDevCnctd = false;
 
-            uialScope.Add(new double[scp_cntmax]);
-            uialScope.Add(new double[scp_cntmax]);
-            uialScope.Add(new double[scp_cntmax]);
-            uialScope.Add(new double[scp_cntmax]);
+            //uialScope.Add(new double[scp_cntmax]);
+            //uialScope.Add(new double[scp_cntmax]);
+            //uialScope.Add(new double[scp_cntmax]);
+            //uialScope.Add(new double[scp_cntmax]);
 
-            uialScopeSHD.Add(new double[scp_cntmax]);
-            uialScopeSHD.Add(new double[scp_cntmax]);
-            uialScopeSHD.Add(new double[scp_cntmax]);
-            uialScopeSHD.Add(new double[scp_cntmax]);
+            //uialScopeSHD.Add(new double[scp_cntmax]);
+            //uialScopeSHD.Add(new double[scp_cntmax]);
+            //uialScopeSHD.Add(new double[scp_cntmax]);
+            //uialScopeSHD.Add(new double[scp_cntmax]);
 
-            lldScopeBuf.Add(new List<double[]>());
-            lldScopeBuf.Add(new List<double[]>());
-            lldScopeBuf.Add(new List<double[]>());
-            lldScopeBuf.Add(new List<double[]>());
+            //lldScopeBuf.Add(new List<double[]>());
+            //lldScopeBuf.Add(new List<double[]>());
+            //lldScopeBuf.Add(new List<double[]>());
+            //lldScopeBuf.Add(new List<double[]>());
 
 
             master = ModbusSerialMaster.CreateRtu(spPort);
@@ -339,7 +340,7 @@ namespace WindowsFormsApp4
                         {
                             int temp = 2;
                             int i = 0;
-                            while ((temp =  intReadScopeAsync(scope_ADC_div)) > 0)
+                            while ((temp = await intReadScopeAsync(scope_ADC_div)) > 0)
                             {
 
                                 await Task.Delay(10);
@@ -452,32 +453,11 @@ namespace WindowsFormsApp4
          * 
          */
 
-
-        class ScopData
-        {
-            public double X { get; private set; }
-            public double Y { get; private set; }
-
-            public ScopData(double x, double y)
-            {
-                this.X = x;
-                this.Y = y;
-            }
-        }
+         public ScopeFrameReader circbuf = new ScopeFrameReader(1500) ;
 
 
-
-        public class ScopeData
-        {
-            public double[] X { get; set; }
-            public double[] Y { get; set; }
-
-        }
-
-        public ScopeData scp = new ScopeData();
-
-        // async Task<int> intReadScopeAsync(int div)
-        int intReadScopeAsync(int div)
+         async Task<int> intReadScopeAsync(int div)
+        //int intReadScopeAsync(int div)
         {
             List<byte> cmdGetID = new List<byte>() { btDevAdr, 20, 0x1, 0x1, 0x1 };
             vMBCRC16(cmdGetID);
@@ -503,7 +483,7 @@ namespace WindowsFormsApp4
                         if (spPort.BytesToRead == 5) break;
                         logger.Add("Осциллограф таймаут xx " + spPort.BytesToRead.ToString());
                         //  Debug.WriteLine(" SCP TO");
-                        Task.Delay(10).Wait();
+                        await Task.Delay(10);
                         return -1;
                     }
 
@@ -538,8 +518,7 @@ namespace WindowsFormsApp4
                     return -1;
                 }
 
-               // await Task.Delay (50);
-                Thread.Sleep(10);
+                await Task.Delay (50);
                 return 0;
 
             }
@@ -547,7 +526,6 @@ namespace WindowsFormsApp4
 
            // Debug.WriteLine(sBtoS(buff, size));
 
-     
             ushort crc = chMBCRC16(buff, (ushort)(size - 2));
            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2]) {
                 Debug.WriteLine("CRC_ERROR");
@@ -555,86 +533,15 @@ namespace WindowsFormsApp4
                 return 0;
             }
 
+
             // Debug.WriteLine("Elemnts in FIFO " + buff[size - 3]);
             // Debug.WriteLine("Ch in SCOPE     " + buff[size - 4]);
             // Debug.WriteLine("SCOPE  delay    " + buff[size - 5]);
 
-          
-            //for (int i = 2; i < size - 7;)
-            //{
-
-            //    if (scp_cnt == scp_cntmax) blnScpRstreq = true;
-
-
-            //    if (blnScpRstreq)
-            //    {
-            //        blnScpRstreq = false;
-            //        scp_cnt = 0;
-            //        if (scp_cntmax == 0) scp_cntmax = 1200;
-            //        if (uialScope[0].Length != scp_cntmax)  //если изменили размер развертки
-            //        {
-            //            uialScope[0] = new double[scp_cntmax];
-            //            uialScope[1] = new double[scp_cntmax];
-            //            uialScope[2] = new double[scp_cntmax];
-            //            uialScope[3] = new double[scp_cntmax];
-            //        }
-
-            //        break;
-            //    }
-
-
-            //    for (int k = 0; k < buff[size - 4]; k++) // для всех каналов во фрейме
-            //    {
-
-            //        uialScope[k][scp_cnt] = (double)(buff[i++] << 8);
-            //        uialScope[k][scp_cnt] += (double)(buff[i++]); // собираем 16 бит
-
-            //        if (uialScope[k][scp_cnt] > (1 << 15)) uialScope[k][scp_cnt] = (uialScope[k][scp_cnt] - (1 << 16)); // делаем инт16
-            //        uialScope[k][scp_cnt] = uialScope[k][scp_cnt] * daGain[k] + daOffset[k]; // смещение усиление
-            //    }
-
-            //    i += buff[size - 4] * 2 * (div - 1); //прореживаем значения если делитель больше 1
-            //    scp_cnt++;
-
-            //    blnScpDataRdy = true;
-            //}
-
-            if (blnScpRstreq)
-            {
-                blnScpRstreq = false;
-                scp_cnt = 0;
-                if (scp_cntmax == 0) scp_cntmax = 1200;
-                if (uialScope[0].Length != scp_cntmax)  //если изменили размер развертки
-                {
-                    
-                }
-
-              //  uialScope[0] = new double[scp_cntmax];
-              //  uialScope[1] = new double[scp_cntmax];
-              //  uialScope[2] = new double[scp_cntmax];
-               // uialScope[3] = new double[scp_cntmax];
-
-            }
-
-            byte[] buff_data  =new byte[512];
-            //short[] tmp =( buff.ToList().GetRange(2, 248).ToArray()).Select(el => (Int16)el).ToArray();
-
-            double[] tmp =buff.Select(el =>(double) ( (Int16)el) ).ToArray();
-            int counter = 0;
-            int ch_num = buff[size - 4];
-            var b = tmp.GroupBy(_ => ++counter % ch_num).ToArray();
-            counter = 0;
-            foreach (var el in b)
-            {
-                uialScope[counter] = el.ToArray();
-                counter++;
-            }
-
-            scp.Y = uialScope[1];
+            
+            circbuf.ReadFrame(buff);
 
             blnScpDataRdy = true;
-
-            iScpChNum = buff[size - 4]; // количество каналов
             return buff[size-3]; // возвращаю количество фраймов в фифо МК
         }
 

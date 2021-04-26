@@ -55,15 +55,15 @@ namespace WindowsFormsApp4
             chart2.Series[3].Color = Color.Green;
             //формат подписей по оси х
             chart1.ChartAreas[0].AxisX.LabelStyle.Format = "0.##";
-            chart1.ChartAreas[0].AxisX.Interval = 0.2;
+           // chart1.ChartAreas[0].AxisX.Interval = 100;
             chart2.ChartAreas[0].AxisX.LabelStyle.Format = "0.##";
-            chart2.ChartAreas[0].AxisX.Interval = 0.2;
+           // chart2.ChartAreas[0].AxisX.Interval = 100;
             //создание значений по оси х
-            iaAxisX = new float[Server.scp_cntmax];
-            for (int i = 0; i < Server.scp_cntmax; i++) iaAxisX[i] =(float)(  i*((cmBoxScpFreq.SelectedIndex + 1) * 0.001) );
+            //iaAxisX = new float[Server.scp_cntmax];
+            //for (int i = 0; i < Server.scp_cntmax; i++) iaAxisX[i] =(float)(  i*((cmBoxScpFreq.SelectedIndex + 1) * 0.001) );
             // настройка параметров зума
             chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            chart1.ChartAreas[0].CursorX.Interval = 0.005;
+            //chart1.ChartAreas[0].CursorX.Interval = 100;
             chart1.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
             chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
             chart1.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
@@ -71,14 +71,13 @@ namespace WindowsFormsApp4
             chart1.ChartAreas[0].CursorY.AutoScroll = true;
 
             chart2.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            chart2.ChartAreas[0].CursorX.Interval = 0.005;
+            //chart2.ChartAreas[0].CursorX.Interval = 1;
             chart2.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
             chart2.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
             chart2.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
             chart2.ChartAreas[0].CursorX.AutoScroll = true;
             chart2.ChartAreas[0].CursorY.AutoScroll = true;
-            //сброс графиков
-            ResetAxis();
+           
             //
             tbaGain    = new TextBox[] { textBoxGainCh1,textBoxGainCh2,textBoxGainCh3,textBoxGainCh4 };
             tbaOffset  = new TextBox[] { textBoxOffCh1, textBoxOffCh2, textBoxOffCh3, textBoxOffCh4 };
@@ -98,67 +97,45 @@ namespace WindowsFormsApp4
             chart1.MouseWheel += new MouseEventHandler(chData_MouseWheel);
             chart2.MouseWheel += new MouseEventHandler(chData_MouseWheel);
             Server.blnScpEnbl = true;
+
+            UpdateChartsAsync();
+
+
         }
 
 
-
-        public void UpdateCharts(double [] point, int num)
+        //Обновление графиков.
+        private async void UpdateChartsAsync()
         {
 
-            if (blnFrmOpen) chart1.Series[0].Points.AddXY(point[0], point[1]);
-        }
-
-        //Обновление графиков. Функция выполняется в основном потоке вызванном из  главной формы
-        public void UpdateCharts(List<double[]> value, int num)
-        {
-            
-            for (int i = 0; i < 4; i++)
+            while (true)
             {
-
-                if (blnFrmOpen) // если форма отображается
+                if (blnFrmOpen)
                 {
-                    if (i < num) // количество доступных каналов
+                    for (int i = 0; i < 4; i++)
                     {
-                        if (iaAxisX.Length == value[i].Length) //проверяем что количество значений по осям равно
+                        if (Server.circbuf.GetChlDataCount(i) > 0)
                         {
-
-                            if (!checkBoxPause1.Checked) chart1.Series[i].Points.DataBindXY(iaAxisX, value[i]);
-                            if (lsaRbEnbl[0][i].Checked == true) { chart1.Series[i].Enabled = true; } else { chart1.Series[i].Enabled = false; };
-                            if (!checkBoxPause2.Checked) chart2.Series[i].Points.DataBindXY(iaAxisX, value[i]);
-                            if (lsaRbEnbl[1][i].Checked == true) { chart2.Series[i].Enabled = true; } else { chart2.Series[i].Enabled = false; };
-
+                            chart1.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
+                            chart2.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
                         }
                         else
                         {
-                            Debug.WriteLine("Length x="+iaAxisX.Length + " Length y=" + value[i].Length);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        //недоступные каналы не отображаются
-                        chart1.Series[i].Enabled = false; 
-                        chart2.Series[i].Enabled = false;
+                            chart1.Series[i].Points.Clear();
+                            chart2.Series[i].Points.Clear();
+                        };
+                        i++;
+
                     }
 
+                    chart2.ChartAreas[0].AxisX.Interval = Server.circbuf.TimeStep * 100;
+                    chart2.ChartAreas[0].AxisX.Maximum = Server.circbuf.TimeStep * Server.circbuf.BufferSize;
                 }
-               
+
+                await Task.Delay(500);
+
             }
             
-
-            //double[] tempD = new double[256];
-            //double[] temp = new double[256];
-
-            //if (value[0].Length==360)
-            //{
-            //    for (int i = 0; i < 256; i++) tempD[i] = value[0][i]; 
-            //    FFTLibrary.Complex.FFT(1, 8, tempD, temp);
-            //    chart2.ChartAreas[0].AxisX.Maximum = 128;
-            //    chart2.ChartAreas[0].AxisX.Interval = 10;
-            //    chart2.Series[0].Points.DataBindY(tempD);
-            //}
-
-
 
         }
 
@@ -173,40 +150,7 @@ namespace WindowsFormsApp4
             Server.blnScpEnbl = false;
         }
 
-        //Сброс графиков
-        private void ResetAxis()
-        {
-            //новое количество точек в графике для сервера 
-            Server.scp_cntmax = 120 * (comboBoxPageNum.SelectedIndex + 1);
-            //запрос на сброс точек на сервере
-            Server.blnScpRstreq = true;
-            int i=0;
-            //while (Server.blnScpRstreq)
-            //{
-            //   // Thread.Sleep(1);
-            //    i++;
-            //    if (i > 1000000) return;
-            //    if (!Server.blnScpEnbl) return;
-            //}
-
-            //обновляем пределы по оси х
-           // chart1.ChartAreas[0].AxisX.Maximum = Server.scp_cntmax;
-
-           chart2.ChartAreas[0].AxisX.Maximum = 120 * (comboBoxPageNum.SelectedIndex + 1) * (cmBoxScpFreq.SelectedIndex + 1) * 0.001*Server.scope_ADC_div;
-           chart1.ChartAreas[0].AxisX.Maximum = 120 * (comboBoxPageNum.SelectedIndex + 1) * (cmBoxScpFreq.SelectedIndex + 1) * 0.001*Server.scope_ADC_div;
-          //обновляем значения по оси х
-             iaAxisX = new float[Server.scp_cntmax];
-             if (iaAxisX != null) for (i = 0; i < Server.scp_cntmax; i++) iaAxisX[i] = (float)(i * ((cmBoxScpFreq.SelectedIndex + 1) * 0.001) * Server.scope_ADC_div);
-
-            //обновляем шаг сетки по х
-            chart1.ChartAreas[0].AxisX.IntervalAutoMode = IntervalAutoMode.FixedCount;
-            chart1.ChartAreas[0].AxisX.Interval = chart1.ChartAreas[0].AxisX.Maximum / 10;
-            chart2.ChartAreas[0].AxisX.Interval = chart2.ChartAreas[0].AxisX.Maximum / 10;
-
-            //  Debug.WriteLine("Новый размер " + Server.scp_cntmax);
-
-        }
-
+     
         //Прокрутка колесиком
         private void chData_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -241,8 +185,6 @@ namespace WindowsFormsApp4
             //добавляем в очередь
             Server.uialHRForWrite.Add(new UInt16[2] { 35, (UInt16)temp });
 
-            ResetAxis();
-
         }
 
 
@@ -258,11 +200,11 @@ namespace WindowsFormsApp4
         }
         private void comboBoxPageNum_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ResetAxis();
+           
         }
         private void btnClear1_Click(object sender, EventArgs e)
         {
-            ResetAxis();
+           
         }
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
@@ -280,7 +222,7 @@ namespace WindowsFormsApp4
             TextBox temp = (TextBox)sender;
             try
             {
-               Server.daGain[Array.IndexOf(tbaGain, temp)] = Convert.ToDouble(temp.Text);
+              // Server.daGain[Array.IndexOf(tbaGain, temp)] = Convert.ToDouble(temp.Text);
             }
             catch (Exception e2) { Debug.WriteLine(e2); return; };
 
@@ -291,7 +233,7 @@ namespace WindowsFormsApp4
             TextBox temp = (TextBox)sender;
             try
             {
-                Server.daOffset[Array.IndexOf(tbaOffset, temp)] = Convert.ToDouble(temp.Text);
+               // Server.daOffset[Array.IndexOf(tbaOffset, temp)] = Convert.ToDouble(temp.Text);
             }
             catch (Exception e2) { Debug.WriteLine(e2); return; };
 
@@ -350,8 +292,6 @@ namespace WindowsFormsApp4
             Server.scope_ADC_div = 1;
             try{ temp = Convert.ToInt32(textBoxADCdiv.Text, 10);}catch (Exception ex) { return; };
             if (temp == 0) { textBoxADCdiv.Text = "1"; } else { Server.scope_ADC_div = temp; };
-            ResetAxis();
-
 
         }
     }

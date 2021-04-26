@@ -274,29 +274,21 @@ namespace WindowsFormsApp4
 
             Task_SlavePoll();
             Task_IndiRefresh();
-            Task_GensigRefresh();
             Server.vPoll();
 
-            chart1.Series[0].XValueMember = "X";
-            chart1.Series[0].YValueMembers = "Y";
-            chart1.DataSource = Server.scp;
-            chart1.DataBind();
+          
+
+            byte[] tst = { 1, 0, 0, 2, 0, 3, 0, 4, 6,7,8,17,19 ,20, 34, 50, 56,43,28};
+            
+            int count = 0;
+            var tmp2 = tst.ToList().GetRange(0, 16).GroupBy(_ => count++ / 2).Select(v => BitConverter.ToInt16(v.ToArray(),0));
+            count = 0;
+            short[][] tmp3 = tmp2.GroupBy(_ => count++ % 2).Select(v => v.ToArray()).ToArray();
+
+            count = 10;
 
         }
 
-        class MyData
-        {
-            public double X { get; private set; }
-            public double Y { get; private set; }
-
-            public MyData(double x, double y)
-            {
-                this.X = x;
-                this.Y = y;
-            }
-        }
-
-        MyData[] list = new MyData[100];
         //основной поток
 
         private Stopwatch startTime = Stopwatch.StartNew();
@@ -396,35 +388,8 @@ namespace WindowsFormsApp4
 
                 });
 
-                chart1.DataBind();
-             
                 await Task.Delay(uiServerDelay);
             }
-        }
-
-        private async void Task_GensigRefresh() {
-
-            while (true)
-            {
-                await Task.Run(() =>
-                {
-                    //Осциллограф
-                    if (ScopeForm != null)
-                    {
-                        if (Server.blnScpDataRdy)
-                        {
-
-                            BeginInvoke(new MyDelegate(() => { ScopeForm.UpdateCharts(Server.uialScope, Server.iScpChNum); }));
-                            Server.blnScpDataRdy = false;
-
-                        };
-                        if (!Server.blnScpEnbl) ScopeForm.Close();
-                    }
-                });
-
-                await Task.Delay(200);
-            }
-
         }
 
         private void vSearchDeviceDescriptionFile() {
@@ -1022,16 +987,23 @@ namespace WindowsFormsApp4
         static int spdpos = 0;
         static int portpos = 0;
         static bool bs_flg = false;
-        
 
+
+        
         private void btn_Cnct_Click(object sender, EventArgs e)
         {
-
+            List<String> broken_ports = new List<string>();
             if (bs_flg) return;
             con_start:
             bs_flg = true;
             Int32[] bds = new Int32[] { 9600, 38400, 115200, 128000, 230400, 406000 };
             List<String> ports = SerialPort.GetPortNames().ToList();
+
+            foreach (var item in broken_ports)
+            {
+                int ind = ports.IndexOf(item);
+                if (ind >= 0) ports.RemoveAt(ind);
+            }
 
             if (ports.Count == 0) { Debug.WriteLine("No port found"); return; }
 
@@ -1073,6 +1045,7 @@ namespace WindowsFormsApp4
                 spdpos = 0;
                 goto con_start;
 
+
             }
             catch (Exception ex)
             {
@@ -1080,15 +1053,13 @@ namespace WindowsFormsApp4
                 Server.vReset();
                 ToolStripMenuItem_Connect.Text = "Отключить";
                 bs_flg = false;
-                Server.logger.Add(ports[portpos].ToString() + " ошибка доступа");
-                return;
+                Server.logger.Add(ports[portpos].ToString() + " ошибка доступа xxx");
+                broken_ports.Add(ports[portpos].ToString());
+                goto con_start;
             };
 
         
              bs_flg = false;
-           // if (!Updater.IsAlive) { 
-           //     Updater.Start(); return;
-           // };
 
         }
 
