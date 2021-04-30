@@ -81,6 +81,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cmbBoxScpChNum = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.dataGridPreChnls = new System.Windows.Forms.DataGridView();
+            this.State = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Info = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
@@ -96,11 +101,13 @@
             this.btnAutoScale2 = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnClear1 = new System.Windows.Forms.Button();
+            this.butGetPreChnl = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridPreChnls)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -149,7 +156,7 @@
             this.chart1.Series.Add(series2);
             this.chart1.Series.Add(series3);
             this.chart1.Series.Add(series4);
-            this.chart1.Size = new System.Drawing.Size(1046, 419);
+            this.chart1.Size = new System.Drawing.Size(978, 419);
             this.chart1.SuppressExceptions = true;
             this.chart1.TabIndex = 2;
             this.chart1.Text = "chart3";
@@ -199,7 +206,7 @@
             this.chart2.Series.Add(series6);
             this.chart2.Series.Add(series7);
             this.chart2.Series.Add(series8);
-            this.chart2.Size = new System.Drawing.Size(1046, 478);
+            this.chart2.Size = new System.Drawing.Size(978, 478);
             this.chart2.SuppressExceptions = true;
             this.chart2.TabIndex = 2;
             this.chart2.Text = "chart3";
@@ -252,10 +259,11 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 15);
             this.tableLayoutPanel1.Controls.Add(this.cmbBoxScpChNum, 0, 14);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.dataGridPreChnls, 0, 21);
             this.tableLayoutPanel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(1038, 35);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(970, 35);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 21;
+            this.tableLayoutPanel1.RowCount = 22;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -277,7 +285,8 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(222, 550);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 252F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(228, 786);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // label13
@@ -776,6 +785,44 @@
             this.label1.TabIndex = 30;
             this.label1.Text = "Количество каналов";
             // 
+            // dataGridPreChnls
+            // 
+            this.dataGridPreChnls.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridPreChnls.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.State,
+            this.Info,
+            this.Column1,
+            this.Column2});
+            this.dataGridPreChnls.Location = new System.Drawing.Point(3, 537);
+            this.dataGridPreChnls.Name = "dataGridPreChnls";
+            this.dataGridPreChnls.RowHeadersVisible = false;
+            this.dataGridPreChnls.Size = new System.Drawing.Size(222, 246);
+            this.dataGridPreChnls.TabIndex = 32;
+            this.dataGridPreChnls.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellEndEdit);
+            // 
+            // State
+            // 
+            this.State.HeaderText = "";
+            this.State.Name = "State";
+            this.State.Width = 30;
+            // 
+            // Info
+            // 
+            this.Info.HeaderText = "Имя";
+            this.Info.Name = "Info";
+            this.Info.Width = 60;
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Адрес";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Тип";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 50;
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
@@ -855,7 +902,7 @@
             this.flowLayoutPanel1.Controls.Add(this.checkBox8);
             this.flowLayoutPanel1.Controls.Add(this.checkBoxPause2);
             this.flowLayoutPanel1.Controls.Add(this.btnAutoScale2);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(981, 35);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(913, 35);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(51, 462);
             this.flowLayoutPanel1.TabIndex = 5;
@@ -940,9 +987,10 @@
             this.flowLayoutPanel2.Controls.Add(this.btnAutoScale1);
             this.flowLayoutPanel2.Controls.Add(this.checkBoxPause1);
             this.flowLayoutPanel2.Controls.Add(this.btnClear1);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(981, 495);
+            this.flowLayoutPanel2.Controls.Add(this.butGetPreChnl);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(913, 495);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(51, 398);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(51, 370);
             this.flowLayoutPanel2.TabIndex = 8;
             // 
             // btnClear1
@@ -955,12 +1003,22 @@
             this.btnClear1.UseVisualStyleBackColor = true;
             this.btnClear1.Click += new System.EventHandler(this.btnClear1_Click);
             // 
+            // butGetPreChnl
+            // 
+            this.butGetPreChnl.Location = new System.Drawing.Point(3, 238);
+            this.butGetPreChnl.Name = "butGetPreChnl";
+            this.butGetPreChnl.Size = new System.Drawing.Size(48, 23);
+            this.butGetPreChnl.TabIndex = 6;
+            this.butGetPreChnl.Text = "Канал";
+            this.butGetPreChnl.UseVisualStyleBackColor = true;
+            this.butGetPreChnl.Click += new System.EventHandler(this.butGetPreChnl_Click);
+            // 
             // FormScope
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1296, 881);
+            this.ClientSize = new System.Drawing.Size(1330, 881);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -978,6 +1036,7 @@
             this.tableLayoutPanel3.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridPreChnls)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
@@ -1046,5 +1105,11 @@
         private System.Windows.Forms.TextBox textBoxAdrShCh4;
         private System.Windows.Forms.TextBox textBoxADCdiv;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.DataGridView dataGridPreChnls;
+        private System.Windows.Forms.Button butGetPreChnl;
+        private System.Windows.Forms.DataGridViewTextBoxColumn State;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Info;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
     }
 }

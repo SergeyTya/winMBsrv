@@ -19,7 +19,8 @@ namespace WindowsFormsApp4
 
         private bool blnFrmOpen = false;
         public MODBUS_srv Server = null;
-        List<CheckBox[]>  lsaRbEnbl= new List<CheckBox[]>();
+        List<CheckBox>  lsaRbEnbl2= new List<CheckBox>();
+        List<CheckBox>  lsaRbEnbl1 = new List<CheckBox>();
         TextBox[] tbaGain = new TextBox[] {};
         TextBox[] tbaOffset = new TextBox[] { };
         TextBox[] tbaAdr = new TextBox[] { };
@@ -63,7 +64,7 @@ namespace WindowsFormsApp4
             //for (int i = 0; i < Server.scp_cntmax; i++) iaAxisX[i] =(float)(  i*((cmBoxScpFreq.SelectedIndex + 1) * 0.001) );
             // настройка параметров зума
             chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            //chart1.ChartAreas[0].CursorX.Interval = 100;
+            chart1.ChartAreas[0].CursorX.Interval = 100;
             chart1.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
             chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
             chart1.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
@@ -71,7 +72,7 @@ namespace WindowsFormsApp4
             chart1.ChartAreas[0].CursorY.AutoScroll = true;
 
             chart2.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            //chart2.ChartAreas[0].CursorX.Interval = 1;
+            chart2.ChartAreas[0].CursorX.Interval = 1;
             chart2.ChartAreas[0].CursorY.IsUserSelectionEnabled = true;
             chart2.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
             chart2.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
@@ -86,10 +87,11 @@ namespace WindowsFormsApp4
             btaAdrSend = new Button[]  { btnSendAdrCh1, btnSendAdrCh2, btnSendAdrCh3, btnSendAdrCh4 };
      
             //массив чекбоксов для отображения каналов
-            lsaRbEnbl.Add(new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4 });
-            lsaRbEnbl.Add(new CheckBox[] { checkBox5, checkBox6, checkBox7, checkBox8 });
+            lsaRbEnbl1.AddRange(new List<CheckBox> { checkBox1, checkBox2, checkBox3, checkBox4 });
+            lsaRbEnbl2.AddRange(new List<CheckBox> { checkBox5, checkBox6, checkBox7, checkBox8 });
             //все включены
-            foreach (CheckBox[] el in lsaRbEnbl) { for (int i = 0; i < el.Length; i++) el[i].Checked = true; };
+            foreach (CheckBox el in lsaRbEnbl1) {el.Checked = true; };
+            foreach (CheckBox el in lsaRbEnbl2) { el.Checked = true; };
 
             for (int i = 0; i < 4; i++) { tbaGain[i].Text = "1"; tbaOffset[i].Text = "0"; };
 
@@ -116,20 +118,24 @@ namespace WindowsFormsApp4
                     {
                         if (Server.circbuf.GetChlDataCount(i) > 0)
                         {
-                            chart1.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
-                            chart2.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
+                            chart1.Series[i].Enabled = lsaRbEnbl1[i].Checked;
+                            chart2.Series[i].Enabled = lsaRbEnbl2[i].Checked;
+
+
+                           if(!checkBoxPause1.Checked) chart1.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
+                           if(!checkBoxPause2.Checked) chart2.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i)); 
+
                         }
                         else
                         {
                             chart1.Series[i].Points.Clear();
                             chart2.Series[i].Points.Clear();
                         };
-                        i++;
 
                     }
 
-                    chart2.ChartAreas[0].AxisX.Interval = Server.circbuf.TimeStep * 100;
-                    chart2.ChartAreas[0].AxisX.Maximum = Server.circbuf.TimeStep * Server.circbuf.BufferSize;
+                    //chart2.ChartAreas[0].AxisX.Interval = Server.circbuf.TimeStep * 100;
+                    //chart2.ChartAreas[0].AxisX.Maximum = Server.circbuf.TimeStep * Server.circbuf.BufferSize;
                 }
 
                 await Task.Delay(500);
@@ -200,11 +206,15 @@ namespace WindowsFormsApp4
         }
         private void comboBoxPageNum_SelectedIndexChanged(object sender, EventArgs e)
         {
-           
+            double time = comboBoxPageNum.SelectedIndex + 1;
+            Server.circbuf.SetSweepTime(time);
+
         }
+
+
         private void btnClear1_Click(object sender, EventArgs e)
         {
-           
+            
         }
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
@@ -294,5 +304,100 @@ namespace WindowsFormsApp4
             if (temp == 0) { textBoxADCdiv.Text = "1"; } else { Server.scope_ADC_div = temp; };
 
         }
+
+        private async void butGetPreChnl_Click(object sender, EventArgs e)
+        {
+            dataGridPreChnls.Rows.Clear();
+
+            Server.blnScpGetPreChRequest = true;
+            while (Server.blnScpGetPreChRequest) await Task.Delay(100);
+           
+            foreach (var item in Server.circbuf.target_chnl)
+            {
+                DataGridViewRow row = new DataGridViewRow();
+                row.HeaderCell.Value = "Row";
+                row.CreateCells(dataGridPreChnls);
+                row.SetValues(new object[] { "", item._info, "0x"+Convert.ToString(item._adr,16), item._type_name});
+
+                DataGridViewCheckBoxCell checkedBox = new DataGridViewCheckBoxCell();
+                
+
+                checkedBox.Value = false;
+                row.Cells[0] = checkedBox;
+                dataGridPreChnls.Rows.Add(row);
+            };
+
+        }
+
+
+        private void dataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if (e.ColumnIndex == 0) if (dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+            {
+
+          
+                    while (Server.ScopeChnToRead.Count() != 4) Server.ScopeChnToRead.Add(0);
+
+                    bool status = (bool) (dataGridPreChnls.Rows[e.RowIndex].Cells[0] as DataGridViewCheckBoxCell).Value;
+                    UInt32 adr = Convert.ToUInt32( ( (string) dataGridPreChnls.Rows[e.RowIndex].Cells[2].Value).Substring(2), 16);
+                    int adr_index = Server.ScopeChnToRead.IndexOf(adr);
+                    int empty_adr = Server.ScopeChnToRead.IndexOf(0);
+
+
+                    if (status & adr_index == -1 & empty_adr != -1)
+                    {
+                        Server.ScopeChnToRead[empty_adr] = adr;
+                        Debug.WriteLine("Add at " + empty_adr + " value " + adr);
+                        switch (empty_adr)
+                        {
+                            case 0: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Red; break;
+                            case 1: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Blue; break;
+                            case 2: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Black; break;
+                            case 3: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Green; break;
+
+                            default:
+                                dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
+                                break;
+                        }
+                       
+                    }
+                    else 
+
+                    if (!status & adr_index != -1)
+                    {
+                        Server.ScopeChnToRead.RemoveAt(adr_index);
+                        Debug.WriteLine("Remove at " + adr_index + " value " + adr);
+                        dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
+                        
+                     
+                    }
+                    else
+
+                    if (status & empty_adr == -1)
+                    {
+                        (dataGridPreChnls.Rows[e.RowIndex].Cells[0] as DataGridViewCheckBoxCell).Value = false;
+                        dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
+                        while (Server.ScopeChnToRead.Count() != 4) Server.ScopeChnToRead.Add(0);
+                    }
+
+                    while (Server.ScopeChnToRead.Count() != 4) Server.ScopeChnToRead.Add(0);
+                    Server.blnScpSetChRequest = true;
+
+                    textBoxAdrCh1.Text = Convert.ToString(Server.ScopeChnToRead[0], 16);
+                    textBoxAdrCh2.Text = Convert.ToString(Server.ScopeChnToRead[1], 16);
+                    textBoxAdrCh3.Text = Convert.ToString(Server.ScopeChnToRead[2], 16);
+                    textBoxAdrCh4.Text = Convert.ToString(Server.ScopeChnToRead[3], 16);
+
+
+                    int num = Server.ScopeChnToRead.GroupBy(_ => _ != 0).ToList()[0].Count();
+                    if(num<=4 && num >= 1)cmbBoxScpChNum.SelectedIndex = num - 1;
+
+
+
+                }
+        }
+
+
     }
 }

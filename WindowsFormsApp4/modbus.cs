@@ -30,10 +30,12 @@ namespace WindowsFormsApp4
         public bool blnReadAllHR = false;
 
         public bool blnScpEnbl = false; // разрешение опроса осцила по кнопке из главной формы
-        public bool blnScpRstreq = false; // запрос на сброс данных осцила
-        public bool blnScpDataRdy = false;  // готовность данных
+        public bool blnScpGetPreChRequest = false;
+        public bool blnScpSetChRequest = false;
+        public bool blnScpGetChRequest = false;
 
         public int scope_ADC_div=1;
+
 
 
         private bool blnSuspended = false;
@@ -57,12 +59,10 @@ namespace WindowsFormsApp4
 
         public List<UInt16> uilHRadrForRead = new List<UInt16>();
         public List<UInt16[]> uialHRForWrite = new List<UInt16[]>();
+        public List<UInt32> ScopeChnToRead = new List<UInt32>(); 
 
         public double iFail = 0;
-        //public int iScpChNum = 3;
-        //public int scp_cntmax = 1200;
-        //public int scp_cnt = 0;
-
+      
         public String strDevID = null;
 
         public SerialPort spPort = new SerialPort("COM1", 9600, Parity.None, 8);
@@ -70,13 +70,6 @@ namespace WindowsFormsApp4
         public List<string> logger = new List<string>();
         public UInt16[] uiInputReg = new UInt16[256];
         public UInt16[] uiHoldingReg = new UInt16[256];
-
-        //public List<double[]> uialScope = new List<double[]>();
-        //public List<double[]> uialScopeSHD = new List<double[]>();
-        //public double[] daGain   = new double[4] { 1, 1, 1, 1 };
-        //public double[] daOffset = new double[4] { 0, 0, 0, 0 };
-
-       // public List<List<double[]>> lldScopeBuf = new List<List<double[]>>();
 
         public enum comand
         {
@@ -142,25 +135,10 @@ namespace WindowsFormsApp4
         {
             btDevAdr = 0;
             blDevCnctd = false;
-
-            //uialScope.Add(new double[scp_cntmax]);
-            //uialScope.Add(new double[scp_cntmax]);
-            //uialScope.Add(new double[scp_cntmax]);
-            //uialScope.Add(new double[scp_cntmax]);
-
-            //uialScopeSHD.Add(new double[scp_cntmax]);
-            //uialScopeSHD.Add(new double[scp_cntmax]);
-            //uialScopeSHD.Add(new double[scp_cntmax]);
-            //uialScopeSHD.Add(new double[scp_cntmax]);
-
-            //lldScopeBuf.Add(new List<double[]>());
-            //lldScopeBuf.Add(new List<double[]>());
-            //lldScopeBuf.Add(new List<double[]>());
-            //lldScopeBuf.Add(new List<double[]>());
-
-
+            //spPort.ReadTimeout = 5;
             master = ModbusSerialMaster.CreateRtu(spPort);
-
+            //master.Transport.WriteTimeout = 5;
+            //master.Transport.ReadTimeout = 5;
         }
 
 
@@ -201,7 +179,7 @@ namespace WindowsFormsApp4
             return (UInt16)(ucCRCLo + (ucCRCHi << 8));
         }
 
-        public void vConnectToDev()
+        public async void vConnectToDevAsync()
         {
             string mes = null;
             if (!blDevCnctd)
@@ -242,7 +220,8 @@ namespace WindowsFormsApp4
                 logger.Add(strDevID);
  
                 Thread.Sleep(100);
-                if (intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
+                if ( intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
+                Thread.Sleep(100);
                 if (this.uiInputReg[0] == 0 || this.uiInputReg[0] > 255 || this.uiInputReg[0] == 0 || this.uiInputReg[1] > 255)
                 {
                     logger.Add("Неверное количество регистров устройства");
@@ -259,7 +238,7 @@ namespace WindowsFormsApp4
 
         public async void vPoll()
         {
-
+            int delay = 10;
             while (true) {
                 if (spPort.IsOpen && blDevCnctd)
                 {
@@ -267,12 +246,18 @@ namespace WindowsFormsApp4
                     {
                         //читаем все РВ
                         // blReadIRreq = false;
-                        if (blReadIRreq)
-                            if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
-                            {
-                                for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
-                                iFail++;
-                            }
+
+
+                        await Task.Run(() =>
+                        {
+                            if (blReadIRreq)
+                                if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
+                                {
+                                    for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
+                                    iFail++;
+
+                                }
+                        });
                         blReadIRreq = false;
 
 
@@ -284,7 +269,7 @@ namespace WindowsFormsApp4
                             int min = uilHRadrForRead.Min();
                             if (max >= uiInputReg[1]) max = uiInputReg[1];
                             int len = max - min;
-                            if (intReadData((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
+                            if ( intReadData((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
                             blUpdGridHR = true;
                             uilHRadrForRead.Clear();
                         }
@@ -294,7 +279,7 @@ namespace WindowsFormsApp4
                         {
                             if (uilHRadrForRead[0] > uiInputReg[1] - 1) uilHRadrForRead[0] = (ushort)(uiInputReg[1] - 1);
 
-                            if (intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
+                            if ( intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
                             uilHRadrForRead.RemoveAt(0);
                             if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
                             blUpdGridHR = true;
@@ -302,48 +287,57 @@ namespace WindowsFormsApp4
 
 
                         //Пишем один РХ
-                        if (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 2)
+
+                        await Task.Run(() =>
                         {
-                            iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
-                            uialHRForWrite.RemoveAt(0);
-                            if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
-                        }
+                             if (uialHRForWrite.Count != 0) if (uialHRForWrite[0].Length == 2)
+                                {
+                                    iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
+                                    uialHRForWrite.RemoveAt(0);
+                                    if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
+                                }
+                        });
+
+                      
 
 
                         //Пишем все РХ
-                        if (blnWriteAllHR)
+                        await Task.Run(() =>
                         {
-                            ushort tempAdrForWrite = 0;
-                            while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
+                            if (blnWriteAllHR)
                             {
-                                iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
-                                tempAdrForWrite++;
-                                uialHRForWrite.RemoveAt(0);
+                                ushort tempAdrForWrite = 0;
+                                while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
+                                {
+                                    iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
+                                    tempAdrForWrite++;
+                                    uialHRForWrite.RemoveAt(0);
 
+                                }
+
+                                //List<ushort> temp = new List<ushort>();
+
+                                //foreach (var el in uialHRForWrite)
+                                //{
+                                //   if(el.Length ==1) temp.Add(el[0]);
+                                //}
+                                //iWriteData(0,temp);
+
+
+                                uialHRForWrite.Clear();
+                                blnWriteAllHR = false;
                             }
-
-                            //List<ushort> temp = new List<ushort>();
-
-                            //foreach (var el in uialHRForWrite)
-                            //{
-                            //   if(el.Length ==1) temp.Add(el[0]);
-                            //}
-                            //iWriteData(0,temp);
-
-
-                            uialHRForWrite.Clear();
-                            blnWriteAllHR = false;
-                        }
+                        });
 
                         //Осциллограф
                         if (blnScpEnbl)
                         {
                             int temp = 2;
                             int i = 0;
-                            while ((temp = await intReadScopeAsync(scope_ADC_div)) > 0)
+                            while ((temp = await ScopeReadDataAsync(scope_ADC_div)) > 0)
                             {
 
-                                await Task.Delay(10);
+                                await Task.Delay(2);
                                 i++;
                                 if (i > 8)
                                 {
@@ -351,18 +345,42 @@ namespace WindowsFormsApp4
                                     break;
                                 }
                             };
-                            //если ошибка выключаем окно
-                            //if (temp < 0)
-                            //{
-                            //    blnScpEnbl = false;
-                            //}
+    
+
+                            if (blnScpGetPreChRequest)
+                            {
+                                await ScopeGetPredefChnListAsync();
+                                blnScpGetPreChRequest = false;
+
+                            }
+
+                            if (blnScpGetChRequest)
+                            {
+                                await ScopeGetChannelsAdrAsync();
+                                blnScpGetChRequest = false;
+
+                            }
+
+                            if (blnScpSetChRequest)
+                            {
+                                //await ScopeSetChannelsAdrAsync(ScopeChnToRead);
+                                await ScopeSetChannelsAdrAsync(ScopeChnToRead);
+                                byte num = (byte)ScopeChnToRead.GroupBy(_ => _ != 0).ToList()[0].Count();
+                                if(num<=4 && num >= 1) await ScopeSetParam(--num, 1);
+                                blnScpSetChRequest = false;
+                            }
                         };
+
+
+                        
+                        // ScopeSetChannel();
+                        // 
 
 
                     }
                     else
                     {
-                        if (intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
+                        if (intReadData(0, 3, comand.RD_INPUT) < 0 ) iFail++;
                     };
                 }
 
@@ -380,6 +398,7 @@ namespace WindowsFormsApp4
                 if (cmd == comand.RD_HOLDING)
                 {
                     temp = master.ReadHoldingRegisters(1, adr, count);
+                    //temp =master.ReadHoldingRegistersAsync(1, adr, count);
                     int i = 0;
                     foreach (var el in temp)
                     {
@@ -392,7 +411,8 @@ namespace WindowsFormsApp4
                 if (cmd == comand.RD_INPUT)
                 {
 
-                    temp = master.ReadInputRegisters(1, adr, count);
+                    //temp = master.ReadInputRegistersAsync(1, adr, count);
+                    temp = master.ReadInputRegisters(1, adr, count); 
                     int i = 0;
                     foreach (var el in temp)
                     {
@@ -406,6 +426,7 @@ namespace WindowsFormsApp4
             catch (Exception e)
             {
                 logger.Add(e.Message);
+                return -1;
             }
 
         return 0;
@@ -417,7 +438,7 @@ namespace WindowsFormsApp4
 
             try
             {
-                master.WriteSingleRegister(1, adr, data);
+                master.WriteSingleRegisterAsync(1, adr, data);
                 uilHRadrForRead.Add(adr);
             }
             catch (Exception e){
@@ -433,7 +454,8 @@ namespace WindowsFormsApp4
         {
             try
             {
-                master.WriteMultipleRegisters(1, adrW, data.ToArray());
+                //master.WriteMultipleRegisters(1, adrW, data.ToArray());
+                master.WriteMultipleRegistersAsync(1, adrW, data.ToArray());
                 uilHRadrForRead.Add(0);
                 uilHRadrForRead.Add(256);
             }
@@ -456,7 +478,7 @@ namespace WindowsFormsApp4
          public ScopeFrameReader circbuf = new ScopeFrameReader(1500) ;
 
 
-         async Task<int> intReadScopeAsync(int div)
+         async Task<int> ScopeReadDataAsync(int div)
         //int intReadScopeAsync(int div)
         {
             List<byte> cmdGetID = new List<byte>() { btDevAdr, 20, 0x1, 0x1, 0x1 };
@@ -510,7 +532,7 @@ namespace WindowsFormsApp4
 
             if (size == 5)
             {
-                   Debug.WriteLine("FIFO not ready");
+                  // Debug.WriteLine("FIFO not ready");
               // Debug.WriteLine(sBtoS(buff, size));
                 if (buff[1] == 1)
                 {
@@ -518,7 +540,7 @@ namespace WindowsFormsApp4
                     return -1;
                 }
 
-                await Task.Delay (50);
+               // await Task.Delay (50);
                 return 0;
 
             }
@@ -535,18 +557,185 @@ namespace WindowsFormsApp4
 
 
             // Debug.WriteLine("Elemnts in FIFO " + buff[size - 3]);
-            // Debug.WriteLine("Ch in SCOPE     " + buff[size - 4]);
+            //  Debug.WriteLine("Ch in SCOPE     " + buff[size - 4]);
             // Debug.WriteLine("SCOPE  delay    " + buff[size - 5]);
 
             
             circbuf.ReadFrame(buff);
 
-            blnScpDataRdy = true;
+           // blnScpDataRdy = true;
             return buff[size-3]; // возвращаю количество фраймов в фифо МК
         }
 
 
- 
+        public async Task<int> ScopeGetPredefChnListAsync() {
+
+            List<byte> cmdGetID = new List<byte>() { btDevAdr, 21};
+            vMBCRC16(cmdGetID);
+            int size;
+            byte[] buff;
+
+
+            try
+            {
+
+                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
+                spPort.ReadExisting();
+                spPort.Write(cmdGetID.ToArray(), 0, cmdGetID.ToArray().Length);
+                int i = 0;
+                await Task.Delay(100);
+                //Thread.Sleep(50);
+                size = spPort.BytesToRead;
+                buff = new byte[size];
+                try { spPort.Read(buff, 0, size); }
+                catch (TimeoutException ex) { logger.Add("Нет Ответа"); return -1; };
+
+            }
+            catch (Exception ex) { logger.Add("Ошибка записи в порт"); return -1; };
+
+            ushort crc = chMBCRC16(buff, (ushort)(size - 2));
+            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2])
+            {
+                Debug.WriteLine("CRC_ERROR");
+                logger.Add("Осцил - Ошибка CRC ");
+                return 0;
+            };
+
+
+            circbuf.ReadTargetChl(buff);
+
+            Debug.WriteLine(sBtoS(buff, size));
+
+            Debug.WriteLine("Get target scope channels #" + circbuf.target_chnl.Count());
+
+            return 0;
+        }
+
+        public async Task<int> ScopeSetChannelsAdrAsync(List <UInt32> chnls) {
+       // public int ScopeSetChannelsAdrAsync(List <UInt32> chnls) {
+
+            if (chnls.Count() > 4) return -1;
+         //   while (chnls.Count() != 4) chnls.Add(0);
+            List<byte> cmd = new List<byte>() { btDevAdr, 22 };
+            foreach (var item in chnls) cmd.AddRange(BitConverter.GetBytes(item));
+            vMBCRC16(cmd);
+            int size;
+            byte[] buff;
+
+            try
+            {
+
+                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
+                spPort.ReadExisting();
+                spPort.Write(cmd.ToArray(), 0, cmd.ToArray().Length);
+                int i = 0;
+               await Task.Delay(50);
+                //Thread.Sleep(50);
+                size = spPort.BytesToRead;
+                if (size == 0) return -1;
+                
+                buff = new byte[size];
+                try { spPort.Read(buff, 0, size); }
+                catch (TimeoutException ex) { logger.Add("Нет Ответа"); return -1; };
+
+            }
+            catch (Exception ex) { logger.Add("Ошибка записи в порт"); return -1; };
+
+            ushort crc = chMBCRC16(buff, (ushort)(size - 2));
+            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2])
+            {
+                Debug.WriteLine("CRC_ERROR");
+                logger.Add("Осцил - Ошибка CRC ");
+                return -1;
+            };
+
+            Debug.WriteLine(sBtoS(buff, size));
+
+            return 0;
+        }
+
+        public async Task<int> ScopeSetParam(byte count, byte freq)
+        { 
+            List<byte> cmd = new List<byte>() { btDevAdr, 25, count, freq };
+            vMBCRC16(cmd);
+            int size;
+            byte[] buff;
+
+            try
+            {
+
+                if (!spPort.IsOpen) { this.blDevCnctd = false; return -1; }
+                spPort.ReadExisting();
+                spPort.Write(cmd.ToArray(), 0, cmd.ToArray().Length);
+                int i = 0;
+                await Task.Delay(10);
+                //Thread.Sleep(10);
+                size = spPort.BytesToRead;
+                if (size == 0) return -1;
+                buff = new byte[size];
+                try { spPort.Read(buff, 0, size); }
+                catch (TimeoutException ex) { logger.Add("Нет Ответа"); return -1; };
+
+            }
+            catch (Exception ex) { logger.Add("Ошибка записи в порт"); return -1; };
+
+            ushort crc = chMBCRC16(buff, (ushort)(size - 2));
+            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2])
+            {
+                Debug.WriteLine("CRC_ERROR");
+                logger.Add("Осцил - Ошибка CRC ");
+                return -1;
+            };
+
+            Debug.WriteLine(sBtoS(buff, size));
+
+            return 0;
+        }
+
+        public async Task<Int32[]> ScopeGetChannelsAdrAsync()
+        {
+
+            List<byte> cmd = new List<byte>() { btDevAdr, 24 };
+            vMBCRC16(cmd);
+            int size;
+            byte[] buff;
+
+            try
+            {
+
+                if (!spPort.IsOpen) { this.blDevCnctd = false; return null; }
+                spPort.ReadExisting();
+                spPort.Write(cmd.ToArray(), 0, cmd.ToArray().Length);
+                int i = 0;
+                await Task.Delay(10);
+                //Thread.Sleep(10);
+                size = spPort.BytesToRead;
+                buff = new byte[size];
+                try { spPort.Read(buff, 0, size); }
+                catch (TimeoutException ex) { logger.Add("Нет Ответа"); return null; };
+
+            }
+            catch (Exception ex) { logger.Add("Ошибка записи в порт"); return null; };
+
+            ushort crc = chMBCRC16(buff, (ushort)(size - 2));
+            if ((crc >> 8) != buff[size - 1] || (crc & 0xFF) != buff[size - 2])
+            {
+                Debug.WriteLine("CRC_ERROR");
+                logger.Add("Осцил - Ошибка CRC ");
+                return null;
+            };
+
+            Debug.WriteLine(sBtoS(buff, size));
+
+            int counter = 0;
+            Int32[] temp = new Int32[4];
+            for (int i = 0; i < 4; i++) temp[i] = BitConverter.ToInt32(buff, 2 + i * 4);
+
+            return temp;
+        }
+
+
+
 
         public string sBtoS(byte[] mas, int size)
         {
@@ -554,7 +743,7 @@ namespace WindowsFormsApp4
             int i=0;
             while (i <size)
             {
-                str += Convert.ToString(mas[i], 10)+".";
+                str += Convert.ToString(mas[i], 16)+".";
                 i++;
             }
 

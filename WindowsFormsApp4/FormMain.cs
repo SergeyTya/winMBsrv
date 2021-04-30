@@ -276,18 +276,28 @@ namespace WindowsFormsApp4
             Task_IndiRefresh();
             Server.vPoll();
 
-          
 
-            byte[] tst = { 1, 0, 0, 2, 0, 3, 0, 4, 6,7,8,17,19 ,20, 34, 50, 56,43,28};
-            
-            int count = 0;
-            var tmp2 = tst.ToList().GetRange(0, 16).GroupBy(_ => count++ / 2).Select(v => BitConverter.ToInt16(v.ToArray(),0));
-            count = 0;
-            short[][] tmp3 = tmp2.GroupBy(_ => count++ % 2).Select(v => v.ToArray()).ToArray();
+           // List<int> a = new List<int> {1,2,3,0,0 };
+           // var b = a.GroupBy( _ => _ != 0).ToList()[0].Count();
+           // Debug.WriteLine(b.Count());
 
-            count = 10;
+            btn_Cnct_Click(new object(), new EventArgs());
+            TStart_Scope();
+
+
 
         }
+
+        private async void TStart_Scope() {
+
+            while (true) { 
+            MenuItem_Scope_Start_Click(new object(), new EventArgs());
+            await Task.Delay(200);
+            if (ScopeForm != null) if (ScopeForm.Created) return;
+            }
+
+        }
+        
 
         //основной поток
 
@@ -308,7 +318,7 @@ namespace WindowsFormsApp4
 
                         if (!Server.blDevCnctd)
                         {
-                            Server.vConnectToDev();
+                            Server.vConnectToDevAsync();
                             if (!Server.blDevCnctd)
                             {
                                 Server.iFail++;
@@ -334,7 +344,7 @@ namespace WindowsFormsApp4
 
                 });
                 
-                await Task.Delay(200);
+                await Task.Delay(1);
                
             }
         }
@@ -730,7 +740,7 @@ namespace WindowsFormsApp4
             while (i < size)
             {
                 DataGridViewRow row = new DataGridViewRow();
-                row.HeaderCell.Value = "Row";
+               
                 row.CreateCells(gridHRTable);
                 var listSet = new DataGridViewComboBoxCell();
                 var btnSend = new DataGridViewButtonCell();
