@@ -236,9 +236,9 @@ namespace WindowsFormsApp4
 
         }
 
-        public async void vPoll()
+        public async void SlavePollAsync(int delay)
         {
-            int delay = 10;
+
             while (true) {
                 if (spPort.IsOpen && blDevCnctd)
                 {
@@ -247,18 +247,6 @@ namespace WindowsFormsApp4
                         //читаем все РВ
                         // blReadIRreq = false;
 
-
-                        await Task.Run(() =>
-                        {
-                            if (blReadIRreq)
-                                if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
-                                {
-                                    for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
-                                    iFail++;
-
-                                }
-                        });
-                        blReadIRreq = false;
 
 
 
@@ -290,7 +278,7 @@ namespace WindowsFormsApp4
 
                         await Task.Run(() =>
                         {
-                             if (uialHRForWrite.Count != 0) if (uialHRForWrite[0].Length == 2)
+                             if (uialHRForWrite.Count != 0)// if (uialHRForWrite[0].Length == 2)
                                 {
                                     iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
                                     uialHRForWrite.RemoveAt(0);
@@ -337,7 +325,7 @@ namespace WindowsFormsApp4
                             while ((temp = await ScopeReadDataAsync(scope_ADC_div)) > 0)
                             {
 
-                                await Task.Delay(2);
+                                //await Task.Delay(2);
                                 i++;
                                 if (i > 8)
                                 {
@@ -384,7 +372,24 @@ namespace WindowsFormsApp4
                     };
                 }
 
-                await Task.Delay(10);
+                Task inputs = Task.Run(() =>
+                     {
+                         if (spPort.IsOpen & blDevCnctd & blReadIRreq)
+                             if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
+                             {
+                                 for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
+                                 iFail++;
+
+                             }
+                         blReadIRreq = false;
+                });
+
+                // Task delay = Task.Delay(10);
+
+                // Task.WaitAll( new Task[] { inputs, delay } );
+
+                await inputs;
+                await Task.Delay(delay);
             }
 
         }

@@ -398,6 +398,9 @@ namespace WindowsFormsApp4
                 }
         }
 
+        private void FormScope_Load(object sender, EventArgs e)
+        {
 
+        }
     }
 }

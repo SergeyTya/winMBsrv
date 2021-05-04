@@ -27,7 +27,7 @@ namespace WindowsFormsApp4
         MODBUS_srv Server = new MODBUS_srv();
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
-       
+
         public enum eDev_cmd
         {
             RUN = 0x1,
@@ -61,7 +61,7 @@ namespace WindowsFormsApp4
         private UInt16 uiServerDelay = 10;
         private List<ParamNames> paramNames;
         private InputRegisterIndicator timeStepInd;
-        FormGensig FormGenSig = new FormGensig();
+        FormGensig FormGenSig;
 
         private class CustomControlTyple
         {
@@ -80,17 +80,21 @@ namespace WindowsFormsApp4
 
             private string RegSing = " ";
 
-            public string Name { // name of input register
+            public string Name
+            { // name of input register
                 get { return label.Text; }
-                set {
+                set
+                {
                     label.Text = RegSing + " " + value;
                     chart.Label = label.Text;
                 }
             }
 
-            public bool RegSingEnable {
+            public bool RegSingEnable
+            {
 
-                set {
+                set
+                {
                     if (value) RegSing = "Рег. " + Adr.ToString();
                     if (!value) RegSing = "";
                 }
@@ -108,11 +112,15 @@ namespace WindowsFormsApp4
             public int Max { get; set; }
             public string Dimension { get; set; }
 
-            public int value {
+            public int value
+            {
                 get { return 0; }
-                set {
+                set
+                {
                     float temp = (float)value / Scale;
-                    if (Scale == 1) { indicator.Text = value.ToString(); } else {
+                    if (Scale == 1) { indicator.Text = value.ToString(); }
+                    else
+                    {
                         indicator.Text = temp.ToString("#####0.0") + " " + Dimension;
                     }
 
@@ -124,7 +132,8 @@ namespace WindowsFormsApp4
             }
 
 
-            public InputRegisterIndicator(int pos) {
+            public InputRegisterIndicator(int pos)
+            {
 
                 Adr = pos;
                 chart = new FormChart(Adr - 3);
@@ -272,92 +281,90 @@ namespace WindowsFormsApp4
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
-            Task_SlavePoll();
-            Task_IndiRefresh();
-            Server.vPoll();
+           // FormGenSig = new FormGensig(Server);
 
+            
+            Task_ConnecterAsync();
+            Server.SlavePollAsync(10);
+            Task_FormRefreshAsync();
+           
 
-           // List<int> a = new List<int> {1,2,3,0,0 };
-           // var b = a.GroupBy( _ => _ != 0).ToList()[0].Count();
-           // Debug.WriteLine(b.Count());
-
-            btn_Cnct_Click(new object(), new EventArgs());
             TStart_Scope();
-
-
+            btn_Cnct_Click(new object(), new EventArgs());
 
         }
 
-        private async void TStart_Scope() {
+        private async void TStart_Scope()
+        {
 
-            while (true) { 
-            MenuItem_Scope_Start_Click(new object(), new EventArgs());
-            await Task.Delay(200);
-            if (ScopeForm != null) if (ScopeForm.Created) return;
+            while (true)
+            {
+                MenuItem_Scope_Start_Click(new object(), new EventArgs());
+                await Task.Delay(200);
+                if (ScopeForm != null) if (ScopeForm.Created) return;
             }
 
         }
-        
+
 
         //основной поток
 
         private Stopwatch startTime = Stopwatch.StartNew();
         private double timeStep;
 
-        private async void Task_SlavePoll() {
+        private async void Task_ConnecterAsync()
+        {
             while (true)
             {
-                await Task.Run(() => {
-                    if (Server.spPort.IsOpen)
-                    {
+               await Task.Run(() => {
+
+                   if (Server.spPort.IsOpen)
+                   {
 
 
-                        if (Server.suspend) { return; }
+                       if (Server.suspend) { return; }
 
-                        if (bloader != null) bloader = null;
+                       if (bloader != null) bloader = null;
 
-                        if (!Server.blDevCnctd)
-                        {
-                            Server.vConnectToDevAsync();
-                            if (!Server.blDevCnctd)
-                            {
-                                Server.iFail++;
-                                Server.logger.Add("Нет ответа");
-                                btn_Cnct_Click(this, null);
-                                return;
-                            }
+                       if (!Server.blDevCnctd)
+                       {
+                           Server.vConnectToDevAsync();
+                           if (!Server.blDevCnctd)
+                           {
+                               Server.iFail++;
+                               Server.logger.Add("Нет ответа");
+                               btn_Cnct_Click(this, null);
+                               return;
+                           }
 
-                            BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
+                           BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
 
-                        }
+                       }
+                   }
+                   else
+                   {
+                       Server.vReset();
+                       bloader = null;
+                   }
 
-                       
-                    }
-                    else {
-                        Server.vReset();
-                        bloader = null;
-                    }
+                   startTime.Stop();
+                   timeStep = (double)startTime.ElapsedMilliseconds / 1000;
+                   startTime.Restart();
 
-                    startTime.Stop();
-                    timeStep = (double)startTime.ElapsedMilliseconds / 1000;
-                    startTime.Restart();
+               });
 
-                });
-                
-                await Task.Delay(1);
-               
+                await Task.Delay(10);
             }
         }
 
-        private async void Task_IndiRefresh()
+        private async void Task_FormRefreshAsync()
         {
             double counter = 0.0;
             int pos = 0;
 
             while (true)
             {
-                await Task.Run(() =>
-                {
+               
 
                     try { BeginInvoke(new MyDelegate(vLog_Update)); }
                     catch (Exception) { }
@@ -374,41 +381,39 @@ namespace WindowsFormsApp4
                             BeginInvoke(new MyDelegate(vIndi_Clear));
                         }
                     }
-                    catch (System.InvalidOperationException e) { Task.Delay(1000); };
+                    catch (System.InvalidOperationException e) { await Task.Delay(1000); };
 
 
                     if (Server.spPort.IsOpen)
                     {
-                        if (FormGenSig.GetState())
-                        {
-                            UInt16 point = FormGenSig.GetReference();
-                            UInt16 target = FormGenSig.GetTargetHR();
-                            FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
-                            FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
-                            if (Server.uiHoldingReg[target] != point)
-                                Server.uialHRForWrite.Add(new UInt16[2] { target, point });
-                        }
+                        //if (FormGenSig.GetState())
+                        //{
+                        //    //UInt16 point = FormGenSig.GetReference();
+                        //    //UInt16 target = FormGenSig.GetTargetHR();
+                        //    //FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
+                        //    //FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
+                        //    //if (Server.uiHoldingReg[target] != point)
+                        //    //    Server.uialHRForWrite.Add(new UInt16[2] { target, point });
+                        //};
 
-                        try { BeginInvoke(new MyDelegate(() => { FormGenSig.proc(timeStep); })); }
-                        catch (Exception) { }
+                        //try { BeginInvoke(new MyDelegate(() => { FormGenSig.proc(timeStep); })); }
+                        //catch (Exception) { }
 
                         Server.blReadIRreq = true;
                     }
 
-
-                });
-
-                await Task.Delay(uiServerDelay);
+                await Task.Delay(100);
             }
         }
 
-        private void vSearchDeviceDescriptionFile() {
+        private void vSearchDeviceDescriptionFile()
+        {
             // поиск файлов настройки
             string[] allFoundFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.json", SearchOption.AllDirectories);
 
             foreach (var file in allFoundFiles)
             {
- 
+
                 try
                 {
                     string jsonString = File.ReadAllText(file, Encoding.Default);
@@ -428,7 +433,7 @@ namespace WindowsFormsApp4
 
                         if (result == DialogResult.OK)
                         {
-                           
+
                         }
 
                         paramNames = temp;
@@ -441,7 +446,8 @@ namespace WindowsFormsApp4
                         vIndi_HRGrid_init(Server.uiInputReg[1]);
                     }
                 }
-                catch (Newtonsoft.Json.JsonReaderException ex) {
+                catch (Newtonsoft.Json.JsonReaderException ex)
+                {
 
                 }
 
@@ -479,7 +485,8 @@ namespace WindowsFormsApp4
                 {
 
                     if (bloader.logger[0].Length > 1)
-                    {                      var lines = txtBoxLog.Lines.ToList();
+                    {
+                        var lines = txtBoxLog.Lines.ToList();
                         lines.RemoveAt(lines.Count - 1);
                         txtBoxLog.Lines = lines.ToArray();
                     }
@@ -498,25 +505,28 @@ namespace WindowsFormsApp4
             if (gridHRTable.Rows.Count < Server.uiInputReg[1]) vIndi_HRGrid_init(Server.uiInputReg[1]);
 
             //Input Registers table
-            if (tableLayoutPanel_IR.RowCount < Server.uiInputReg[0]) {
+            if (tableLayoutPanel_IR.RowCount < Server.uiInputReg[0])
+            {
 
                 tableLayoutPanel_IR.Controls.Clear();
                 IrIndicList.Clear();
                 tableLayoutPanel_IR.RowCount = 1;
                 tableLayoutPanel_IR.ColumnCount = 1;
 
-                i = 2; while (i++ < Server.uiInputReg[0]) {
+                i = 2; while (i++ < Server.uiInputReg[0])
+                {
 
                     InputRegisterIndicator ir = new InputRegisterIndicator(i);
 
-                    foreach (var el in paramNames) if (el.Adr == 1000 + i) {
+                    foreach (var el in paramNames) if (el.Adr == 1000 + i)
+                        {
 
                             ir.Name = el.Name;
                             ir.Scale = el.Scl;
                             ir.Max = el.Max;
                             ir.Min = el.Min;
                             ir.Dimension = el.Dim;
-                    }
+                        }
 
                     tableLayoutPanel_IR.Controls.Add(ir.label, 0, tableLayoutPanel_IR.RowCount - 1);
                     tableLayoutPanel_IR.RowCount++;
@@ -627,7 +637,8 @@ namespace WindowsFormsApp4
 
 
                     // обновляю customControlsTextBox
-                    foreach (var el in customControlsList) {
+                    foreach (var el in customControlsList)
+                    {
                         if (el.index == i)
                         {
                             int tmp_trackBarValue = 0;
@@ -643,20 +654,24 @@ namespace WindowsFormsApp4
                                     tmp_trackBarValue = Convert.ToInt32(row.Cells[2].Value);
                                 }
                             }
-                            else {
+                            else
+                            {
 
                                 tmp_trackBarValue = Convert.ToUInt16(row.Cells[2].Value);
                             }
 
-                            if  (tmp_trackBarValue > el.trackBarController.Maximum)
+                            if (tmp_trackBarValue > el.trackBarController.Maximum)
                             {
                                 el.trackBarController.BackColor = Color.LightPink;
                                 el.trackBarController.Value = el.trackBarController.Maximum;
-                            }else if(tmp_trackBarValue < el.trackBarController.Minimum)
+                            }
+                            else if (tmp_trackBarValue < el.trackBarController.Minimum)
                             {
                                 el.trackBarController.BackColor = Color.LightPink;
                                 el.trackBarController.Value = el.trackBarController.Minimum;
-                            } else {
+                            }
+                            else
+                            {
                                 el.trackBarController.Value = tmp_trackBarValue;
                                 el.trackBarController.BackColor = Color.White;
                             };
@@ -699,8 +714,8 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text =Server.spPort.PortName + " "+ Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
-            timeStepInd.value =(int) (timeStep*1000);
+            tsStatus.Text = Server.spPort.PortName + " " + Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
+            timeStepInd.value = (int)(timeStep * 1000);
 
 
         }
@@ -740,7 +755,7 @@ namespace WindowsFormsApp4
             while (i < size)
             {
                 DataGridViewRow row = new DataGridViewRow();
-               
+
                 row.CreateCells(gridHRTable);
                 var listSet = new DataGridViewComboBoxCell();
                 var btnSend = new DataGridViewButtonCell();
@@ -763,13 +778,14 @@ namespace WindowsFormsApp4
 
 
                 // custom controls
-                if (paramNames[i].Control != false) {
+                if (paramNames[i].Control != false)
+                {
 
                     bool elementExist = false;
                     //foreach (var el in this.customControlsList)
                     //    if (el.textboxIndicator.Name == "CustomTexBox_" + i.ToString()) elementExist = true;
                     foreach (var el in this.customControlsList)
-                        if (el.index ==  (UInt16)i) elementExist = true;
+                        if (el.index == (UInt16)i) elementExist = true;
                     if (elementExist == false)
                     {
                         if (tableLayoutPanel_customControl.RowCount == 1) tableLayoutPanel_customControl.RowCount++;
@@ -784,30 +800,33 @@ namespace WindowsFormsApp4
                         bar.Dock = DockStyle.Fill;
                         bar.Maximum = paramNames[i].Max;
                         bar.Minimum = paramNames[i].Min;
-                        if(Server.uiHoldingReg[i] < bar.Maximum) bar.Value = Server.uiHoldingReg[i];
+                        if (Server.uiHoldingReg[i] < bar.Maximum) bar.Value = Server.uiHoldingReg[i];
                         //Контекстное меню для регуляторов
                         ToolStripMenuItem TrackBarlimitMenu_Hi = new ToolStripMenuItem("Максимум");
                         ToolStripTextBox toolStripText_Hi = new ToolStripTextBox();
                         toolStripText_Hi.Text = bar.Maximum.ToString();
                         toolStripText_Hi.TextBoxTextAlign = HorizontalAlignment.Center;
-                        toolStripText_Hi.KeyUp += new KeyEventHandler((s, e) => {
+                        toolStripText_Hi.KeyUp += new KeyEventHandler((s, e) =>
+                        {
                             if (e.KeyCode != Keys.Enter) return;
                             try
                             {
                                 bar.Maximum = Convert.ToInt32(toolStripText_Hi.Text);
-                                if (bar.Minimum < 0 && bar.Maximum > 32767) {
+                                if (bar.Minimum < 0 && bar.Maximum > 32767)
+                                {
                                     bar.Maximum = 32767;
                                     toolStripText_Hi.Text = bar.Maximum.ToString();
                                 }
                             }
                             catch (Exception) { toolStripText_Hi.Text = bar.Maximum.ToString(); };
                         });
-                        TrackBarlimitMenu_Hi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {toolStripText_Hi});
+                        TrackBarlimitMenu_Hi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripText_Hi });
                         ToolStripMenuItem TrackBarlimitMenu_Lo = new ToolStripMenuItem("Минимум");
                         ToolStripTextBox toolStripText_Lo = new ToolStripTextBox();
                         toolStripText_Lo.Text = bar.Minimum.ToString();
                         toolStripText_Lo.TextBoxTextAlign = HorizontalAlignment.Center;
-                        toolStripText_Lo.KeyUp += new KeyEventHandler((s, e) => {
+                        toolStripText_Lo.KeyUp += new KeyEventHandler((s, e) =>
+                        {
                             if (e.KeyCode != Keys.Enter) return;
                             try
                             {
@@ -825,19 +844,22 @@ namespace WindowsFormsApp4
                         contextMenuForTrackBar.Items.AddRange(new[] { TrackBarlimitMenu_Hi, TrackBarlimitMenu_Lo });
                         bar.ContextMenuStrip = contextMenuForTrackBar;
                         //Changed handler for Custom Bar
-                        bar.MouseUp += new MouseEventHandler((s, e) => {
+                        bar.MouseUp += new MouseEventHandler((s, e) =>
+                        {
                             if (!Server.blDevCnctd) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
                             Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp, (UInt16)bar.Value });
                             gridHRTable.Rows[tmp].Cells[2].Style.BackColor = Color.Red;
                         });
-                        bar.ValueChanged += new EventHandler((s, e) => {
+                        bar.ValueChanged += new EventHandler((s, e) =>
+                        {
                             if (!Server.blDevCnctd) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
                             foreach (var el in customControlsList)
                                 if (tmp == el.index) el.textboxIndicator.Text = bar.Value.ToString();
                         });
-                        bar.KeyUp += new KeyEventHandler((s, e) => {
+                        bar.KeyUp += new KeyEventHandler((s, e) =>
+                        {
                             if (!(e.KeyCode == Keys.Up | e.KeyCode == Keys.Down | e.KeyCode == Keys.Right | e.KeyCode == Keys.Left)) return;
                             if (!Server.blDevCnctd) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
@@ -888,15 +910,15 @@ namespace WindowsFormsApp4
                         tmpcntrl.index = (UInt16)i;
                         this.customControlsList.Add(tmpcntrl);
                     }
-                    
+
                 }
 
-               // if (i == 0) foreach (var itm in listSet.Items) Debug.WriteLine(itm.ToString());
+                // if (i == 0) foreach (var itm in listSet.Items) Debug.WriteLine(itm.ToString());
 
                 str = "";
                 if (i < paramNames.Count) str = paramNames[i].Name;
                 row.SetValues(new object[] { i, str, Server.uiHoldingReg[i] });
-                if(paramNames[i].Descript != null) row.Cells[1].ToolTipText = paramNames[i].Descript;
+                if (paramNames[i].Descript != null) row.Cells[1].ToolTipText = paramNames[i].Descript;
                 gridHRTable.Rows.Add(row);
 
                 i++;
@@ -959,7 +981,7 @@ namespace WindowsFormsApp4
 
                 gridHRTable.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = sTempForCell;
 
-                    return;
+                return;
             }
 
         }
@@ -975,7 +997,7 @@ namespace WindowsFormsApp4
                     );
 
                     UInt16 data = Convert.ToUInt16(paramNames[e.RowIndex].Options[index][1]);
-                    Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)e.RowIndex, data});
+                    Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)e.RowIndex, data });
                     gridHRTable.Rows[e.RowIndex].Cells[2].Value = data;
                     gridHRTable.Rows[e.RowIndex].Cells[2].Style.BackColor = Color.Red;
                 }
@@ -999,7 +1021,7 @@ namespace WindowsFormsApp4
         static bool bs_flg = false;
 
 
-        
+
         private void btn_Cnct_Click(object sender, EventArgs e)
         {
             List<String> broken_ports = new List<string>();
@@ -1068,8 +1090,8 @@ namespace WindowsFormsApp4
                 goto con_start;
             };
 
-        
-             bs_flg = false;
+
+            bs_flg = false;
 
         }
 
@@ -1322,11 +1344,13 @@ namespace WindowsFormsApp4
             if (!bloader.port.IsOpen) { bloader.logger.Add(new string[] { "Ошибка открытия порта" }); return; }
             bloader.port.Write("R");
             System.Threading.Thread.Sleep(100);
-            if (bloader.port.ReadExisting() == "R") {
+            if (bloader.port.ReadExisting() == "R")
+            {
                 bloader.logger.Add(new string[] { "Перезагрузка ... ок" });
-                this.btn_Cnct_Click(this,null);
                 this.btn_Cnct_Click(this, null);
-                return; }
+                this.btn_Cnct_Click(this, null);
+                return;
+            }
             bloader.logger.Add(new string[] { "нет ответа" });
         }
 
@@ -1377,11 +1401,11 @@ namespace WindowsFormsApp4
                 paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
                 customControlsList.Clear();
                 tableLayoutPanel_IR.RowCount = 0;
-                tableLayoutPanel_IR.Controls.Clear();               
+                tableLayoutPanel_IR.Controls.Clear();
 
                 tableLayoutPanel_customControl.Controls.Clear();
                 vIndi_HRGrid_init(Server.uiInputReg[1]);
-               
+
             }
             catch (Newtonsoft.Json.JsonReaderException ex)
             {
@@ -1411,13 +1435,14 @@ namespace WindowsFormsApp4
 
         private void ToolStripMenuItem_ToolGen_Click(object sender, EventArgs e)
         {
-            if (FormGenSig != null) if (FormGenSig.Created) {
+            if (FormGenSig != null) if (FormGenSig.Created)
+                {
                     FormGenSig.Show();
                     FormGenSig.BringToFront();
                     return;
-            };
+                };
 
-            FormGenSig = new FormGensig();
+            FormGenSig = new FormGensig(Server);
             FormGenSig.Show();
         }
 

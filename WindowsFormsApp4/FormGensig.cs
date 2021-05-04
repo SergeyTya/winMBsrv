@@ -31,6 +31,7 @@ namespace WindowsFormsApp4
             public static string Period =  "Период, с";
             public static string Amplitude = "Aмплитуда";
             public static string Offset = "Смещение";
+            public static string Timestep = "TimeStep, с";
 
         }
 
@@ -74,6 +75,30 @@ namespace WindowsFormsApp4
 
         }
 
+        private List<Points> ChartData = new List<Points>();
+
+        private class Points
+        {
+
+            public double Time { get; set; }
+            public double Setpoint { get; set; }
+            public double TargetSetpoint { get; set; }
+            public double Error { get; set; }
+            public double Responce { get; set; }
+
+            public Points(double time, double setpoint, double targetSetpoint, double responce)
+            {
+
+
+                Time = time;
+                Setpoint = setpoint;
+                TargetSetpoint = targetSetpoint;
+                Responce = responce;
+                Error = targetSetpoint - responce;
+
+            }
+        }
+
         private class ControlsTable
         {
 
@@ -94,6 +119,7 @@ namespace WindowsFormsApp4
                 Controls.Add(ParamNames.Period,      new Control(ParamNames.Period, min: 0.1, def: 15));
                 Controls.Add(ParamNames.Amplitude,   new Control(ParamNames.Amplitude, min: 1, def: 3000));
                 Controls.Add(ParamNames.Offset,      new Control(ParamNames.Offset, min: 0));
+                Controls.Add(ParamNames.Timestep,   new Control(ParamNames.Timestep, min: 0.01, max: 0.5, def:0.100));
 
                 foreach (String name in Controls.Keys)
                 {
@@ -131,9 +157,10 @@ namespace WindowsFormsApp4
             }
         }
 
-
-        public FormGensig()
+        MODBUS_srv Server;
+        public FormGensig(MODBUS_srv value)
         {
+            Server = value;
             InitializeComponent();
             chart1.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             chart1.Series[0].Color = Color.Gray;
@@ -169,8 +196,7 @@ namespace WindowsFormsApp4
             chart1.ContextMenuStrip = contextMenuForChart;
 
             clearMenuItem.Click += new System.EventHandler((s, e) => {
-                foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart1.Series) el.Points.Clear();
-                foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart2.Series) el.Points.Clear();
+                ChartData.Clear();
                 time = 0;
             });
             zoomMenuItem.Click += new System.EventHandler((s, e) => {
@@ -184,10 +210,103 @@ namespace WindowsFormsApp4
 
             controlTable = new ControlsTable(this.dataGridView1);
             dataGridView1.DataSource = myControl;
+
+
+            chart1.Series[0].XValueMember = "Time";
+            chart1.Series[0].YValueMembers = "Setpoint";
+
+            chart1.Series[1].XValueMember = "Time";
+            chart1.Series[1].YValueMembers = "TargetSetpoint";
+
+            chart1.Series[2].XValueMember = "Time";
+            chart1.Series[2].YValueMembers = "Responce";
+
+            chart2.Series[0].XValueMember = "Time";
+            chart2.Series[0].YValueMembers = "Error";
+
+            chart1.DataSource = ChartData;
+            chart2.DataSource = ChartData;
+            chart1.DataBind();
+            chart2.DataBind();
+
+            procAsync();
+            Task_FormRefreshAsync();
+        }
+
+        private async void Task_FormRefreshAsync() {
+
+            while (true) {
+
+                this.chart1.Series[2].Enabled = controlTable.Controls[ParamNames.ResEnable].Value == 1;
+                chart1.DataBind();
+                chart2.DataBind();
+
+                await Task.Delay(300);
+            }
         }
 
 
-            private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        private double time = 0;
+        private double point = 0;
+        private double responce = 0;
+        private double targetRef = 0;
+       
+        private async void procAsync()
+        {
+            double gen_dir = 1;
+            while (true) {
+
+                if (chart1 == null || chart2 == null) { await Task.Delay(1000); continue; }
+                if (!this.Visible) { await Task.Delay(1000); continue; };
+
+                double amp = controlTable.Controls[ParamNames.Amplitude].Value;
+                double period = controlTable.Controls[ParamNames.Period].Value;
+                double offset = controlTable.Controls[ParamNames.Offset].Value;
+                double time_step = controlTable.Controls[ParamNames.Timestep].Value;
+
+
+                switch (controlTable.Controls[ParamNames.Type].Value)
+                {
+                    case 0:
+                        point = amp * Math.Sin(2 * Math.PI * time / period) + offset;
+                        break;
+                    case 1:
+                        point = amp * Math.Sin(2 * Math.PI * time / period);
+                        if (point > 0) point = amp + offset;
+                        if (point < 0) point = -amp + offset;
+                        break;
+                    case 2:
+                        double delta = 4 * amp * time_step / period;
+                        point += delta * gen_dir;
+                        if (point - offset >= amp) gen_dir = -1;
+                        if (point - offset <= -amp) gen_dir = 1;
+
+                        break;
+                    default:
+
+                        break;
+                };
+
+                ChartData.Add(new Points(time, point, targetRef, responce));
+                if (ChartData.Count > (int) ( period/time_step)) ChartData.RemoveAt(0);
+
+                this.time += time_step;
+
+                UInt16 point_val = GetReference();
+                UInt16 target_val = GetTargetHR();
+                SetTargetRef(Server.uiHoldingReg[target_val]);
+                SetResponce(Server.uiInputReg[GetResponceIR()]);
+
+                if (Server.uiHoldingReg[target_val] != point_val & controlTable.Controls[ParamNames.Enable].Value == 1)
+                    Server.uialHRForWrite.Add(new UInt16[2] { target_val, point_val });
+
+                await Task.Delay((int) (1000*time_step));
+            }
+
+        }
+
+
+        private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
           
             if (e.ColumnIndex != 1) return;
@@ -240,96 +359,6 @@ namespace WindowsFormsApp4
 
                 return;
             }
-
-
-
-        }
-
-        private double time = 0;
-        private double gen_dir = 1;
-        private double point = 0;
-        private double scale = 1;
-        private double responce = 0;
-        private double targetRef = 0;
-
-        public void proc(double Ts) {
-            if (chart1 == null || chart2 == null) return;
-            if (!this.Visible) return;
-
-            double time_step = Ts;
-            double xAxisMaximum = Math.Round(time, 3);
-            double amp = controlTable.Controls[ParamNames.Amplitude].Value;
-            double period = controlTable.Controls[ParamNames.Period].Value;
-            double offset = controlTable.Controls[ParamNames.Offset].Value;
-
-
-            switch (controlTable.Controls[ParamNames.Type].Value)
-            {
-                case 0:
-                    point = amp * Math.Sin(2 * Math.PI * time / period) + offset;
-                    break;
-                case 1:
-                    point = amp * Math.Sin(2 * Math.PI * time / period);
-                    if (point > 0) point = amp + offset;
-                    if (point < 0) point = -amp + offset;
-                    break;
-                case 2:
-                    double delta = 4 * amp * time_step / period;
-                    point += delta * gen_dir;
-                    if (point - offset >= amp) gen_dir = -1;
-                    if (point - offset <= -amp) gen_dir = 1;
-
-                    break;
-                default:
-
-                    break;
-            };
-
-            try
-            {
-                if (scale != controlTable.Controls[ParamNames.Scale].Value)
-                {
-                    scale = controlTable.Controls[ParamNames.Scale].Value;
-                    foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart1.Series) el.Points.Clear();
-                    foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart2.Series) el.Points.Clear();
-                }
-
-
-                if (chart1.ChartAreas[0].AxisY.Minimum > point) chart1.ChartAreas[0].AxisY.Minimum = Math.Round(point - 5, 0);
-                if (chart1.ChartAreas[0].AxisY.Maximum < point) chart1.ChartAreas[0].AxisY.Maximum = Math.Round(point + 5, 0);
-
-                if (chart2.ChartAreas[0].AxisY.Minimum > targetRef - responce) chart2.ChartAreas[0].AxisY.Minimum = Math.Round(targetRef - responce - 5, 0);
-                if (chart2.ChartAreas[0].AxisY.Maximum < targetRef - responce) chart2.ChartAreas[0].AxisY.Maximum = Math.Round(targetRef - responce + 5, 0);
-                if (chart2.ChartAreas[0].AxisY.Maximum > 100) chart2.ChartAreas[0].AxisY.Maximum = 100;
-                if (chart2.ChartAreas[0].AxisY.Minimum < -100) chart2.ChartAreas[0].AxisY.Minimum = -100;
-
-                if (xAxisMaximum < scale) xAxisMaximum = scale;
-
-                this.chart1.Series[0].Points.AddXY(time, point);
-                this.chart1.Series[1].Points.AddXY(time, targetRef);
-                this.chart1.Series[2].Points.AddXY(time, responce);
-
-                this.chart2.Series[0].Points.AddXY(time, targetRef - responce);
-
-
-                this.chart1.Series[2].Enabled = controlTable.Controls[ParamNames.ResEnable].Value == 1;
-
-                if (this.chart1.Series[0].Points.Count > scale / time_step)
-                {
-                    foreach (Series el in chart1.Series) el.Points.RemoveAt(0);
-                    foreach (Series el in chart2.Series) el.Points.RemoveAt(0);
-                }
-
-
-                chart1.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
-                chart1.ChartAreas[0].AxisX.Minimum = Math.Round(chart1.Series[0].Points[0].XValue, 3);
-
-                chart2.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
-                chart2.ChartAreas[0].AxisX.Minimum = Math.Round(chart2.Series[0].Points[0].XValue, 3);
-            }
-            catch (NullReferenceException) { };
-
-            this.time += time_step;
 
         }
 
