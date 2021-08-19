@@ -344,42 +344,52 @@ namespace WindowsFormsApp4
                     int adr_index = Server.ScopeChnToRead.IndexOf(adr);
                     int empty_adr = Server.ScopeChnToRead.IndexOf(0);
 
+                    Action setcolor = () =>
+                    {
 
-                    if (status & adr_index == -1 & empty_adr != -1)
+                        foreach (DataGridViewRow row in dataGridPreChnls.Rows)
+                        {
+                            string tsadr = (string)row.Cells[2].Value;
+                            if (tsadr != null)
+                            {
+                                UInt32 tadr = Convert.ToUInt32((tsadr).Substring(2), 16);
+                                int ind = Server.ScopeChnToRead.IndexOf(tadr);
+                                switch (ind)
+                                {
+                                    case 0: row.Cells[0].Style.BackColor = Color.Red; break;
+                                    case 1: row.Cells[0].Style.BackColor = Color.Blue; break;
+                                    case 2: row.Cells[0].Style.BackColor = Color.Black; break;
+                                    case 3: row.Cells[0].Style.BackColor = Color.Green; break;
+
+                                    default:
+                                        row.Cells[0].Style.BackColor = Color.White;
+                                        break;
+                                }
+
+                                 (row.Cells[0] as DataGridViewCheckBoxCell).Value = ind !=-1;
+
+                            }
+
+                               
+                        }
+                           
+                    };
+
+
+                    if (status & adr_index == -1 & empty_adr != -1) // Add to list
                     {
                         Server.ScopeChnToRead[empty_adr] = adr;
                         Debug.WriteLine("Add at " + empty_adr + " value " + adr);
-                        switch (empty_adr)
-                        {
-                            case 0: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Red; break;
-                            case 1: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Blue; break;
-                            case 2: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Black; break;
-                            case 3: dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.Green; break;
-
-                            default:
-                                dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
-                                break;
-                        }
-                       
                     }
                     else 
 
-                    if (!status & adr_index != -1)
+                    if (!status & adr_index != -1) //remove from list
                     {
                         Server.ScopeChnToRead.RemoveAt(adr_index);
-                        Debug.WriteLine("Remove at " + adr_index + " value " + adr);
-                        dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
-                        
-                     
+                        Debug.WriteLine("Remove at " + adr_index + " value " + adr);   
                     }
-                    else
 
-                    if (status & empty_adr == -1)
-                    {
-                        (dataGridPreChnls.Rows[e.RowIndex].Cells[0] as DataGridViewCheckBoxCell).Value = false;
-                        dataGridPreChnls.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.White;
-                        while (Server.ScopeChnToRead.Count() != 4) Server.ScopeChnToRead.Add(0);
-                    }
+                    setcolor();
 
                     while (Server.ScopeChnToRead.Count() != 4) Server.ScopeChnToRead.Add(0);
                     Server.blnScpSetChRequest = true;

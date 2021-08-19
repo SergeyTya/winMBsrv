@@ -17,6 +17,7 @@ using System.Diagnostics;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp4
 {
@@ -281,15 +282,12 @@ namespace WindowsFormsApp4
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
-           // FormGenSig = new FormGensig(Server);
-
-            
             Task_ConnecterAsync();
             Server.SlavePollAsync(10);
             Task_FormRefreshAsync();
            
 
-            TStart_Scope();
+            //TStart_Scope();
             btn_Cnct_Click(new object(), new EventArgs());
 
         }

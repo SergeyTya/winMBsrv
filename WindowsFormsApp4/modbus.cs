@@ -15,6 +15,7 @@ using Modbus.Device;
 using Modbus.Utility;
 using System.Net;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp4
 {
@@ -215,8 +216,12 @@ namespace WindowsFormsApp4
                     Debug.WriteLine("Нет ответа 3");
                     return;
                 }
-                if(mes.Length> 43)
-                strDevID = mes.Substring(10, 8) + " " + mes.Substring(20, 10) + " " + mes.Substring(32, 10) + " " + mes.Substring(44, 9);
+                if (mes.Length > 43)
+                     //strDevID = mes.Substring(10, 8) + " " + mes.Substring(20, 10) + " " + mes.Substring(32, 10) + " " + mes.Substring(44, 9);
+                     strDevID = Regex.Replace(mes.Substring(10), @"[^0-9a-zA-Z-_. ]+", " ");
+
+
+
                 logger.Add(strDevID);
  
                 Thread.Sleep(100);
@@ -240,6 +245,9 @@ namespace WindowsFormsApp4
         {
 
             while (true) {
+
+                while(suspend) await Task.Delay(1000);
+
                 if (spPort.IsOpen && blDevCnctd)
                 {
                     if (uiInputReg[0] > 0)
@@ -278,7 +286,7 @@ namespace WindowsFormsApp4
 
                         await Task.Run(() =>
                         {
-                             if (uialHRForWrite.Count != 0)// if (uialHRForWrite[0].Length == 2)
+                             if (uialHRForWrite.Count != 0) if (uialHRForWrite[0].Length == 2)
                                 {
                                     iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
                                     uialHRForWrite.RemoveAt(0);
