@@ -282,11 +282,14 @@ namespace WindowsFormsApp4
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
+            toolStripMenuItemConSpd.SelectedIndex = 0;
+            toolStripMenuItem3_DropDown(new object(), new EventArgs());
+            toolStripMenuItemConPort.SelectedIndex = 0;
+
             Task_ConnecterAsync();
             Server.SlavePollAsync(10);
             Task_FormRefreshAsync();
            
-
             //TStart_Scope();
             btn_Cnct_Click(new object(), new EventArgs());
 
@@ -932,14 +935,6 @@ namespace WindowsFormsApp4
                 if (Convert.ToDouble(toolStripTextBox_adr.Text) > 255) toolStripTextBox_adr.Text = "1";
             }
         }
-        private void txtBox_ModbusAdr_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            char number = e.KeyChar;
-            if (!Char.IsDigit(number) && number != 8)
-            {
-                e.Handled = true;
-            }
-        }
 
 
         private void cmbBoxServerDelay_SelectedIndexChanged(object sender, EventArgs e)
@@ -1029,38 +1024,53 @@ namespace WindowsFormsApp4
             Int32[] bds = new Int32[] { 9600, 38400, 115200, 128000, 230400, 406000 };
             List<String> ports = SerialPort.GetPortNames().ToList();
 
-            foreach (var item in broken_ports)
-            {
-                int ind = ports.IndexOf(item);
-                if (ind >= 0) ports.RemoveAt(ind);
-            }
-
-            if (ports.Count == 0) { Debug.WriteLine("No port found"); return; }
-
-            if (Server.spPort.IsOpen)
-            {
-                try { Server.spPort.Close(); } catch (Exception ex) { };
-                bool tmp = Server.blDevCnctd;
-                Server.vReset();
-                if (bloader != null) bloader.Reset();
-                if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
-                if (portpos == ports.Count || tmp)
+                if (Server.spPort.IsOpen)
                 {
-                    spdpos = 0;
-                    portpos = 0;
-                    Server.logger.Add("Сброс соединения ");
-                    bs_flg = false;
-                    return;
+                    try { Server.spPort.Close(); } catch (Exception ex) { };
+                    bool tmp = Server.blDevCnctd;
+                    Server.vReset();
+                    if (bloader != null) bloader.Reset();
+                    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
+                    if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
+                    {
+                        spdpos = 0;
+                        portpos = 0;
+                        Server.logger.Add("Сброс соединения ");
+                        bs_flg = false;
+                        return;
+                    };
                 };
+
+
+            if (ToolStripMenuItemConAuto.Checked)
+            {
+
+                foreach (var item in broken_ports)
+                {
+                    int ind = ports.IndexOf(item);
+                    if (ind >= 0) ports.RemoveAt(ind);
+                }
+
+                if (ports.Count == 0) { Debug.WriteLine("No port found"); return; }
+
+                Server.spPort.BaudRate = bds[spdpos];
+                Server.spPort.PortName = ports[portpos];
+                Server.spPort.Parity = Parity.None;
+                Server.spPort.DataBits = 8;
+                Server.spPort.ReadTimeout = 500;
+                Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
+
+            }
+            else {
+
+                if (toolStripMenuItemConSpd.SelectedItem == null) return;
+                Server.spPort.BaudRate = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
+                Server.spPort.PortName = toolStripMenuItemConPort.SelectedItem.ToString();
+                Server.spPort.Parity = Parity.None;
+                Server.spPort.DataBits = 8;
+                Server.spPort.ReadTimeout = 500;
+                Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
             };
-
-
-            Server.spPort.BaudRate = bds[spdpos];
-            Server.spPort.PortName = ports[portpos];
-            Server.spPort.Parity = Parity.None;
-            Server.spPort.DataBits = 8;
-            Server.spPort.ReadTimeout = 500;
-            Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
 
 
 
@@ -1073,9 +1083,7 @@ namespace WindowsFormsApp4
                 Server.logger.Add(ports[portpos].ToString() + " порт занят");
                 portpos++;
                 spdpos = 0;
-                goto con_start;
-
-
+                if (ToolStripMenuItemConAuto.Checked)  goto con_start;
             }
             catch (Exception ex)
             {
@@ -1085,27 +1093,26 @@ namespace WindowsFormsApp4
                 bs_flg = false;
                 Server.logger.Add(ports[portpos].ToString() + " ошибка доступа xxx");
                 broken_ports.Add(ports[portpos].ToString());
-                goto con_start;
+                if (ToolStripMenuItemConAuto.Checked)  goto con_start;
             };
 
 
             bs_flg = false;
 
-        }
+            if (!ToolStripMenuItemConAuto.Checked) return;
 
+           //     // refresh lists in connection menu 
+           //toolStripMenuItem3_DropDown(this, null);
 
-        private void tbFREQ_ref_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            char number = e.KeyChar;
-            if (!Char.IsDigit(number) && number != 8 && number != 44)
-            {
-                e.Handled = true;
-                return;
-            }
+           // if (toolStripMenuItemConPort.Items.IndexOf(Server.spPort.PortName.ToString()) < 0)
+           //     toolStripMenuItemConPort.Items.Add(Server.spPort.PortName.ToString());
+           // toolStripMenuItemConPort.SelectedItem = Server.spPort.PortName.ToString();
 
-            if (((TextBox)sender).Text.IndexOf("Г") != -1) ((TextBox)sender).Text = "";
+           // if (toolStripMenuItemConSpd.Items.IndexOf(Server.spPort.BaudRate.ToString()) < 0)
+           //     toolStripMenuItemConSpd.SelectedItem = Server.spPort.BaudRate.ToString();
 
         }
+
 
 
         private void MenuItem_Param_Save_ToFile_Click(object sender, EventArgs e)
@@ -1448,5 +1455,17 @@ namespace WindowsFormsApp4
         {
 
         }
+
+        private void toolStripMenuItem3_DropDown(object sender, EventArgs e)
+        {
+
+            toolStripMenuItemConPort.Items.Clear();
+            List<String> tempPortsList = SerialPort.GetPortNames().ToList();
+            if (tempPortsList is null) return;
+            foreach (String el in tempPortsList) toolStripMenuItemConPort.Items.Add(el);
+
+
+        }
+
     }
 }
