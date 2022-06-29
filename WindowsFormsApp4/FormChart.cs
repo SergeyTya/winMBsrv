@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Threading.Tasks;
+
 
 
 namespace WindowsFormsApp4
@@ -20,6 +22,23 @@ namespace WindowsFormsApp4
        "ДПР Мотор" ,"Температура мотора, С",  "ДПР Виртуальный" , "ДПР Физический" ,  "Регистр 14", "Регистр 15",
        "Регистр 16", "Регистр 17", " ", " ", "", ""};
 
+        private List<Points> ChartData = new List<Points>();
+        private double maxScan = 10;
+
+        private class Points
+        {
+
+            public double Time { get; set; }
+            public double Values { get; set; }
+
+            public Points(double time, double values)
+            { 
+                Time = time;
+                Values = values;
+            }
+        }
+
+        private bool resresh_enable = true;
         private int index = 0;
         public FormChart(int ind)
         {
@@ -45,7 +64,7 @@ namespace WindowsFormsApp4
             chart1.ChartAreas[0].CursorY.AutoScroll = true;
 
             chart1.Series[0].XValueType = ChartValueType.Auto;
-             chart1.Series[0].YValueType = ChartValueType.Auto;
+            // chart1.Series[0].YValueType = ChartValueType.Auto;
             //chart1.Series[0].XValueType = ChartValueType.Auto;
             //chart1.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Minutes;
             //chart1.ChartAreas[0].AxisX.IntervalAutoMode = IntervalAutoMode.FixedCount;
@@ -53,7 +72,7 @@ namespace WindowsFormsApp4
           //  chart1.ChartAreas[0].AxisX.Minimum = 0;
           //  chart1.ChartAreas[0].AxisX.Interval = 0.01;
             //art1.ChartAreas[0].AxisX.LabelStyle.Format = "mm:ss";
-            chart1.ChartAreas[0].AxisX.Maximum = 1000;
+           // chart1.ChartAreas[0].AxisX.Maximum = 1000;
             chart1.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.0}";
 
 
@@ -61,21 +80,59 @@ namespace WindowsFormsApp4
             ToolStripMenuItem clearMenuItem = new ToolStripMenuItem("Очистить");
             ToolStripMenuItem zoomMenuItem = new ToolStripMenuItem("Масштаб");
             ToolStripMenuItem PoinStyle = new ToolStripMenuItem("Тип графика");
+            ToolStripMenuItem ScaneMenuItem = new ToolStripMenuItem("Развертка");
 
             ToolStripMenuItem PoinStyle_Point = new ToolStripMenuItem("Точки");
             ToolStripMenuItem PoinStyle_Line = new ToolStripMenuItem("Линия");
 
-            contextMenuForChart.Items.AddRange(new[] { zoomMenuItem, clearMenuItem, PoinStyle });
+            ToolStripTextBox ScanToolStripTextBox = new ToolStripTextBox();
+
+
+            ScaneMenuItem.DropDownItems.Add(ScanToolStripTextBox);
+            ScanToolStripTextBox.KeyPress += new KeyPressEventHandler((s, e) =>
+            {
+                char num = e.KeyChar;
+                if (!Char.IsDigit(num) && num != 8) e.Handled = true;
+            });
+
+            ScanToolStripTextBox.TextChanged += new System.EventHandler((s, e) => {
+
+                double val = 10;
+                try
+                {
+                    val = Convert.ToDouble(ScanToolStripTextBox.Text);
+
+                    if (val < 0) return; 
+                    if (val < maxScan)
+                    {
+                        ChartData.Clear();
+                        time = 0;
+                    }
+                    maxScan = val;
+                }
+                catch (System.FormatException) { return; };
+                
+
+            });
+
+            ScaneMenuItem.DropDownOpening += new System.EventHandler((s, e) => {
+                ScanToolStripTextBox.Text = maxScan.ToString();
+            });
+
+
+           
             PoinStyle.DropDownItems.Add(PoinStyle_Point);
             PoinStyle.DropDownItems.Add(PoinStyle_Line);
 
-            chart1.ContextMenuStrip = contextMenuForChart;
-
             clearMenuItem.Click += new System.EventHandler((s, e) => {
-                foreach (Series el in chart1.Series) el.Points.Clear();
+               ChartData.Clear();
+               time = 0;
             }); 
-            zoomMenuItem.Click += new System.EventHandler((s, e) => {
+
+            zoomMenuItem.Click += new System.EventHandler((s, e) => 
+            {
                 chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+                chart1.ChartAreas[0].AxisY.ScaleView.ZoomReset();
             });
 
             PoinStyle_Point.Click += new System.EventHandler((s, e) =>
@@ -88,7 +145,8 @@ namespace WindowsFormsApp4
                 chart1.Series[0].ChartType = SeriesChartType.FastLine;
             });
 
-
+            contextMenuForChart.Items.AddRange(new[] { zoomMenuItem, clearMenuItem, PoinStyle, ScaneMenuItem });
+            chart1.ContextMenuStrip = contextMenuForChart;
 
             foreach (Series el in chart1.Series)
             {
@@ -101,6 +159,14 @@ namespace WindowsFormsApp4
                 this.Text = lables[ind];
             }
 
+            chart1.Series[0].XValueMember = "Time";
+            chart1.Series[0].YValueMembers = "Values";
+
+            chart1.DataSource = ChartData;
+
+            Task_FormRefreshAsync();
+
+
         }
 
         public string Label {
@@ -108,52 +174,37 @@ namespace WindowsFormsApp4
             set {label1.Text = value;}
         }
 
-        
+
+        private async void Task_FormRefreshAsync()
+        {
+
+            while (true)
+            {
+
+               if(resresh_enable) chart1.DataBind();
+
+                await Task.Delay(300);
+            }
+        }
+
         private double time = 0;
         private Stopwatch startTime = Stopwatch.StartNew();
 
-        public void AddPoint(float point) {
+        public void AddPoint(double point) {
 
-            // if (chart1 == null) return;
-            // DateTime baseDate = DateTime.Today;
-            //// var x = baseDate.AddSeconds((double)cnt);
-            // var x = DateTime.Now;
-            // try
-            // {
-            //     //this.chart1.Series[0].Points.AddXY(cnt, point);
-            //     this.chart1.Series[0].Points.Add(point);
-            //     cnt++;
-            // }
-            // catch (System.NullReferenceException) { Debug.WriteLine("oops"); };
-
-            // if (cnt >= chart1.ChartAreas[0].AxisX.Maximum)
-            // {
-            //     cnt = 0;
-            //     foreach (var sr in chart1.Series) sr.Points.Clear();
-            // }
-
-            double scale = 30;
+            
             if (chart1 == null) return;
             startTime.Stop();
             double timeStep = (double) startTime.ElapsedMilliseconds / 1000;
             startTime.Restart();
 
-            if (timeStep == 0) timeStep = 0.1;
+           // if (timeStep == 0) timeStep = 0.1;
             try
             {
                 
                 double xAxisMaximum = Math.Round(time, 1);
-                this.chart1.Series[0].Points.AddXY(time, point);
-
-                if (xAxisMaximum < scale) xAxisMaximum = scale;
-
-                if (this.chart1.Series[0].Points.Count > scale / timeStep) chart1.Series[0].Points.RemoveAt(0);
-
-                chart1.ChartAreas[0].AxisX.Maximum = xAxisMaximum;
-
-                if (chart1.Series.Count > 0 && chart1.Series[0].Points.Count > 0)
-                    chart1.ChartAreas[0].AxisX.Minimum = Math.Round(chart1.Series[0].Points[0].XValue, 1);
-
+                ChartData.Add(new Points(time, point));
+                if (ChartData.Count > (int)(maxScan / timeStep)) ChartData.RemoveAt(0);
                 time += timeStep;
             }
             catch (System.NullReferenceException) { Debug.WriteLine("oops"); };
@@ -186,7 +237,6 @@ namespace WindowsFormsApp4
             {
                 if (e.Delta < 0)
                 {
-                    ((Chart)sender).ChartAreas[0].AxisX.ScaleView.ZoomReset();
                     ((Chart)sender).ChartAreas[0].AxisY.ScaleView.ZoomReset();
                 }
 
@@ -207,6 +257,52 @@ namespace WindowsFormsApp4
         private void chart1_DoubleClick(object sender, EventArgs e)
         {
             
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_pause_Click(object sender, EventArgs e)
+        {
+            resresh_enable = !resresh_enable;
+            if (!resresh_enable) { btn_pause.BackColor = Color.Gray; } else { btn_pause.BackColor = Color.White; }
+        }
+
+        private void btn_rec_Click(object sender, EventArgs e)
+        {
+            List <Points> temp = ChartData;
+            List <double[]> data = new List<double[]>();
+
+            int key = 1;
+            foreach (Points el in temp)
+            {
+
+                data.Add(new double[] { el.Time,el.Values});
+            }
+
+            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel.Workbook wb = app.Workbooks.Add();
+            Microsoft.Office.Interop.Excel.Worksheet ws = (Microsoft.Office.Interop.Excel.Worksheet)wb.Worksheets[1];
+
+
+            //int key = 1;
+            //foreach (Points el in temp) {
+
+            //    ws.Cells[key, 1] = el.Time;
+            //    ws.Cells[key, 2] = el.Values;
+            //    ws.Cells.bi
+            //    key++;
+
+            //}
+
+            Microsoft.Office.Interop.Excel.Range rng = (Microsoft.Office.Interop.Excel.Range)ws.Range[ws.Cells[1, 1], ws.Cells[2, data.Count + 2]];
+            rng.Value = data.ToArray();
+
+
+            app.Visible = true;
+
         }
     }
 }

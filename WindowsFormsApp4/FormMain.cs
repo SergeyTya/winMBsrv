@@ -113,7 +113,7 @@ namespace WindowsFormsApp4
             public int Max { get; set; }
             public string Dimension { get; set; }
 
-            public int value
+            public int Value
             {
                 get { return 0; }
                 set
@@ -289,9 +289,11 @@ namespace WindowsFormsApp4
             Task_ConnecterAsync();
             Server.SlavePollAsync(10);
             Task_FormRefreshAsync();
-           
+
             //TStart_Scope();
             btn_Cnct_Click(new object(), new EventArgs());
+
+
 
         }
 
@@ -354,7 +356,7 @@ namespace WindowsFormsApp4
 
                });
 
-                await Task.Delay(10);
+                await Task.Delay(50);
             }
         }
 
@@ -543,7 +545,7 @@ namespace WindowsFormsApp4
 
             foreach (var el in IrIndicList)
             {
-                el.value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
+                el.Value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
             }
 
 
@@ -716,7 +718,7 @@ namespace WindowsFormsApp4
 
             // обновляю статус бар
             tsStatus.Text = Server.spPort.PortName + " " + Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
-            timeStepInd.value = (int)(timeStep * 1000);
+            timeStepInd.Value = (int)(timeStep * 1000);
 
 
         }
@@ -1030,7 +1032,7 @@ namespace WindowsFormsApp4
                     bool tmp = Server.blDevCnctd;
                     Server.vReset();
                     if (bloader != null) bloader.Reset();
-                    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
+                    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++;} else { spdpos++; }
                     if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
                     {
                         spdpos = 0;

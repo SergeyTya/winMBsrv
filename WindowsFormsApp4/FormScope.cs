@@ -121,9 +121,21 @@ namespace WindowsFormsApp4
                             chart1.Series[i].Enabled = lsaRbEnbl1[i].Checked;
                             chart2.Series[i].Enabled = lsaRbEnbl2[i].Checked;
 
+                            double offset = 0; double gain = 1;
 
-                           if(!checkBoxPause1.Checked) chart1.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i));
-                           if(!checkBoxPause2.Checked) chart2.Series[i].Points.DataBindXY(Server.circbuf.Time, Server.circbuf.GetChnlData(i)); 
+                            try
+                            {
+                                offset = Convert.ToDouble(tbaOffset[i].Text);
+                                gain = Convert.ToDouble(tbaGain[i].Text);
+                            }
+                            catch (Exception e) { };
+
+                            if (!checkBoxPause1.Checked) chart1.Series[i].Points.DataBindXY(Server.circbuf.Time,
+                               Server.circbuf.GetChnlData(i).Select(x=> x * gain).Select(x=> x + offset).ToList()
+                               );
+                           if(!checkBoxPause2.Checked) chart2.Series[i].Points.DataBindXY(Server.circbuf.Time,
+                               Server.circbuf.GetChnlData(i).Select(x => x * gain).Select(x => x + offset).ToList()
+                               ); 
 
                         }
                         else
@@ -409,6 +421,11 @@ namespace WindowsFormsApp4
         }
 
         private void FormScope_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel6_Paint(object sender, PaintEventArgs e)
         {
 
         }
