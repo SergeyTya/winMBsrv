@@ -29,23 +29,22 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series16 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemConSpd = new System.Windows.Forms.ToolStripComboBox();
-            this.скоростьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbState = new System.Windows.Forms.TextBox();
@@ -62,8 +61,8 @@
             this.ToolStripMenuItemConAuto = new System.Windows.Forms.ToolStripMenuItem();
             this.портToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemConPort = new System.Windows.Forms.ToolStripComboBox();
+            this.скоростьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.адресToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox_adr = new System.Windows.Forms.ToolStripTextBox();
             this.периодОпросаМсToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_RefTime = new System.Windows.Forms.ToolStripComboBox();
             this.MenuItem_Param = new System.Windows.Forms.ToolStripMenuItem();
@@ -114,6 +113,7 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel_IR = new System.Windows.Forms.TableLayoutPanel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.toolStripTextBox_adr = new System.Windows.Forms.ToolStripTextBox();
             this.contextMenuForChart.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -152,13 +152,6 @@
             this.toolStripMenuItemConSpd.Name = "toolStripMenuItemConSpd";
             this.toolStripMenuItemConSpd.Size = new System.Drawing.Size(180, 23);
             this.toolStripMenuItemConSpd.Text = "...";
-            // 
-            // скоростьToolStripMenuItem
-            // 
-            this.скоростьToolStripMenuItem.DropDown = this.contextMenuForChart;
-            this.скоростьToolStripMenuItem.Name = "скоростьToolStripMenuItem";
-            this.скоростьToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.скоростьToolStripMenuItem.Text = "Скорость";
             // 
             // statusStrip1
             // 
@@ -288,7 +281,7 @@
             // ToolStripMenuItem_Connect
             // 
             this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
-            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(162, 26);
+            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(182, 26);
             this.ToolStripMenuItem_Connect.Text = "Соединить";
             this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
             // 
@@ -301,7 +294,7 @@
             this.адресToolStripMenuItem1,
             this.периодОпросаМсToolStripMenuItem});
             this.ParamToolStripMenuItem.Name = "ParamToolStripMenuItem";
-            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(162, 26);
+            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
             this.ParamToolStripMenuItem.Text = "Параметры";
             // 
             // ToolStripMenuItemConAuto
@@ -328,6 +321,13 @@
             this.toolStripMenuItemConPort.Text = "...";
             this.toolStripMenuItemConPort.DropDown += new System.EventHandler(this.toolStripMenuItem3_DropDown);
             // 
+            // скоростьToolStripMenuItem
+            // 
+            this.скоростьToolStripMenuItem.DropDown = this.contextMenuForChart;
+            this.скоростьToolStripMenuItem.Name = "скоростьToolStripMenuItem";
+            this.скоростьToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
+            this.скоростьToolStripMenuItem.Text = "Скорость";
+            // 
             // адресToolStripMenuItem1
             // 
             this.адресToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -335,15 +335,6 @@
             this.адресToolStripMenuItem1.Name = "адресToolStripMenuItem1";
             this.адресToolStripMenuItem1.Size = new System.Drawing.Size(215, 26);
             this.адресToolStripMenuItem1.Text = "Адрес";
-            // 
-            // toolStripTextBox_adr
-            // 
-            this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
-            this.toolStripTextBox_adr.Size = new System.Drawing.Size(152, 23);
-            this.toolStripTextBox_adr.Text = "1";
-            this.toolStripTextBox_adr.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolStripTextBox_adr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox_adr_KeyPress);
-            this.toolStripTextBox_adr.TextChanged += new System.EventHandler(this.txtBox_ModbusAdr_TextChanged);
             // 
             // периодОпросаМсToolStripMenuItem
             // 
@@ -638,9 +629,9 @@
             // adr
             // 
             this.adr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.adr.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.adr.DefaultCellStyle = dataGridViewCellStyle13;
             this.adr.FillWeight = 60F;
             this.adr.HeaderText = "Адрес";
             this.adr.Name = "adr";
@@ -650,8 +641,8 @@
             // name
             // 
             this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.name.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.name.DefaultCellStyle = dataGridViewCellStyle14;
             this.name.HeaderText = "Параметр";
             this.name.Name = "name";
             this.name.Width = 99;
@@ -659,8 +650,8 @@
             // value
             // 
             this.value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.value.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.value.DefaultCellStyle = dataGridViewCellStyle15;
             this.value.HeaderText = "Значение";
             this.value.Name = "value";
             this.value.Width = 98;
@@ -674,8 +665,8 @@
             // 
             // read
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.read.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.read.DefaultCellStyle = dataGridViewCellStyle16;
             this.read.HeaderText = "";
             this.read.Name = "read";
             this.read.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -743,8 +734,8 @@
             // 
             // Ivalue
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ivalue.DefaultCellStyle = dataGridViewCellStyle17;
             this.Ivalue.DividerWidth = 10;
             this.Ivalue.HeaderText = "";
             this.Ivalue.Name = "Ivalue";
@@ -758,8 +749,8 @@
             // 
             // Ovalue
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Ovalue.DefaultCellStyle = dataGridViewCellStyle18;
             this.Ovalue.HeaderText = "";
             this.Ovalue.Name = "Ovalue";
             this.Ovalue.ReadOnly = true;
@@ -824,38 +815,38 @@
             // 
             // chart1
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chart1.Legends.Add(legend3);
             this.chart1.Location = new System.Drawing.Point(0, 0);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "Series2";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series3";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series4";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series5";
-            series6.ChartArea = "ChartArea1";
-            series6.Legend = "Legend1";
-            series6.Name = "Series6";
-            this.chart1.Series.Add(series1);
-            this.chart1.Series.Add(series2);
-            this.chart1.Series.Add(series3);
-            this.chart1.Series.Add(series4);
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
+            series13.ChartArea = "ChartArea1";
+            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series13.Legend = "Legend1";
+            series13.Name = "Series1";
+            series14.ChartArea = "ChartArea1";
+            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series14.Legend = "Legend1";
+            series14.Name = "Series2";
+            series15.ChartArea = "ChartArea1";
+            series15.Legend = "Legend1";
+            series15.Name = "Series3";
+            series16.ChartArea = "ChartArea1";
+            series16.Legend = "Legend1";
+            series16.Name = "Series4";
+            series17.ChartArea = "ChartArea1";
+            series17.Legend = "Legend1";
+            series17.Name = "Series5";
+            series18.ChartArea = "ChartArea1";
+            series18.Legend = "Legend1";
+            series18.Name = "Series6";
+            this.chart1.Series.Add(series13);
+            this.chart1.Series.Add(series14);
+            this.chart1.Series.Add(series15);
+            this.chart1.Series.Add(series16);
+            this.chart1.Series.Add(series17);
+            this.chart1.Series.Add(series18);
             this.chart1.Size = new System.Drawing.Size(676, 400);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
@@ -904,6 +895,15 @@
             this.tableLayoutPanel_IR.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 529);
             this.tableLayoutPanel_IR.TabIndex = 35;
+            // 
+            // toolStripTextBox_adr
+            // 
+            this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
+            this.toolStripTextBox_adr.Size = new System.Drawing.Size(152, 23);
+            this.toolStripTextBox_adr.Text = "1";
+            this.toolStripTextBox_adr.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolStripTextBox_adr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox_adr_KeyPress);
+            this.toolStripTextBox_adr.TextChanged += new System.EventHandler(this.txtBox_ModbusAdr_TextChanged);
             // 
             // FormMain
             // 
