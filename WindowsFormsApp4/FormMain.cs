@@ -286,12 +286,37 @@ namespace WindowsFormsApp4
             toolStripMenuItem3_DropDown(new object(), new EventArgs());
             toolStripMenuItemConPort.SelectedIndex = 0;
 
-            Task_ConnecterAsync();
-            Server.SlavePollAsync(10);
-            Task_FormRefreshAsync();
-           
+            // Task_ConnecterAsync();
+            // Server.SlavePollAsync(10);
+            // Task_FormRefreshAsync();
+
             //TStart_Scope();
-            btn_Cnct_Click(new object(), new EventArgs());
+            //btn_Cnct_Click(new object(), new EventArgs());
+
+
+
+            OpenFileDialog openFileDialog2 = new OpenFileDialog();
+            openFileDialog2.Filter = "Файл прошивки|*.hex";
+            if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
+                return;
+            // получаем выбранный файл
+            string filename = openFileDialog2.FileName;
+
+            UnitTestProject1.Hexrader hex = new UnitTestProject1.Hexrader(filename);
+            hex.Read();
+
+            Server.spPort.BaudRate = 115200;
+            Server.spPort.PortName = "COM3";
+            Server.spPort.Parity = Parity.None;
+            Server.spPort.DataBits = 8;
+            Server.spPort.ReadTimeout = 500;
+            Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
+            Server.spPort.Open();
+            UnitTestProject1.Com_Reader com_reader = new UnitTestProject1.Com_Reader(Server.spPort, 1);
+            com_reader.setRequstedSize(hex.image.Count);
+            com_reader.Read();
+
+            com_reader.Compare(hex.image.ToArray(), hex.image.Count);
 
         }
 
