@@ -96,6 +96,12 @@
       <DependentUpon>AdrSelForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Bootloader.cs" />
+    <Compile Include="loaderutils\crc.cs" />
+    <Compile Include="loaderutils\ISerialPort.cs" />
+    <Compile Include="loaderutils\win_port.cs" />
+    <Compile Include="loaderutils\com_reader.cs" />
+    <Compile Include="loaderutils\hexrader.cs" />
+    <Compile Include="loaderutils\Iimagereader.cs" />
     <Compile Include="ScopeFrameReader.cs" />
     <Compile Include="modbus.cs" />
     <Compile Include="Complex.cs" />
@@ -239,5 +245,6 @@
   <ItemGroup>
     <None Include="Resources\478-4784804_signal-generator-comments-fast-forward-icon-white.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
