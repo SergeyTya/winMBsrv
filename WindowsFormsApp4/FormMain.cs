@@ -1340,29 +1340,26 @@ namespace WindowsFormsApp4
         private void MenuItem_Loader_Verify_Click(object sender, EventArgs e)
         {
 
-            if (!Server.spPort.IsOpen) return;
-            if ((Server.uiInputReg[2] & 0xFF00) == 0x0300) return;
-            bloader = new Bootloader(Server.spPort);
+            string pname = Server.spPort.PortName;
+            int pspeed = Server.spPort.BaudRate;
+            int dadr = Server.btDevAdr;
+            string dst = pname +"," + pspeed+","+dadr;
 
-            if (bloader.ProcBisy) return;
+            if (Server.spPort.IsOpen) {
+                btn_Cnct_Click(sender,e);
+            }
 
             tabForm.SelectTab(3);
 
-            Server.suspend = true;
-            Server.blUpdGridHR = false;
-            if (bloader.GetLoader())
-            {
-                tbState.Text = "Режим загрузчика";
-
-                bloader.FOpen();
-
-                Thread Tloader = new Thread(bloader.threadVeryfi);
-                Tloader.Start();
+            OpenFileDialog openFileDialog2 = new OpenFileDialog();
+            openFileDialog2.Filter = "Файл прошивки|*.hex";
+            if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
-            }
+            // получаем выбранный файл
+            string filename = openFileDialog2.FileName;
 
-            Server.suspend = false;
-            Server.blUpdGridHR = true;
+            LoaderUtilsAdapter.LoaderUtilsAdapter.SetOutput(txtBoxLog);
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Compare(filename, dst);
 
         }
 
