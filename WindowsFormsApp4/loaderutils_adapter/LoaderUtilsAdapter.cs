@@ -10,7 +10,6 @@ namespace LoaderUtilsAdapter
 {
     static class LoaderUtilsAdapter
     {
-
         static Process console = null;
         static StreamWriter consoleStreamWriter = null;
         delegate void UpdateConsoleWindowDelegate(String msg);
@@ -20,7 +19,15 @@ namespace LoaderUtilsAdapter
         {
             if (!String.IsNullOrEmpty(recieved.Data))
             {
-                UpdateConsoleWindow(recieved.Data + "\r\n");
+                UpdateConsoleWindow("   "+recieved.Data + Environment.NewLine);
+            }
+        }
+
+        private static void ConsoleErrorHandler(object sendingProcess, DataReceivedEventArgs recieved)
+        {
+            if (!String.IsNullOrEmpty(recieved.Data))
+            {
+                UpdateConsoleWindow(Environment.NewLine+ recieved.Data + Environment.NewLine + Environment.NewLine);
             }
         }
 
@@ -38,16 +45,16 @@ namespace LoaderUtilsAdapter
             }
         }
 
-        private static bool IsRunning(this Process process)
+        public static bool IsRunning()
         {
-            if (process == null)
+            if (console == null)
                 return false;
 
             try
             {
-                Process.GetProcessById(process.Id);
+                Process.GetProcessById(console.Id);
             }
-            catch (ArgumentException)
+            catch (Exception)
             {
                 return false;
             }
@@ -55,20 +62,29 @@ namespace LoaderUtilsAdapter
             return true;
         }
 
-        private static void exec_cmd(string name, string arg) {
-            if (IsRunning(console)) return;
-            UpdateConsoleWindow(name+"\r\n");
+        private static void exec_cmd( string arg) {
+            if (IsRunning()) return;
+            UpdateConsoleWindow(Environment.NewLine);
             console = new Process();
             console.StartInfo.FileName = "loader_util.exe";
             console.StartInfo.UseShellExecute = false;
             console.StartInfo.CreateNoWindow = true;
             console.StartInfo.RedirectStandardInput = true;
             console.StartInfo.RedirectStandardOutput = true;
+            console.StartInfo.RedirectStandardError = true;
             console.OutputDataReceived += new DataReceivedEventHandler(ConsoleOutputHandler);
+            console.ErrorDataReceived += new DataReceivedEventHandler(ConsoleErrorHandler);
             console.StartInfo.Arguments = arg;
-            console.Start();
-            consoleStreamWriter = console.StandardInput;
-            console.BeginOutputReadLine();
+            try {
+                console.Start();
+                consoleStreamWriter = console.StandardInput;
+                console.BeginOutputReadLine();
+                console.BeginErrorReadLine();
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                UpdateConsoleWindow("Файл loaderutil.exe отсутсвует!");
+            }
         }
 
         public static void SetOutput(System.Windows.Forms.TextBox tb) {
@@ -76,29 +92,39 @@ namespace LoaderUtilsAdapter
         }
 
         public static void Version() {
-            exec_cmd("Loader_utils", "-v");
+            exec_cmd( "-v");
         }
 
         public static void Help() {
-            exec_cmd("Help", "-?");
+            exec_cmd( "-?");
         }
 
         public static void Write(string src, string dst)
         {
             string arg = "-w " + src + " " + dst;
-            exec_cmd("Прошиваю:", arg);
+            exec_cmd( arg);
         }
 
         public static void Compare(string src, string dst)
         {
             string arg = "-c " + src + " " + dst;
-            exec_cmd("Сравниваю:", arg);
+            exec_cmd( arg);
         }
 
-        public static void Reset(string dst)
+        public static void ResetMCU(string dst)
         {
             string arg = "-r " + dst;
-            exec_cmd("Сброс.", "-?");
+            exec_cmd(arg);
+        }
+
+        public static void Abort()
+        {
+            if (IsRunning()) {
+                console.Kill();
+                UpdateConsoleWindow("Отмена!");
+            }
+
         }
     }
 }
+

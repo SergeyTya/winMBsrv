@@ -7,7 +7,7 @@
     <ProjectGuid>{CA644E81-F031-4DB0-B70F-7C790AEABF7C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>WindowsFormsApp4</RootNamespace>
-    <AssemblyName>WindowsFormsApp4</AssemblyName>
+    <AssemblyName>Server_MPCH</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -102,6 +102,7 @@
     <Compile Include="loaderutils\com_reader.cs" />
     <Compile Include="loaderutils\hexrader.cs" />
     <Compile Include="loaderutils\Iimagereader.cs" />
+    <Compile Include="loaderutils_adapter\LoaderUtilsAdapter.cs" />
     <Compile Include="ScopeFrameReader.cs" />
     <Compile Include="modbus.cs" />
     <Compile Include="Complex.cs" />
