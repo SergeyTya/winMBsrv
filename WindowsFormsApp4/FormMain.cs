@@ -1311,7 +1311,7 @@ namespace WindowsFormsApp4
             if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
 
-            string filename = openFileDialog2.FileName;
+           string filename = "\"" + openFileDialog2.FileName + "\"";
 
             if (Server.spPort.IsOpen)
             {
@@ -1349,7 +1349,7 @@ namespace WindowsFormsApp4
             if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
 
-            string filename = openFileDialog2.FileName;
+            string filename = "\"" + openFileDialog2.FileName + "\"";
 
             if (Server.spPort.IsOpen) {
                 pname = Server.spPort.PortName;
@@ -1427,7 +1427,7 @@ namespace WindowsFormsApp4
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
             // получаем выбранный файл
-            string filename = openFileDialog1.FileName;
+            string filename = "\"" + openFileDialog1.FileName+ "\"";
 
             try
             {
