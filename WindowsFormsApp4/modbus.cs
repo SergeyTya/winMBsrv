@@ -185,7 +185,7 @@ namespace WindowsFormsApp4
             string mes = null;
             if (!blDevCnctd)
             {
-                Debug.WriteLine("modbus.cs 188: Device is not connected");
+                Debug.WriteLine("Device is not connected");
 
                 logger.Add("Поиск: " + btDevAdr.ToString()+"-"+ spPort.PortName+"-"+ spPort.BaudRate);
 
@@ -197,23 +197,23 @@ namespace WindowsFormsApp4
                     Thread.Sleep(100);
                     mes = spPort.ReadExisting();
                 }
-                catch (Exception e) { Debug.WriteLine("modbus.cs 200: сбой" + e.ToString()); };
+                catch (Exception e) { Debug.WriteLine("сбой" + e.ToString()); };
 
                 if (String.IsNullOrEmpty(mes))
                 {
-                    Debug.WriteLine("modbus.cs 204: Нет ответа" + mes);
+                    Debug.WriteLine("Нет ответа 1 " + mes);
                     return;
                 }
 
                 if (mes.Length<2)
                 {
-                    Debug.WriteLine("modbus.cs 210: Нет ответа" + mes);
+                    Debug.WriteLine("Нет ответа 2 " + mes);
                     return;
                 }
 
                 if ((byte)mes.ToCharArray()[1] != 0x2b)
                 {
-                    Debug.WriteLine("modbus.cs 216: Нет ответа");
+                    Debug.WriteLine("Нет ответа 3");
                     return;
                 }
                 if (mes.Length > 43)
@@ -225,11 +225,11 @@ namespace WindowsFormsApp4
                 logger.Add(strDevID);
  
                 Thread.Sleep(100);
-                if ( intReadData(btDevAdr, 0, 10, comand.RD_INPUT) < 0) iFail++;
+                if ( intReadData(0, 3, comand.RD_INPUT) < 0) iFail++;
                 Thread.Sleep(100);
                 if (this.uiInputReg[0] == 0 || this.uiInputReg[0] > 255 || this.uiInputReg[0] == 0 || this.uiInputReg[1] > 255)
                 {
-                    logger.Add("modbus.cs 232: Неверное количество регистров ");
+                    logger.Add("Неверное количество регистров устройства");
                     iFail++;
                     return; };
 
@@ -265,7 +265,7 @@ namespace WindowsFormsApp4
                             int min = uilHRadrForRead.Min();
                             if (max >= uiInputReg[1]) max = uiInputReg[1];
                             int len = max - min;
-                            if ( intReadData(btDevAdr, (ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
+                            if ( intReadData((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
                             blUpdGridHR = true;
                             uilHRadrForRead.Clear();
                         }
@@ -275,7 +275,7 @@ namespace WindowsFormsApp4
                         {
                             if (uilHRadrForRead[0] > uiInputReg[1] - 1) uilHRadrForRead[0] = (ushort)(uiInputReg[1] - 1);
 
-                            if ( intReadData(btDevAdr, uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
+                            if ( intReadData(uilHRadrForRead[0], 1, comand.RD_HOLDING) < 0) iFail++;
                             uilHRadrForRead.RemoveAt(0);
                             if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
                             blUpdGridHR = true;
@@ -288,7 +288,7 @@ namespace WindowsFormsApp4
                         {
                              if (uialHRForWrite.Count != 0) if (uialHRForWrite[0].Length == 2)
                                 {
-                                    iWriteData(btDevAdr, uialHRForWrite[0][0], uialHRForWrite[0][1]);
+                                    iWriteData(uialHRForWrite[0][0], uialHRForWrite[0][1]);
                                     uialHRForWrite.RemoveAt(0);
                                     if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
                                 }
@@ -305,7 +305,7 @@ namespace WindowsFormsApp4
                                 ushort tempAdrForWrite = 0;
                                 while (uialHRForWrite.Count > 0 && uialHRForWrite[0].Length == 1)
                                 {
-                                    iWriteData(btDevAdr, tempAdrForWrite, uialHRForWrite[0][0]);
+                                    iWriteData(tempAdrForWrite, uialHRForWrite[0][0]);
                                     tempAdrForWrite++;
                                     uialHRForWrite.RemoveAt(0);
 
@@ -376,14 +376,14 @@ namespace WindowsFormsApp4
                     }
                     else
                     {
-                        if (intReadData(btDevAdr, 0, 3, comand.RD_INPUT) < 0 ) iFail++;
+                        if (intReadData(0, 3, comand.RD_INPUT) < 0 ) iFail++;
                     };
                 }
 
                 Task inputs = Task.Run(() =>
                      {
                          if (spPort.IsOpen & blDevCnctd & blReadIRreq)
-                             if (intReadData(btDevAdr, 0, uiInputReg[0], comand.RD_INPUT) < 0)
+                             if (intReadData(0, uiInputReg[0], comand.RD_INPUT) < 0)
                              {
                                  for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
                                  iFail++;
@@ -402,7 +402,7 @@ namespace WindowsFormsApp4
 
         }
 
-        int intReadData(byte slaveAdr , UInt16 adr, UInt16 count, comand cmd)
+        int intReadData(UInt16 adr, UInt16 count, comand cmd)
         {
 
             try
@@ -410,7 +410,7 @@ namespace WindowsFormsApp4
                 ushort[] temp;
                 if (cmd == comand.RD_HOLDING)
                 {
-                    temp = master.ReadHoldingRegisters(slaveAdr, adr, count); ;
+                    temp = master.ReadHoldingRegisters(1, adr, count);
                     //temp =master.ReadHoldingRegistersAsync(1, adr, count);
                     int i = 0;
                     foreach (var el in temp)
@@ -425,7 +425,7 @@ namespace WindowsFormsApp4
                 {
 
                     //temp = master.ReadInputRegistersAsync(1, adr, count);
-                    temp = master.ReadInputRegisters(slaveAdr, adr, count); 
+                    temp = master.ReadInputRegisters(1, adr, count); 
                     int i = 0;
                     foreach (var el in temp)
                     {
@@ -446,12 +446,12 @@ namespace WindowsFormsApp4
 
         }
 
-        int iWriteData  (byte slaveAdr, UInt16 adr, UInt16 data)
+        int iWriteData  (UInt16 adr, UInt16 data)
         {
 
             try
             {
-                master.WriteSingleRegisterAsync(slaveAdr, adr, data);
+                master.WriteSingleRegisterAsync(1, adr, data);
                 uilHRadrForRead.Add(adr);
             }
             catch (Exception e){
@@ -463,12 +463,12 @@ namespace WindowsFormsApp4
 
 
             //write multiply register
-        unsafe int iWriteData(byte slaveAdr, UInt16 adrW, List<ushort> data)
+        unsafe int iWriteData(UInt16 adrW, List<ushort> data)
         {
             try
             {
                 //master.WriteMultipleRegisters(1, adrW, data.ToArray());
-                master.WriteMultipleRegistersAsync(slaveAdr, adrW, data.ToArray());
+                master.WriteMultipleRegistersAsync(1, adrW, data.ToArray());
                 uilHRadrForRead.Add(0);
                 uilHRadrForRead.Add(256);
             }
@@ -531,14 +531,14 @@ namespace WindowsFormsApp4
                 size = spPort.BytesToRead;
                 buff = new byte[size];
                 try { spPort.Read(buff, 0, size); }
-                catch (TimeoutException ex) { logger.Add("modbus.cs 534: Нет Ответа"); return -1; };
+                catch (TimeoutException ex) { logger.Add("Нет Ответа"); return -1; };
             }
-            catch (Exception ex) { logger.Add("modbus.cs 536: Ошибка записи в порт"); return -1; };
+            catch (Exception ex) { logger.Add("Ошибка записи в порт"); return -1; };
            
 
             if (size < 5) {
               //  Debug.WriteLine("no answer");
-                logger.Add("modbus.cs 541: Нет ответа"); return -1;
+                logger.Add("Нет ответа"); return -1;
 
             }
             //Debug.WriteLine("Get data " + size);

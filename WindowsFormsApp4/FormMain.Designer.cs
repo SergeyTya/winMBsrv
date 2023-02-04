@@ -288,7 +288,7 @@
             // ToolStripMenuItem_Connect
             // 
             this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
-            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(162, 26);
+            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(180, 26);
             this.ToolStripMenuItem_Connect.Text = "Соединить";
             this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
             // 
@@ -301,7 +301,7 @@
             this.адресToolStripMenuItem1,
             this.периодОпросаМсToolStripMenuItem});
             this.ParamToolStripMenuItem.Name = "ParamToolStripMenuItem";
-            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(162, 26);
+            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
             this.ParamToolStripMenuItem.Text = "Параметры";
             // 
             // ToolStripMenuItemConAuto

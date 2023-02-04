@@ -113,7 +113,7 @@ namespace WindowsFormsApp4
             public int Max { get; set; }
             public string Dimension { get; set; }
 
-            public int Value
+            public int value
             {
                 get { return 0; }
                 set
@@ -284,7 +284,11 @@ namespace WindowsFormsApp4
 
             toolStripMenuItemConSpd.SelectedIndex = 0;
             toolStripMenuItem3_DropDown(new object(), new EventArgs());
-            toolStripMenuItemConPort.SelectedIndex = 0;
+
+            if (toolStripMenuItemConPort.Items.Count > 0)
+            {
+                toolStripMenuItemConPort.SelectedIndex = 0;
+            }
 
             Task_ConnecterAsync();
             Server.SlavePollAsync(10);
@@ -292,8 +296,6 @@ namespace WindowsFormsApp4
 
             //TStart_Scope();
             btn_Cnct_Click(new object(), new EventArgs());
-
-
 
         }
 
@@ -356,7 +358,7 @@ namespace WindowsFormsApp4
 
                });
 
-                await Task.Delay(50);
+                await Task.Delay(10);
             }
         }
 
@@ -545,7 +547,7 @@ namespace WindowsFormsApp4
 
             foreach (var el in IrIndicList)
             {
-                el.Value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
+                el.value = ((Int16)Server.uiInputReg[IrIndicList.IndexOf(el) + 3]);
             }
 
 
@@ -718,7 +720,7 @@ namespace WindowsFormsApp4
 
             // обновляю статус бар
             tsStatus.Text = Server.spPort.PortName + " " + Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
-            timeStepInd.Value = (int)(timeStep * 1000);
+            timeStepInd.value = (int)(timeStep * 1000);
 
 
         }
@@ -1032,7 +1034,7 @@ namespace WindowsFormsApp4
                     bool tmp = Server.blDevCnctd;
                     Server.vReset();
                     if (bloader != null) bloader.Reset();
-                    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++;} else { spdpos++; }
+                    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
                     if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
                     {
                         spdpos = 0;
@@ -1053,9 +1055,18 @@ namespace WindowsFormsApp4
                     if (ind >= 0) ports.RemoveAt(ind);
                 }
 
-                if (ports.Count == 0) { Debug.WriteLine("No port found"); return; }
+                if (ports.Count == 0) {
+                    Debug.WriteLine("No port found");
+                    return;
+                }
 
                 Server.spPort.BaudRate = bds[spdpos];
+                if (ports.Count <= portpos) {
+                    ports.Clear();
+                    bs_flg = false;
+                    portpos = 0;
+                    return;
+                }
                 Server.spPort.PortName = ports[portpos];
                 Server.spPort.Parity = Parity.None;
                 Server.spPort.DataBits = 8;
@@ -1093,7 +1104,7 @@ namespace WindowsFormsApp4
                 Server.vReset();
                 ToolStripMenuItem_Connect.Text = "Отключить";
                 bs_flg = false;
-                Server.logger.Add(ports[portpos].ToString() + " ошибка доступа xxx");
+                Server.logger.Add(ports[portpos].ToString() + " ошибка доступа");
                 broken_ports.Add(ports[portpos].ToString());
                 if (ToolStripMenuItemConAuto.Checked)  goto con_start;
             };
@@ -1288,83 +1299,99 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Loader_Flash_Click(object sender, EventArgs e)
         {
-            if (!Server.spPort.IsOpen) return;
-            if ((Server.uiInputReg[2] & 0xFF00) == 0x0300) return;
-            bloader = new Bootloader(Server.spPort);
+            if (toolStripMenuItemConSpd.SelectedItem == null) return;
 
-            if (bloader.ProcBisy) return;
+            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
+            int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
+            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
 
-            tabForm.SelectTab(3);
-
-            Server.suspend = true;
-            Server.blUpdGridHR = false;
-            if (bloader.GetLoader())
-            {
-                tbState.Text = "Режим загрузчика";
-
-
-                bloader.FOpen();
-
-                Thread Tloader = new Thread(bloader.threadProgram);
-                Tloader.Start();
+            // получаем выбранный файл
+            OpenFileDialog openFileDialog2 = new OpenFileDialog();
+            openFileDialog2.Filter = "Файл прошивки|*.hex";
+            if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
+
+           string filename = "\"" + openFileDialog2.FileName + "\"";
+
+            if (Server.spPort.IsOpen)
+            {
+                pname = Server.spPort.PortName;
+                pspeed = Server.spPort.BaudRate;
+                dadr = Server.btDevAdr;
+                btn_Cnct_Click(sender, e);
             }
 
-            Server.suspend = false;
-            Server.blUpdGridHR = true;
+            string dst = pname + "," + pspeed + "," + dadr;
+
+            tabForm.SelectTab(3);
+            if (Server.logger.Count != 0)
+            {
+                Server.logger.Clear();
+            }
+
+            LoaderUtilsAdapter.LoaderUtilsAdapter.SetOutput(txtBoxLog);
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Version();
+            while (LoaderUtilsAdapter.LoaderUtilsAdapter.IsRunning()) ;
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Write(filename, dst);
         }
 
         private void MenuItem_Loader_Verify_Click(object sender, EventArgs e)
         {
+            if (toolStripMenuItemConSpd.SelectedItem == null) return;
 
-            if (!Server.spPort.IsOpen) return;
-            if ((Server.uiInputReg[2] & 0xFF00) == 0x0300) return;
-            bloader = new Bootloader(Server.spPort);
+            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
+            int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
+            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
 
-            if (bloader.ProcBisy) return;
-
-            tabForm.SelectTab(3);
-
-            Server.suspend = true;
-            Server.blUpdGridHR = false;
-            if (bloader.GetLoader())
-            {
-                tbState.Text = "Режим загрузчика";
-
-                bloader.FOpen();
-
-                Thread Tloader = new Thread(bloader.threadVeryfi);
-                Tloader.Start();
+            // получаем выбранный файл
+            OpenFileDialog openFileDialog2 = new OpenFileDialog();
+            openFileDialog2.Filter = "Файл прошивки|*.hex";
+            if (openFileDialog2.ShowDialog() == DialogResult.Cancel)
                 return;
+
+            string filename = "\"" + openFileDialog2.FileName + "\"";
+
+            if (Server.spPort.IsOpen) {
+                pname = Server.spPort.PortName;
+                pspeed = Server.spPort.BaudRate;
+                dadr = Server.btDevAdr;
+                btn_Cnct_Click(sender,e);
             }
 
-            Server.suspend = false;
-            Server.blUpdGridHR = true;
+            string dst = pname + "," + pspeed + "," + dadr;
+
+            tabForm.SelectTab(3);
+            if (Server.logger.Count != 0) {
+                Server.logger.Clear();
+            }
+
+            LoaderUtilsAdapter.LoaderUtilsAdapter.SetOutput(txtBoxLog);
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Version();
+            while (LoaderUtilsAdapter.LoaderUtilsAdapter.IsRunning());
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Compare(filename, dst);
 
         }
 
         private void MenuItem_Loader_Reset_Click(object sender, EventArgs e)
         {
-            if (bloader == null) return;
-            if (!bloader.devconected) return;
-
-            if (!bloader.port.IsOpen) { bloader.logger.Add(new string[] { "Ошибка открытия порта" }); return; }
-            bloader.port.Write("R");
-            System.Threading.Thread.Sleep(100);
-            if (bloader.port.ReadExisting() == "R")
-            {
-                bloader.logger.Add(new string[] { "Перезагрузка ... ок" });
-                this.btn_Cnct_Click(this, null);
-                this.btn_Cnct_Click(this, null);
-                return;
-            }
-            bloader.logger.Add(new string[] { "нет ответа" });
+            if (toolStripMenuItemConSpd.SelectedItem == null) return;
+            if (Server.spPort.IsOpen) { return; }
+            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
+            int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
+            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
+            string dst = pname + "," + pspeed + "," + dadr;
+            tabForm.SelectTab(3);
+            LoaderUtilsAdapter.LoaderUtilsAdapter.SetOutput(txtBoxLog);
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Version();
+            while (LoaderUtilsAdapter.LoaderUtilsAdapter.IsRunning()) ;
+            LoaderUtilsAdapter.LoaderUtilsAdapter.ResetMCU(dst);
         }
 
         private void MenuItem_Loader_Stop_Click(object sender, EventArgs e)
         {
-            if (bloader == null) return;
-            if (bloader.ProcBisy) bloader.ChnlReq = true;
+            if (Server.spPort.IsOpen) { return; }
+            LoaderUtilsAdapter.LoaderUtilsAdapter.Abort();
+
         }
 
         private void MenuItem_Scope_Start_Click(object sender, EventArgs e)
@@ -1400,7 +1427,7 @@ namespace WindowsFormsApp4
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
             // получаем выбранный файл
-            string filename = openFileDialog1.FileName;
+            string filename = "\"" + openFileDialog1.FileName+ "\"";
 
             try
             {
