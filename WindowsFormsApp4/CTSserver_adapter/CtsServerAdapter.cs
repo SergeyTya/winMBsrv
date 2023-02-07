@@ -12,28 +12,39 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ctsServerAdapter
 {
-    public class CtsServerAdapter
+    public static class CtsServerAdapter
     {
-        ConsoleTask task;
-        string host = "localhost";
-        int port = 8888;
-        System.Windows.Forms.TextBox tb = new TextBox();
+        static ConsoleTask task;
+        static string host = "localhost";
+        static int port = 8888;
+        static string serial_name = "com5";
+        static int serial_speed = 9600;
+        public static StreamReader consoleStreamReader;
+        private static bool _isAttached=false;
+        public static bool isAttached { get { return _isAttached; } }
 
 
-        public CtsServerAdapter(TextBox output) {
-          //  tb = output;
-            Start();
-        }
-
-        public void Start()
+        public static void Start(string host="localhost", int port=8888, string serial_name="com5", int serial_speed=9600)
         {
+            _isAttached = false;
             if (isAlaive() == false)
             {
-                task = new ConsoleTask("CTS_server.exe", "--serial COM6", tb, false);
+                CtsServerAdapter.host = host;
+                CtsServerAdapter.port = port;
+                if (isAlaive() == false)
+                {
+                    CtsServerAdapter.serial_name = serial_name;
+                    CtsServerAdapter.serial_speed = serial_speed;
+
+                    string param = String.Format("--host {0} --port {1} --serial {2} --speed {3}", host, port, serial_name, serial_speed);
+
+                    task = new ConsoleTask("CTS_server.exe", param, consoleStreamReader, true);
+                    _isAttached = isAlaive();
+                }
             }
         }
 
-        public void Close() {
+        public static void Close() {
             var buf = Encoding.UTF8.GetBytes("close");
             try
             {
@@ -46,7 +57,7 @@ namespace ctsServerAdapter
             }
         }
 
-        public bool isAlaive() {
+        public static bool isAlaive() {
 
             try {
 

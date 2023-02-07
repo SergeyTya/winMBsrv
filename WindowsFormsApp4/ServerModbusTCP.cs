@@ -299,6 +299,22 @@ namespace AsyncSocketTest
             }
         }
 
+        public async Task<string> GetInfoAsync() {
+
+            var buf = Encoding.UTF8.GetBytes("info");
+            var req = new BaseFrame(buf);
+
+            await execute_request(req);
+
+            if(req.isValid)
+            {
+                string info = String.Format("{0}:{1} {2}", server, port, System.Text.Encoding.UTF8.GetString(req.getRXbuf).Trim());
+                return info;
+            }
+
+            return String.Empty;
+        }
+
 
 
 

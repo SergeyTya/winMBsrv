@@ -13,36 +13,42 @@ namespace consoleTask
     {
         private Process console = null;
         private StreamWriter consoleStreamWriter = null;
+
         private delegate void UpdateConsoleWindowDelegate(String msg);
-        private static System.Windows.Forms.TextBox textBox;
         string name;
 
-        public ConsoleTask(string exec_name, string arg, System.Windows.Forms.TextBox output, bool redirect_output=true)
+        public ConsoleTask(string exec_name, string arg, StreamReader consoleStreamWReader, bool create_windows=true)
         {
             name = exec_name;
-            textBox = output;
             console = new Process();
             console.StartInfo.FileName = exec_name;
-            console.StartInfo.UseShellExecute = false;
-            console.StartInfo.CreateNoWindow = false;
-            if (redirect_output)
+
+            if (create_windows == false)
             {
-                console.StartInfo.RedirectStandardInput = true;
-                console.StartInfo.RedirectStandardOutput = true;
-                console.StartInfo.RedirectStandardError = true;
-                console.OutputDataReceived += new DataReceivedEventHandler(ConsoleOutputHandler);
-                console.ErrorDataReceived += new DataReceivedEventHandler(ConsoleErrorHandler);
-                console.StartInfo.Arguments = arg;
+                console.StartInfo.UseShellExecute = false;
+                console.StartInfo.CreateNoWindow = true;
+                //console.StartInfo.RedirectStandardInput = true;
+                //console.StartInfo.RedirectStandardOutput = true;
+                //console.StartInfo.RedirectStandardError = true;
+                //console.OutputDataReceived += new DataReceivedEventHandler(ConsoleOutputHandler);
+                //console.ErrorDataReceived += new DataReceivedEventHandler(ConsoleErrorHandler);
+               
+            }
+            else {
+                console.StartInfo.UseShellExecute = true;
+                console.StartInfo.CreateNoWindow = false;
             }
 
             try
             {
+                console.StartInfo.Arguments = arg;
                 console.Start();
-                if (redirect_output) {
-                    consoleStreamWriter = console.StandardInput;
-                    console.BeginOutputReadLine();
-                    console.BeginErrorReadLine();
-                }
+                //if (redirect_output) {
+                //    consoleStreamWriter = console.StandardInput;
+                //    consoleStreamWReader = console.StandardOutput;
+                //    console.BeginOutputReadLine();
+                //    console.BeginErrorReadLine();
+                //}
             }
             catch (System.ComponentModel.Win32Exception)
             {
@@ -68,17 +74,6 @@ namespace consoleTask
 
         private void UpdateConsoleWindow(String message)
         {
-            //if (textBox.InvokeRequired)
-            //{
-            //    UpdateConsoleWindowDelegate update = new UpdateConsoleWindowDelegate(UpdateConsoleWindow);
-            //    textBox.Invoke(update, message);
-            //}
-            //else
-            //{
-            //    textBox.AppendText(message);
-
-            //}
-
             Debug.WriteLine(message);
         }
 
@@ -102,20 +97,13 @@ namespace consoleTask
         public static void Abort(ConsoleTask task)
         {
             //task.console.Kill();
-            //task.consoleStreamWriter.Close();
+            task.consoleStreamWriter.Close();
             foreach (var process in Process.GetProcessesByName(task.name))
             {
                 process.Kill();
             }
 
-
             task.console = null;
-            //if (IsRunning())
-            //{
-                
-            //   // console.Dispose();
-            //   // UpdateConsoleWindow("Отмена!");
-            //}
         }
     }
 }

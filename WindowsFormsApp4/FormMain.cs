@@ -31,6 +31,8 @@ namespace WindowsFormsApp4
         Bootloader bloader = null;
         List<TextBox> lstIndIR = new List<TextBox>();
 
+
+
         public enum eDev_cmd
         {
             RUN = 0x1,
@@ -65,6 +67,8 @@ namespace WindowsFormsApp4
         private List<ParamNames> paramNames;
         private InputRegisterIndicator timeStepInd;
         FormGensig FormGenSig;
+
+      
 
         private class CustomControlTyple
         {
@@ -293,29 +297,43 @@ namespace WindowsFormsApp4
             }
 
 
-            ctsServer = new CtsServerAdapter(txtBoxLog);
-
-            if (ctsServer.isAlaive())
+            Task.Run(() =>
             {
-                Server.vConnectToDevAsync();
-                Server.SlavePollAsync(10);
-                Task_FormRefreshAsync();
+                CtsServerAdapter.Start();
 
-            }
+                if (CtsServerAdapter.isAlaive())
+                {
+                    
+                  
+
+                }
+
+            });
+            Server.vConnectToDevAsync();
+            Server.SlavePollAsync(300);
+            Task_FormRefreshAsync();
+
+
+            //Task.Run(async () =>
+            //{
+            //    while (CtsServerAdapter.isAttached)
+            //    {
+            //        string str = await CtsServerAdapter.consoleStreamReader.ReadToEndAsync();
+            //        Server.logger.Add(str);
+            //        await Task.Delay(1000);
+            //    }
+            //});
+
+
 
 
             // Task_ConnecterAsync();
-           
+
 
             //TStart_Scope();
             //btn_Cnct_Click(new object(), new EventArgs());
 
         }
-
-        CtsServerAdapter ctsServer;
-
-
-
 
         private async void TStart_Scope()
         {
@@ -339,44 +357,44 @@ namespace WindowsFormsApp4
         {
             while (true)
             {
-               await Task.Run(() => {
+               //await Task.Run(() => {
 
-                   if (Server.spPort.IsOpen)
-                   {
+               //    if (Server.spPort.IsOpen)
+               //    {
 
 
-                       if (Server.suspend) { return; }
+               //        if (Server.suspend) { return; }
 
-                       if (bloader != null) bloader = null;
+               //        if (bloader != null) bloader = null;
 
-                       if (!Server.blDevCnctd)
-                       {
-                           Server.vConnectToDevAsync();
-                           if (!Server.blDevCnctd)
-                           {
-                               Server.iFail++;
-                               Server.logger.Add("Нет ответа");
-                               btn_Cnct_Click(this, null);
-                               return;
-                           }
+               //        if (!Server.blDevCnctd)
+               //        {
+               //            Server.vConnectToDevAsync();
+               //            if (!Server.blDevCnctd)
+               //            {
+               //                Server.iFail++;
+               //                Server.logger.Add("Нет ответа");
+               //                btn_Cnct_Click(this, null);
+               //                return;
+               //            }
 
-                           BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
+               //            BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
 
-                       }
-                   }
-                   else
-                   {
-                       Server.vReset();
-                       bloader = null;
-                   }
+               //        }
+               //    }
+               //    else
+               //    {
+               //        Server.vReset();
+               //        bloader = null;
+               //    }
 
-                   startTime.Stop();
-                   timeStep = (double)startTime.ElapsedMilliseconds / 1000;
-                   startTime.Restart();
+               //    startTime.Stop();
+               //    timeStep = (double)startTime.ElapsedMilliseconds / 1000;
+               //    startTime.Restart();
 
-               });
+               //});
 
-                await Task.Delay(10);
+                await Task.Delay(300);
             }
         }
 
@@ -523,9 +541,9 @@ namespace WindowsFormsApp4
             if (Server.suspend) return;
 
             //  Debug.WriteLine(Server.uiInputReg[1].ToString());
-            //кнопка коннект
-            if (Server.spPort.IsOpen) { ToolStripMenuItem_Connect.Text = "Отключить"; } else { ToolStripMenuItem_Connect.Text = "Соединить"; };
-            //проверяем актуальность размера таблиц
+            ////кнопка коннект
+            //if (Server.spPort.IsOpen) { ToolStripMenuItem_Connect.Text = "Отключить"; } else { ToolStripMenuItem_Connect.Text = "Соединить"; };
+            ////проверяем актуальность размера таблиц
             if (gridHRTable.Rows.Count < Server.uiInputReg[1]) vIndi_HRGrid_init(Server.uiInputReg[1]);
 
             //Input Registers table
@@ -738,10 +756,8 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            tsStatus.Text = Server.spPort.PortName + " " + Server.spPort.BaudRate + " устройство [" + Server.strDevID + "] статус [0x0" + Convert.ToString(Server.uiInputReg[2], 16) + "]. Ошибок связи " + Server.iFail.ToString();
-            timeStepInd.value = (int)(timeStep * 1000);
-
-
+            string info = String.Format("-> {0} устройство статус 0x0  ошибок связи", Server.info); //Server.strDevID, Convert.ToString(Server.uiInputReg[2], 16), Server.iFail.ToString());
+            tsStatus.Text = info;
         }
 
 
@@ -1332,13 +1348,13 @@ namespace WindowsFormsApp4
 
            string filename = "\"" + openFileDialog2.FileName + "\"";
 
-            if (Server.spPort.IsOpen)
-            {
-                pname = Server.spPort.PortName;
-                pspeed = Server.spPort.BaudRate;
-                dadr = Server.btDevAdr;
-                btn_Cnct_Click(sender, e);
-            }
+            //if (Server.spPort.IsOpen)
+            //{
+            //    pname = Server.spPort.PortName;
+            //    pspeed = Server.spPort.BaudRate;
+            //    dadr = Server.btDevAdr;
+            //    btn_Cnct_Click(sender, e);
+            //}
 
             string dst = pname + "," + pspeed + "," + dadr;
 
@@ -1370,12 +1386,12 @@ namespace WindowsFormsApp4
 
             string filename = "\"" + openFileDialog2.FileName + "\"";
 
-            if (Server.spPort.IsOpen) {
-                pname = Server.spPort.PortName;
-                pspeed = Server.spPort.BaudRate;
-                dadr = Server.btDevAdr;
-                btn_Cnct_Click(sender,e);
-            }
+            //if (Server.spPort.IsOpen) {
+            //    pname = Server.spPort.PortName;
+            //    pspeed = Server.spPort.BaudRate;
+            //    dadr = Server.btDevAdr;
+            //    btn_Cnct_Click(sender,e);
+            //}
 
             string dst = pname + "," + pspeed + "," + dadr;
 
@@ -1394,7 +1410,7 @@ namespace WindowsFormsApp4
         private void MenuItem_Loader_Reset_Click(object sender, EventArgs e)
         {
             if (toolStripMenuItemConSpd.SelectedItem == null) return;
-            if (Server.spPort.IsOpen) { return; }
+            //if (Server.spPort.IsOpen) { return; }
             string pname = toolStripMenuItemConPort.SelectedItem.ToString();
             int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
             int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
@@ -1408,7 +1424,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Loader_Stop_Click(object sender, EventArgs e)
         {
-            if (Server.spPort.IsOpen) { return; }
+            //if (Server.spPort.IsOpen) { return; }
             LoaderUtilsAdapter.LoaderUtilsAdapter.Abort();
 
         }
@@ -1517,7 +1533,7 @@ namespace WindowsFormsApp4
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ctsServer.Close();
+            CtsServerAdapter.Close();
         }
 
     }
