@@ -96,6 +96,8 @@
       <DependentUpon>AdrSelForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Bootloader.cs" />
+    <Compile Include="CTSserver_adapter\consoleTask.cs" />
+    <Compile Include="CTSserver_adapter\CtsServerAdapter.cs" />
     <Compile Include="loaderutils\crc.cs" />
     <Compile Include="loaderutils\ISerialPort.cs" />
     <Compile Include="loaderutils\win_port.cs" />
@@ -132,6 +134,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerModbusTCP.cs" />
     <Compile Include="SetupForm.cs">
       <SubType>Form</SubType>
     </Compile>

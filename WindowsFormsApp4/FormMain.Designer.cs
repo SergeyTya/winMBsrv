@@ -288,7 +288,7 @@
             // ToolStripMenuItem_Connect
             // 
             this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
-            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(180, 26);
+            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(162, 26);
             this.ToolStripMenuItem_Connect.Text = "Соединить";
             this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
             // 
@@ -301,7 +301,7 @@
             this.адресToolStripMenuItem1,
             this.периодОпросаМсToolStripMenuItem});
             this.ParamToolStripMenuItem.Name = "ParamToolStripMenuItem";
-            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
+            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(162, 26);
             this.ParamToolStripMenuItem.Text = "Параметры";
             // 
             // ToolStripMenuItemConAuto
@@ -338,6 +338,7 @@
             // 
             // toolStripTextBox_adr
             // 
+            this.toolStripTextBox_adr.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
             this.toolStripTextBox_adr.Size = new System.Drawing.Size(152, 23);
             this.toolStripTextBox_adr.Text = "1";
@@ -916,6 +917,7 @@
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "FormMain";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.contextMenuForChart.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

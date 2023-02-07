@@ -49,7 +49,7 @@ namespace AsyncSocketTest
 
     }
 
-    internal class ServerModbusTCP
+    public class ServerModbusTCP
     {
         TcpClient tcpClient;
        
