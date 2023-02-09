@@ -164,16 +164,17 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 584);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 580);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(952, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(952, 26);
             this.statusStrip1.TabIndex = 26;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // tsStatus
             // 
+            this.tsStatus.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.tsStatus.Name = "tsStatus";
-            this.tsStatus.Size = new System.Drawing.Size(89, 17);
+            this.tsStatus.Size = new System.Drawing.Size(117, 21);
             this.tsStatus.Text = "нет устройства";
             // 
             // tbState
@@ -288,7 +289,7 @@
             // ToolStripMenuItem_Connect
             // 
             this.ToolStripMenuItem_Connect.Name = "ToolStripMenuItem_Connect";
-            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(162, 26);
+            this.ToolStripMenuItem_Connect.Size = new System.Drawing.Size(180, 26);
             this.ToolStripMenuItem_Connect.Text = "Соединить";
             this.ToolStripMenuItem_Connect.Click += new System.EventHandler(this.btn_Cnct_Click);
             // 
@@ -301,7 +302,7 @@
             this.адресToolStripMenuItem1,
             this.периодОпросаМсToolStripMenuItem});
             this.ParamToolStripMenuItem.Name = "ParamToolStripMenuItem";
-            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(162, 26);
+            this.ParamToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
             this.ParamToolStripMenuItem.Text = "Параметры";
             // 
             // ToolStripMenuItemConAuto
@@ -545,7 +546,7 @@
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel_Controls.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
-            this.tableLayoutPanel_Controls.Size = new System.Drawing.Size(696, 549);
+            this.tableLayoutPanel_Controls.Size = new System.Drawing.Size(696, 545);
             this.tableLayoutPanel_Controls.TabIndex = 31;
             // 
             // tableLayoutPanel_Button
@@ -562,7 +563,7 @@
             this.tableLayoutPanel_Button.Controls.Add(this.btn_Reset, 3, 0);
             this.tableLayoutPanel_Button.Controls.Add(this.btn_Stop, 1, 0);
             this.tableLayoutPanel_Button.Controls.Add(this.btnRun, 0, 0);
-            this.tableLayoutPanel_Button.Location = new System.Drawing.Point(3, 494);
+            this.tableLayoutPanel_Button.Location = new System.Drawing.Point(3, 490);
             this.tableLayoutPanel_Button.Name = "tableLayoutPanel_Button";
             this.tableLayoutPanel_Button.RowCount = 1;
             this.tableLayoutPanel_Button.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -598,7 +599,7 @@
             this.tabForm.Location = new System.Drawing.Point(3, 53);
             this.tabForm.Name = "tabForm";
             this.tabForm.SelectedIndex = 0;
-            this.tabForm.Size = new System.Drawing.Size(690, 435);
+            this.tabForm.Size = new System.Drawing.Size(690, 431);
             this.tabForm.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabForm.TabIndex = 23;
             // 
@@ -609,7 +610,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(682, 406);
+            this.tabPage1.Size = new System.Drawing.Size(682, 402);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Параметры";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -629,7 +630,7 @@
             this.gridHRTable.Location = new System.Drawing.Point(3, 3);
             this.gridHRTable.Name = "gridHRTable";
             this.gridHRTable.RowHeadersVisible = false;
-            this.gridHRTable.Size = new System.Drawing.Size(676, 400);
+            this.gridHRTable.Size = new System.Drawing.Size(676, 396);
             this.gridHRTable.TabIndex = 22;
             this.gridHRTable.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.GridView_CellBeginEdit);
             this.gridHRTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridView_CellContentClick);
@@ -687,7 +688,7 @@
             this.tabPage4.Controls.Add(this.tableLayoutPanel_customControl);
             this.tabPage4.Location = new System.Drawing.Point(4, 25);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(682, 406);
+            this.tabPage4.Size = new System.Drawing.Size(682, 402);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Управление";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -704,7 +705,7 @@
             this.tableLayoutPanel_customControl.Name = "tableLayoutPanel_customControl";
             this.tableLayoutPanel_customControl.RowCount = 1;
             this.tableLayoutPanel_customControl.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_customControl.Size = new System.Drawing.Size(682, 406);
+            this.tableLayoutPanel_customControl.Size = new System.Drawing.Size(682, 402);
             this.tableLayoutPanel_customControl.TabIndex = 0;
             // 
             // tabPage3
@@ -712,7 +713,7 @@
             this.tabPage3.Controls.Add(this.gridRelayIO);
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(682, 406);
+            this.tabPage3.Size = new System.Drawing.Size(682, 402);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Релейные сигналы";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -771,7 +772,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(682, 406);
+            this.tabPage2.Size = new System.Drawing.Size(682, 402);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Лог";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -783,7 +784,7 @@
             this.txtBoxLog.Multiline = true;
             this.txtBoxLog.Name = "txtBoxLog";
             this.txtBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtBoxLog.Size = new System.Drawing.Size(676, 400);
+            this.txtBoxLog.Size = new System.Drawing.Size(676, 396);
             this.txtBoxLog.TabIndex = 19;
             // 
             // tabPage5
@@ -792,7 +793,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 25);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(682, 406);
+            this.tabPage5.Size = new System.Drawing.Size(682, 402);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Debug";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -809,7 +810,7 @@
             this.tableLayoutPanel_debug.RowCount = 2;
             this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel_debug.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_debug.Size = new System.Drawing.Size(676, 400);
+            this.tableLayoutPanel_debug.Size = new System.Drawing.Size(676, 396);
             this.tableLayoutPanel_debug.TabIndex = 0;
             // 
             // tabPage6
@@ -818,7 +819,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 25);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(682, 406);
+            this.tabPage6.Size = new System.Drawing.Size(682, 402);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "tabPage6";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -873,7 +874,7 @@
             this.tableLayoutPanel_main.Name = "tableLayoutPanel_main";
             this.tableLayoutPanel_main.RowCount = 1;
             this.tableLayoutPanel_main.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel_main.Size = new System.Drawing.Size(952, 555);
+            this.tableLayoutPanel_main.Size = new System.Drawing.Size(952, 551);
             this.tableLayoutPanel_main.TabIndex = 32;
             // 
             // tableLayoutPanel4
@@ -888,7 +889,7 @@
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 4.918033F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(244, 549);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(244, 545);
             this.tableLayoutPanel4.TabIndex = 32;
             // 
             // tableLayoutPanel_IR
@@ -903,7 +904,7 @@
             this.tableLayoutPanel_IR.Name = "tableLayoutPanel_IR";
             this.tableLayoutPanel_IR.RowCount = 1;
             this.tableLayoutPanel_IR.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 529);
+            this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 525);
             this.tableLayoutPanel_IR.TabIndex = 35;
             // 
             // FormMain

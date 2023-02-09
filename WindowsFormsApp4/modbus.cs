@@ -18,6 +18,8 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.Text.RegularExpressions;
 using AsyncSocketTest;
 using System.Collections;
+using static AsyncSocketTest.ServerModbusTCP;
+using ctsServerAdapter;
 
 namespace WindowsFormsApp4
 {
@@ -93,20 +95,20 @@ namespace WindowsFormsApp4
 
         }
 
-        public async void vConnectToDevAsync()
+        public async void ConnectToDevAsync(string host= "localhost", int port= 8888)
         {
             if (!blDevCnctd)
             {
                 try
                 {
-                    tcp_master = new ServerModbusTCP("localhost", 8888);
+                    tcp_master = new ServerModbusTCP(host, port);
                 }
-                catch (System.Net.Sockets.SocketException ex)
+                catch (ServerModbusTCPException ex)
                 {
                     logger.Add(ex.Message);
                     return;
                 }
-                info = await tcp_master.GetInfoAsync()
+                info = await tcp_master.GetInfoAsync();
                 logger.Add(info);
 
                byte[] cmdGetID = new byte[]  { 0, 0, 0, 0, 0 , 5, btDevAdr, 0x2B, 0xE, 0x1, 0x1 };
@@ -589,10 +591,27 @@ namespace WindowsFormsApp4
             return str;
         }
 
-        public void vReset()
+        public void Close()
         {
 
-            blDevCnctd = false;
+            if (CtsServerAdapter.isAlaive()) {
+                
+                Task.Run(() =>
+                 {
+                     logger.Add("Останавливаю сервер");
+                     while (true) {
+                         if (
+                         CtsServerAdapter.isAlaive() == false
+                         ) 
+                         { 
+                         break; }
+                        Task.Delay(100);
+                     }
+                     logger.Add("Ok");
+                });
+                CtsServerAdapter.Close();
+            }
+           blDevCnctd = false;
             iFail = 0;
             strDevID = "";
 
@@ -610,27 +629,72 @@ namespace WindowsFormsApp4
                 uiInputReg[i] = 0;
                 i++;
             }
-
-
-            //this.spPort.Close();
             this.uilHRadrForRead.Clear();
             this.uialHRForWrite.Clear();
-            //this.logger.Clear();
             this.suspend = false;
-
-
+            tcp_master.close();
         }
 
-        private void vLogByteArr(byte[] buff, int len)
-        {
-
-            string str = "";
-            for (int i = 0; i < (len - 1); i++)
+        async Task<bool> StartPort(string name, int speed) {
+            SerialPort port = new SerialPort();
+            try
             {
-                str += Convert.ToString(buff[i], 16);
+                port.Parity = Parity.None;
+                port.DataBits = 8;
+                port.ReadTimeout = 500;
+                port.PortName = name;
+                port.BaudRate = speed;
+                var dmes = String.Format("Поиск {0} {1}", port.PortName, port.BaudRate);
+                Debug.WriteLine(dmes);
+                logger.Add(dmes);
+                port.Open();
+                logger.Add("Открытие порта");
+                IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+                logger.Add("Запрос устройства");
+                await master.ReadHoldingRegistersAsync(btDevAdr, 0, 1);
+                port.Close();
+                logger.Add("Запуск сервера");
+                CtsServerAdapter.Start("localhost", 8888, port.PortName, port.BaudRate);
+                ConnectToDevAsync();
+                return true;
             }
-            logger.Add(str);
+            catch (Exception ex)
+            {
+                if (port.IsOpen)
+                {
+                    port.Close();
+                }
+                logger.Add(ex.Message.ToString());
+                return false;
+            }
         }
+
+
+        public void ConncetToRunningServer(string host, int port)
+        {
+            ConnectToDevAsync(host, port);
+        }
+
+
+
+        public async void SearchPort() {
+
+            if (blDevCnctd) Close();
+            
+            List<String> broken_ports = new List<string>();
+            int[] speeds_avalible = new int[] { 9600, 38400, 115200, 128000, 230400, 406000 };
+            List<String> ports_avalible = SerialPort.GetPortNames().ToList();
+            foreach (String name in ports_avalible)
+            {
+                foreach (int speed in speeds_avalible)
+                {
+                    if (await StartPort(name, speed) == true) {
+                        return;
+                    }
+                }
+            }
+        }
+
 
 
 

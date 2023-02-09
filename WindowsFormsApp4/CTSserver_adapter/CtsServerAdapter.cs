@@ -24,7 +24,7 @@ namespace ctsServerAdapter
         public static bool isAttached { get { return _isAttached; } }
 
 
-        public static void Start(string host="localhost", int port=8888, string serial_name="com5", int serial_speed=9600)
+        public static void Start(string host="localhost", int port=8888, string serial_name="com6", int serial_speed=9600)
         {
             _isAttached = false;
             if (isAlaive() == false)
@@ -35,13 +35,12 @@ namespace ctsServerAdapter
                 {
                     CtsServerAdapter.serial_name = serial_name;
                     CtsServerAdapter.serial_speed = serial_speed;
-
                     string param = String.Format("--host {0} --port {1} --serial {2} --speed {3}", host, port, serial_name, serial_speed);
-
                     task = new ConsoleTask("CTS_server.exe", param, consoleStreamReader, true);
-                    _isAttached = isAlaive();
                 }
             }
+
+
         }
 
         public static void Close() {
@@ -58,8 +57,16 @@ namespace ctsServerAdapter
         }
 
         public static bool isAlaive() {
+            if (task == null) {
+                return false;
+            }
+            return task.IsRunning();
 
-            try {
+        }
+
+        public static bool isAnyServer(string host= "localhost", int port = 8888) {
+            try
+            {
 
                 TcpClient tcpClient = new TcpClient();
                 tcpClient.Connect(host, port);
@@ -73,15 +80,19 @@ namespace ctsServerAdapter
                 Debug.WriteLine("");
                 stream.Close();
                 tcpClient.Close();
-
                 return true;
 
             }
-            catch(System.Net.Sockets.SocketException ex) {
+            catch (System.Net.Sockets.SocketException ex)
+            {
 
                 return false;
             }
-           
+            catch (System.IO.IOException ex)
+            {
+                return false;
+            }
+
         }
 
 

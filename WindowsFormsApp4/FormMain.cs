@@ -297,22 +297,9 @@ namespace WindowsFormsApp4
             }
 
 
-            Task.Run(() =>
-            {
-                CtsServerAdapter.Start();
-
-                if (CtsServerAdapter.isAlaive())
-                {
-                    
-                  
-
-                }
-
-            });
-            Server.vConnectToDevAsync();
+       
             Server.SlavePollAsync(300);
             Task_FormRefreshAsync();
-
 
             //Task.Run(async () =>
             //{
@@ -328,10 +315,13 @@ namespace WindowsFormsApp4
 
 
             // Task_ConnecterAsync();
-
-
             //TStart_Scope();
-            //btn_Cnct_Click(new object(), new EventArgs());
+            
+            //Task.Run(() =>
+            //{
+             btn_Cnct_Click(new object(), new EventArgs());
+            //});
+
 
         }
 
@@ -756,8 +746,17 @@ namespace WindowsFormsApp4
             if (slErrMes.Count > (Server.uiInputReg[2] & 0xFF)) tbState.Text += slErrMes[Server.uiInputReg[2] & 0xFF];
 
             // обновляю статус бар
-            string info = String.Format("-> {0} устройство статус 0x0  ошибок связи", Server.info); //Server.strDevID, Convert.ToString(Server.uiInputReg[2], 16), Server.iFail.ToString());
+            string info = String.Format("{0} [{1}] статус 0x0{2}  ошибок связи {3}", Server.info, Server.strDevID, Convert.ToString(Server.uiInputReg[2], 16), Server.iFail.ToString());
             tsStatus.Text = info;
+
+            //кнопка соединить
+            if (Server.blDevCnctd)
+            {
+                ToolStripMenuItem_Connect.Text = "Отключить";
+            }
+            else {
+                ToolStripMenuItem_Connect.Text = "Соединить";
+            }
         }
 
 
@@ -1056,33 +1055,39 @@ namespace WindowsFormsApp4
 
         private void btn_Cnct_Click(object sender, EventArgs e)
         {
-            List<String> broken_ports = new List<string>();
-            if (bs_flg) return;
-            con_start:
-            bs_flg = true;
-            Int32[] bds = new Int32[] { 9600, 38400, 115200, 128000, 230400, 406000 };
-            List<String> ports = SerialPort.GetPortNames().ToList();
 
-                //if (Server.spPort.IsOpen)
-                //{
-                //    try { Server.spPort.Close(); } catch (Exception ex) { };
-                //    bool tmp = Server.blDevCnctd;
-                //    Server.vReset();
-                //    if (bloader != null) bloader.Reset();
-                //    if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
-                //    if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
-                //    {
-                //        spdpos = 0;
-                //        portpos = 0;
-                //        Server.logger.Add("Сброс соединения ");
-                //        bs_flg = false;
-                //        return;
-                //    };
-                //};
+            if (Server.blDevCnctd)
+            {
+                Server.Close();
+            }
+            else {
+                Task.Run(() =>
+                {
+                    Server.SearchPort();
+                });
+            }
 
+           
+            return; 
+            
+            //bool tmp = Server.blDevCnctd;
+            //Server.vReset();
+
+            //if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
+            //if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
+            //    {
+            //        spdpos = 0;
+            //        portpos = 0;
+            //        Server.logger.Add("Сброс соединения ");
+            //        Debug.WriteLine("Сброс соединения ");
+            //        bs_flg = false;
+            //        return;
+            //    }
 
             //if (ToolStripMenuItemConAuto.Checked)
             //{
+
+                
 
             //    foreach (var item in broken_ports)
             //    {
@@ -1090,48 +1095,51 @@ namespace WindowsFormsApp4
             //        if (ind >= 0) ports.RemoveAt(ind);
             //    }
 
-            //    if (ports.Count == 0) {
+            //    if (ports.Count == 0)
+            //    {
             //        Debug.WriteLine("No port found");
             //        return;
             //    }
 
-            //    Server.spPort.BaudRate = bds[spdpos];
-            //    if (ports.Count <= portpos) {
+            //    spPort.BaudRate = bds[spdpos];
+            //    if (ports.Count <= portpos)
+            //    {
             //        ports.Clear();
             //        bs_flg = false;
             //        portpos = 0;
             //        return;
             //    }
-            //    Server.spPort.PortName = ports[portpos];
-            //    Server.spPort.Parity = Parity.None;
-            //    Server.spPort.DataBits = 8;
-            //    Server.spPort.ReadTimeout = 500;
+            //    spPort.PortName = ports[portpos];
+            //    spPort.Parity = Parity.None;
+            //    spPort.DataBits = 8;
+            //    spPort.ReadTimeout = 500;
             //    Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
 
             //}
-            //else {
+            //else
+            //{
 
             //    if (toolStripMenuItemConSpd.SelectedItem == null) return;
-            //    Server.spPort.BaudRate = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
-            //    Server.spPort.PortName = toolStripMenuItemConPort.SelectedItem.ToString();
-            //    Server.spPort.Parity = Parity.None;
-            //    Server.spPort.DataBits = 8;
-            //    Server.spPort.ReadTimeout = 500;
+            //    spPort.BaudRate = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
+            //    spPort.PortName = toolStripMenuItemConPort.SelectedItem.ToString();
+            //    spPort.Parity = Parity.None;
+            //    spPort.DataBits = 8;
+            //    spPort.ReadTimeout = 500;
             //    Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
             //};
 
-
-
             //try
             //{
-            //    Server.spPort.Open();
+            //    Debug.WriteLine(String.Format("Trying {0} {1}", spPort.PortName, spPort.BaudRate));
+            //    spPort.Open();
+                
             //}
             //catch (System.UnauthorizedAccessException ex)
             //{
             //    Server.logger.Add(ports[portpos].ToString() + " порт занят");
             //    portpos++;
             //    spdpos = 0;
-            //    if (ToolStripMenuItemConAuto.Checked)  goto con_start;
+            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
             //}
             //catch (Exception ex)
             //{
@@ -1141,23 +1149,40 @@ namespace WindowsFormsApp4
             //    bs_flg = false;
             //    Server.logger.Add(ports[portpos].ToString() + " ошибка доступа");
             //    broken_ports.Add(ports[portpos].ToString());
-            //    if (ToolStripMenuItemConAuto.Checked)  goto con_start;
+            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
             //};
 
+            //spPort.Close();
+
+
+            //CtsServerAdapter.Start( "localhost", 8888,  spPort.PortName, spPort.BaudRate);
+
+            //if (CtsServerAdapter.isAlaive())
+            //{
+            //    Task.Run(() =>
+            //    {
+            //        Server.vConnectToDevAsync();
+            //    });
+            //}
+            //else
+            //{
+            //    broken_ports.Add(ports[portpos].ToString());
+            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
+            //}
 
             //bs_flg = false;
 
             //if (!ToolStripMenuItemConAuto.Checked) return;
 
-           //     // refresh lists in connection menu 
-           //toolStripMenuItem3_DropDown(this, null);
+            ////     // refresh lists in connection menu 
+            ////toolStripMenuItem3_DropDown(this, null);
 
-           // if (toolStripMenuItemConPort.Items.IndexOf(Server.spPort.PortName.ToString()) < 0)
-           //     toolStripMenuItemConPort.Items.Add(Server.spPort.PortName.ToString());
-           // toolStripMenuItemConPort.SelectedItem = Server.spPort.PortName.ToString();
+            //// if (toolStripMenuItemConPort.Items.IndexOf(Server.spPort.PortName.ToString()) < 0)
+            ////     toolStripMenuItemConPort.Items.Add(Server.spPort.PortName.ToString());
+            //// toolStripMenuItemConPort.SelectedItem = Server.spPort.PortName.ToString();
 
-           // if (toolStripMenuItemConSpd.Items.IndexOf(Server.spPort.BaudRate.ToString()) < 0)
-           //     toolStripMenuItemConSpd.SelectedItem = Server.spPort.BaudRate.ToString();
+            //// if (toolStripMenuItemConSpd.Items.IndexOf(Server.spPort.BaudRate.ToString()) < 0)
+            ////     toolStripMenuItemConSpd.SelectedItem = Server.spPort.BaudRate.ToString();
 
         }
 
@@ -1533,7 +1558,7 @@ namespace WindowsFormsApp4
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CtsServerAdapter.Close();
+            if(CtsServerAdapter.isAlaive()) CtsServerAdapter.Close();
         }
 
     }

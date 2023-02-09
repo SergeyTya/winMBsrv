@@ -91,7 +91,7 @@ namespace AsyncSocketTest
             }
         }
 
-        private void close() {
+        public void close() {
             tcpClient.Close();
             Debug.WriteLine("Connection closed");
         }
@@ -308,7 +308,7 @@ namespace AsyncSocketTest
 
             if(req.isValid)
             {
-                string info = String.Format("{0}:{1} {2}", server, port, System.Text.Encoding.UTF8.GetString(req.getRXbuf).Trim());
+                string info = String.Format("{0}:{1} {2}", server, port, System.Text.Encoding.UTF8.GetString(req.getRXbuf).Trim('\0'));
                 return info;
             }
 
