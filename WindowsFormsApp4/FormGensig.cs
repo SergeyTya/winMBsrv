@@ -1,11 +1,15 @@
-﻿using System;
+﻿using AsyncSocketTest;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -229,79 +233,120 @@ namespace WindowsFormsApp4
             chart1.DataBind();
             chart2.DataBind();
 
-            procAsync();
-            Task_FormRefreshAsync();
+           
+
+            // procAsync();
+         
+
+
         }
 
-        private async void Task_FormRefreshAsync() {
-
-            while (true) {
-
-                this.chart1.Series[2].Enabled = controlTable.Controls[ParamNames.ResEnable].Value == 1;
-                chart1.DataBind();
-                chart2.DataBind();
-
-                await Task.Delay(300);
-            }
-        }
 
 
         private double time = 0;
         private double point = 0;
         private double responce = 0;
         private double targetRef = 0;
-       
-        private async void procAsync()
-        {
-            double gen_dir = 1;
-            while (true) {
 
-                if (chart1 == null || chart2 == null) { await Task.Delay(1000); continue; }
-                if (!this.Visible) { await Task.Delay(1000); continue; };
+        private ServerModbusTCP server;
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        
 
-                double amp = controlTable.Controls[ParamNames.Amplitude].Value;
-                double period = controlTable.Controls[ParamNames.Period].Value;
-                double offset = controlTable.Controls[ParamNames.Offset].Value;
+
+        private async void Timer(CancellationToken token) {
+            while (true)
+            {
+                token.ThrowIfCancellationRequested();
+                this.chart1.Series[2].Enabled = controlTable.Controls[ParamNames.ResEnable].Value == 1;
+                _ =Task.Run( async () =>
+                {
+                    await _semaphoreSlim.WaitAsync(100);
+                    await TimerCallBack();
+                    _semaphoreSlim.Release();
+                });
                 double time_step = controlTable.Controls[ParamNames.Timestep].Value;
 
-
-                switch (controlTable.Controls[ParamNames.Type].Value)
-                {
-                    case 0:
-                        point = amp * Math.Sin(2 * Math.PI * time / period) + offset;
-                        break;
-                    case 1:
-                        point = amp * Math.Sin(2 * Math.PI * time / period);
-                        if (point > 0) point = amp + offset;
-                        if (point < 0) point = -amp + offset;
-                        break;
-                    case 2:
-                        double delta = 4 * amp * time_step / period;
-                        point += delta * gen_dir;
-                        if (point - offset >= amp) gen_dir = -1;
-                        if (point - offset <= -amp) gen_dir = 1;
-
-                        break;
-                    default:
-
-                        break;
-                };
-
-                ChartData.Add(new Points(time, point, targetRef, responce));
-                if (ChartData.Count > (int) ( period/time_step)) ChartData.RemoveAt(0);
-
-                this.time += time_step;
-
-                UInt16 point_val = GetReference();
-                UInt16 target_val = GetTargetHR();
-                SetTargetRef(Server.uiHoldingReg[target_val]);
-                SetResponce(Server.uiInputReg[GetResponceIR()]);
-
-                if (Server.uiHoldingReg[target_val] != point_val & controlTable.Controls[ParamNames.Enable].Value == 1)
-                    Server.uialHRForWrite.Add(new UInt16[2] { target_val, point_val });
-
-                await Task.Delay((int) (1000*time_step));
+                await Task.Delay(100);
             }
+        }
+
+        double gen_dir = 1;
+
+        private async Task TimerCallBack() {
+
+            if (chart1 == null || chart2 == null) { await Task.Delay(1000); return; }
+            if (!this.Visible) { await Task.Delay(1000); return; };
+
+            double amp = controlTable.Controls[ParamNames.Amplitude].Value;
+            double period = controlTable.Controls[ParamNames.Period].Value;
+            double offset = controlTable.Controls[ParamNames.Offset].Value;
+            double time_step = controlTable.Controls[ParamNames.Timestep].Value;
+
+
+            switch (controlTable.Controls[ParamNames.Type].Value)
+            {
+                case 0:
+                    point = amp * Math.Sin(2 * Math.PI * time / period) + offset;
+                    break;
+                case 1:
+                    point = amp * Math.Sin(2 * Math.PI * time / period);
+                    if (point > 0) point = amp + offset;
+                    if (point < 0) point = -amp + offset;
+                    break;
+                case 2:
+                    double delta = 4 * amp * time_step / period;
+                    point += delta * gen_dir;
+                    if (point - offset >= amp) gen_dir = -1;
+                    if (point - offset <= -amp) gen_dir = 1;
+
+                    break;
+                default:
+
+                    break;
+            };
+
+            ChartData.Add(new Points(time, point, targetRef, responce));
+            if (ChartData.Count > (int)(period / time_step)) ChartData.RemoveAt(0);
+
+
+            this.time += time_step;
+
+            UInt16 point_val = GetReference();
+            UInt16 target_val = GetTargetHR();
+
+            try
+            {
+
+                var refer = await server.ReadHoldingsAsync(1, target_val, 1);
+                var resp = await server.ReadInputsAsync(1, GetResponceIR(), 1);
+
+                if (refer != null)
+                {
+                    SetTargetRef(refer[0]);
+                    if (refer[0] != point_val & controlTable.Controls[ParamNames.Enable].Value == 1)
+                    {
+                        await server.WriteHoldingsAsync(1, GetTargetHR(), new ushort[] { point_val });
+                    }
+                }
+                if (resp != null) SetResponce(resp[0]);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("------->" + ex.Message);
+
+            }
+
+            BeginInvoke(new MyDelegate(() => {
+                try {
+                    chart1.DataBind();
+                    chart2.DataBind();
+                }
+                catch(System.InvalidOperationException ex) {
+                    Debug.WriteLine(ex);
+                }
+
+            }));
 
         }
 
@@ -438,7 +483,7 @@ namespace WindowsFormsApp4
             foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart1.Series) el.Points.Clear();
             foreach (System.Windows.Forms.DataVisualization.Charting.Series el in chart2.Series) el.Points.Clear();
             time = 0;
-
+            server.close();
 
         }
 
@@ -483,6 +528,15 @@ namespace WindowsFormsApp4
                     e.Text = String.Format("{0:F2} {1:F2}", x, y);
                     break;
             }
+        }
+
+
+        CancellationToken token;
+        private void FormGensig_Shown(object sender, EventArgs e)
+        {
+            token = new CancellationToken();
+            server = new ServerModbusTCP("localhost", 8888);
+            Timer(token);
         }
     }
 }

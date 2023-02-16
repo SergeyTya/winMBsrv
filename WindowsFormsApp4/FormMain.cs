@@ -20,6 +20,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.Text.RegularExpressions;
 using consoleTask;
 using ctsServerAdapter;
+using System.Net.NetworkInformation;
 
 namespace WindowsFormsApp4
 {
@@ -27,213 +28,44 @@ namespace WindowsFormsApp4
     public partial class FormMain : Form
     {
 
-        MODBUS_srv Server =  new MODBUS_srv();
-        Bootloader bloader = null;
-        List<TextBox> lstIndIR = new List<TextBox>();
-
-
-
-        public enum eDev_cmd
+        private enum eDev_cmd
         {
-            RUN = 0x1,
-            STOP = 0x2,
-            RESET = 0x4,
-            REBOOT = 0x1603,
-            SAVEPRM = 0x8,
-            LOADPRM = 0x10,
-            DEFPRM = 0x12,
-            CHKDSBL = 0x2801,
-            BOOT = 0x7777,
-            FANTST = 0x300,
-            ENCTST = 0x1303,
-            RDOTST = 0x0016,
-            SET1310 = 0x1304
+            RUN = 0x1, STOP = 0x2, RESET = 0x4, REBOOT = 0x1603, SAVEPRM = 0x8, LOADPRM = 0x10, DEFPRM = 0x12,
+            CHKDSBL = 0x2801, BOOT = 0x7777, FANTST = 0x300, ENCTST = 0x1303, RDOTST = 0x0016, SET1310 = 0x1304
         }
 
-        eDev_cmd[] uaCMD =
-        { 00, eDev_cmd.STOP,     eDev_cmd.RUN,     eDev_cmd.RESET,    eDev_cmd.REBOOT,
-              eDev_cmd.CHKDSBL,  eDev_cmd.SAVEPRM, eDev_cmd.LOADPRM,  eDev_cmd.DEFPRM,
-              eDev_cmd.FANTST,   eDev_cmd.ENCTST,  eDev_cmd.BOOT, eDev_cmd.RDOTST, eDev_cmd.SET1310
-        };
+        private ConnectionSetups connection_setups = new ConnectionSetups();
 
-        List<string> slErrMes = new List<string>();
-        List<string> slPrmNam = new List<string>();
-        List<UInt16> slPrmToSaveRead = new List<UInt16>();
+        private MODBUS_srv Server =  new MODBUS_srv();
+        private Bootloader bloader = null;
+        private SetupForm SetupForm1 = null;
+        private FormGensig FormGenSig;
 
-        public FormScope ScopeForm = null;
-        SetupForm SetupForm1 = null;
         private string sTempForCell = null;
         private UInt16 uiServerDelay = 10;
-        private List<ParamNames> paramNames;
+       
         private InputRegisterIndicator timeStepInd;
-        FormGensig FormGenSig;
-
-      
-
-        private class CustomControlTyple
-        {
-            public TextBox textboxIndicator { get; set; }
-            public TrackBar trackBarController { get; set; }
-            public UInt16 index { get; set; }
-
-        }
-
-        private class InputRegisterIndicator
-        {
-
-            public Label label;
-            public TextBox indicator;
-            public FormChart chart;
-
-            private string RegSing = " ";
-
-            public string Name
-            { // name of input register
-                get { return label.Text; }
-                set
-                {
-                    label.Text = RegSing + " " + value;
-                    chart.Label = label.Text;
-                }
-            }
-
-            public bool RegSingEnable
-            {
-
-                set
-                {
-                    if (value) RegSing = "Рег. " + Adr.ToString();
-                    if (!value) RegSing = "";
-                }
-            }
-
-            private int scale;
-            public int Scale
-            {
-                get { return scale; }
-                set { scale = value; if (scale <= 0) scale = 1; }
-            }
-
-            public int Adr { get; set; }
-            public int Min { get; set; }
-            public int Max { get; set; }
-            public string Dimension { get; set; }
-
-            public int value
-            {
-                get { return 0; }
-                set
-                {
-                    float temp = (float)value / Scale;
-                    if (Scale == 1) { indicator.Text = value.ToString(); }
-                    else
-                    {
-                        indicator.Text = temp.ToString("#####0.0") + " " + Dimension;
-                    }
-
-                    chart.AddPoint(value);
-                    indicator.ForeColor = Color.LightGreen;
-                    if (temp < Min) indicator.ForeColor = Color.Cyan;
-                    if (temp > Max) indicator.ForeColor = Color.LightCoral;
-                }
-            }
-
-
-            public InputRegisterIndicator(int pos)
-            {
-
-                Adr = pos;
-                chart = new FormChart(Adr - 3);
-                Scale = 1;
-                Min = -1;
-                Max = 1;
-                RegSingEnable = true;
-
-
-                label = new Label();
-                label.Dock = DockStyle.Fill;
-                label.Margin = new System.Windows.Forms.Padding(1, 10, 1, 0);
-                label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-                Name = "";
-
-                indicator = new TextBox();
-                indicator.Name = "IRTextBox_" + Adr.ToString("D2");
-                indicator.Dock = DockStyle.Fill;
-                indicator.BackColor = System.Drawing.SystemColors.MenuText;
-                indicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-                indicator.Font = new System.Drawing.Font("Tahoma", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-                indicator.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-                indicator.HideSelection = false;
-                indicator.Location = new System.Drawing.Point(15, 203);
-                indicator.Margin = new System.Windows.Forms.Padding(15, 3, 50, 3);
-                indicator.MaximumSize = new System.Drawing.Size(1000, 1000);
-                indicator.ReadOnly = false;
-                indicator.Size = new System.Drawing.Size(100, 33);
-                indicator.TabIndex = 6;
-                indicator.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-
-
-                indicator.Click += new System.EventHandler((s, e) =>
-                {
-                    this.chart.Show();
-                    this.chart.BringToFront();
-                });
-
-            }
-
-        }
-
+        
+        private List<UInt16> slPrmToSaveRead = new List<UInt16>();
+        private List<TextBox> lstIndIR = new List<TextBox>();
+        private List<string> slErrMes = new List<string>();
+        private List<CustomControlsReader> paramNames;
         private List<CustomControlTyple> customControlsList = new List<CustomControlTyple>();
         private List<InputRegisterIndicator> IrIndicList = new List<InputRegisterIndicator>();
 
+        public FormScope ScopeForm = null;
         public delegate void MyDelegate();
-
-        public class ParamNames
-        {
-
-            [JsonProperty("Device")]
-            public string Device { get; set; }
-
-            [JsonProperty("Name")]
-            public string Name { get; set; }
-
-            [JsonProperty("Options")]
-            public List<List<string>> Options { get; set; }
-
-            [JsonProperty("Control")]
-            public bool Control { get; set; }
-
-            [JsonProperty("Max")]
-            public int Max { get; set; }
-
-            [JsonProperty("Min")]
-            public int Min { get; set; }
-
-            [JsonProperty("Scl")]
-            public int Scl { get; set; }
-
-            [JsonProperty("Adr")]
-            public int Adr { get; set; }
-
-            [JsonProperty("Descript")]
-            public string Descript { get; set; }
-
-            [JsonProperty("Dim")]
-            public string Dim { get; set; }
-        }
-
-
-
 
         public FormMain()
         {
 
             InitializeComponent();
+            connection_setups = ConnectionSetups.read();
 
             try
             {
                 string jsonString = File.ReadAllText("prm.json", Encoding.Default);
-                paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+                paramNames = JsonConvert.DeserializeObject<List<CustomControlsReader>>(jsonString);
             }
             catch (Newtonsoft.Json.JsonReaderException e)
             {
@@ -276,8 +108,6 @@ namespace WindowsFormsApp4
             }
 
             ToolStripMenuItem_Connect.Text = "Соединить";
-            this.toolStripComboBox_RefTime.SelectedIndex = 2;
-
 
             //debug TimeStep
             timeStepInd = new InputRegisterIndicator(100);
@@ -288,41 +118,12 @@ namespace WindowsFormsApp4
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
-            toolStripMenuItemConSpd.SelectedIndex = 0;
-            toolStripMenuItem3_DropDown(new object(), new EventArgs());
-
-            if (toolStripMenuItemConPort.Items.Count > 0)
-            {
-                toolStripMenuItemConPort.SelectedIndex = 0;
-            }
-
-
-       
             Server.SlavePollAsync(300);
             Task_FormRefreshAsync();
 
-            //Task.Run(async () =>
-            //{
-            //    while (CtsServerAdapter.isAttached)
-            //    {
-            //        string str = await CtsServerAdapter.consoleStreamReader.ReadToEndAsync();
-            //        Server.logger.Add(str);
-            //        await Task.Delay(1000);
-            //    }
-            //});
-
-
-
-
-            // Task_ConnecterAsync();
-            //TStart_Scope();
-            
-            //Task.Run(() =>
-            //{
-             btn_Cnct_Click(new object(), new EventArgs());
-            //});
-
-
+            if (connection_setups.Aconnect) {
+                btn_Cnct_Click(new object(), new EventArgs());
+            }
         }
 
         private async void TStart_Scope()
@@ -339,55 +140,6 @@ namespace WindowsFormsApp4
 
 
         //основной поток
-
-        private Stopwatch startTime = Stopwatch.StartNew();
-        private double timeStep;
-
-        private async void Task_ConnecterAsync()
-        {
-            while (true)
-            {
-               //await Task.Run(() => {
-
-               //    if (Server.spPort.IsOpen)
-               //    {
-
-
-               //        if (Server.suspend) { return; }
-
-               //        if (bloader != null) bloader = null;
-
-               //        if (!Server.blDevCnctd)
-               //        {
-               //            Server.vConnectToDevAsync();
-               //            if (!Server.blDevCnctd)
-               //            {
-               //                Server.iFail++;
-               //                Server.logger.Add("Нет ответа");
-               //                btn_Cnct_Click(this, null);
-               //                return;
-               //            }
-
-               //            BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
-
-               //        }
-               //    }
-               //    else
-               //    {
-               //        Server.vReset();
-               //        bloader = null;
-               //    }
-
-               //    startTime.Stop();
-               //    timeStep = (double)startTime.ElapsedMilliseconds / 1000;
-               //    startTime.Restart();
-
-               //});
-
-                await Task.Delay(300);
-            }
-        }
-
         private async void Task_FormRefreshAsync()
         {
             double counter = 0.0;
@@ -403,7 +155,7 @@ namespace WindowsFormsApp4
 
                     try
                     {
-                        if (Server.blDevCnctd)
+                        if (Server.isDeviceConnected)
                         {
                             BeginInvoke(new MyDelegate(vIndi_Update));
                         }
@@ -416,7 +168,7 @@ namespace WindowsFormsApp4
                     catch (System.InvalidOperationException e) { await Task.Delay(1000); };
 
 
-                    if (Server.blDevCnctd)
+                    if (Server.isDeviceConnected)
                     {
                         //if (FormGenSig.GetState())
                         //{
@@ -449,7 +201,7 @@ namespace WindowsFormsApp4
                 try
                 {
                     string jsonString = File.ReadAllText(file, Encoding.Default);
-                    List<ParamNames> temp = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+                    List<CustomControlsReader> temp = JsonConvert.DeserializeObject<List<CustomControlsReader>>(jsonString);
 
                     if (Server.strDevID.IndexOf(temp[0].Device) >= 0)
                     {
@@ -490,7 +242,7 @@ namespace WindowsFormsApp4
 
         private void vSetComandForDev(eDev_cmd cmd)
         {
-            if (Server.blDevCnctd)
+            if (Server.isDeviceConnected)
             {
                 Server.uialHRForWrite.Add(new UInt16[2] { 0, (UInt16)cmd });
                 gridHRTable.Rows[0].Cells[2].Value = (UInt16)cmd;
@@ -750,7 +502,7 @@ namespace WindowsFormsApp4
             tsStatus.Text = info;
 
             //кнопка соединить
-            if (Server.blDevCnctd)
+            if (Server.isDeviceConnected)
             {
                 ToolStripMenuItem_Connect.Text = "Отключить";
             }
@@ -813,7 +565,7 @@ namespace WindowsFormsApp4
                     if (Server.uiHoldingReg[i] < (row.Cells[3] as DataGridViewComboBoxCell).Items.Count)
                         row.Cells[3].Value = (row.Cells[3] as DataGridViewComboBoxCell).Items[Server.uiHoldingReg[i]];
                 }
-                else { paramNames.Add(new ParamNames()); }
+                else { /*paramNames.Add(new ParamNames());*/ }
 
 
                 // custom controls
@@ -885,14 +637,14 @@ namespace WindowsFormsApp4
                         //Changed handler for Custom Bar
                         bar.MouseUp += new MouseEventHandler((s, e) =>
                         {
-                            if (!Server.blDevCnctd) return;
+                            if (!Server.isDeviceConnected) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
                             Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp, (UInt16)bar.Value });
                             gridHRTable.Rows[tmp].Cells[2].Style.BackColor = Color.Red;
                         });
                         bar.ValueChanged += new EventHandler((s, e) =>
                         {
-                            if (!Server.blDevCnctd) return;
+                            if (!Server.isDeviceConnected) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
                             foreach (var el in customControlsList)
                                 if (tmp == el.index) el.textboxIndicator.Text = bar.Value.ToString();
@@ -900,7 +652,7 @@ namespace WindowsFormsApp4
                         bar.KeyUp += new KeyEventHandler((s, e) =>
                         {
                             if (!(e.KeyCode == Keys.Up | e.KeyCode == Keys.Down | e.KeyCode == Keys.Right | e.KeyCode == Keys.Left)) return;
-                            if (!Server.blDevCnctd) return;
+                            if (!Server.isDeviceConnected) return;
                             UInt16 tmp = Convert.ToUInt16(bar.Name.Substring(bar.Name.IndexOf('_') + 1, 2));
                             Server.uialHRForWrite.Add(new UInt16[2] { (UInt16)tmp, (UInt16)bar.Value });
                             gridHRTable.Rows[tmp].Cells[2].Style.BackColor = Color.Red;
@@ -911,7 +663,7 @@ namespace WindowsFormsApp4
                         tb.KeyUp += new KeyEventHandler((s, e) =>
                         {
                             if (e.KeyCode != Keys.Enter) return;
-                            if (!Server.blDevCnctd) return;
+                            if (!Server.isDeviceConnected) return;
 
                             UInt16 tmp_index = Convert.ToUInt16(tb.Name.Substring(tb.Name.IndexOf('_') + 1, 2));
                             UInt16 tmp_val = 0;
@@ -964,20 +716,6 @@ namespace WindowsFormsApp4
             }
 
             if (paramNames[0].Device != null) { this.tabForm.TabPages[0].Text = "Параметры [ " + paramNames[0].Device + " ]"; } else { this.tabForm.TabPages[0].Text = "Параметры [ ]"; };
-        }
-
-        private void txtBox_ModbusAdr_TextChanged(object sender, EventArgs e)
-        {
-            if (!String.IsNullOrEmpty(toolStripTextBox_adr.Text))
-            {
-                if (Convert.ToDouble(toolStripTextBox_adr.Text) > 255) toolStripTextBox_adr.Text = "1";
-            }
-        }
-
-
-        private void cmbBoxServerDelay_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.uiServerDelay = Convert.ToUInt16(this.toolStripComboBox_RefTime.Items[this.toolStripComboBox_RefTime.SelectedIndex]);
         }
 
 
@@ -1056,134 +794,45 @@ namespace WindowsFormsApp4
         private void btn_Cnct_Click(object sender, EventArgs e)
         {
 
-            if (Server.blDevCnctd)
+            if (Server.isDeviceConnected)
             {
+                Server.logger.Add("Отключаю соединение");
                 Server.Close();
+                
             }
             else {
-                Task.Run(() =>
+
+                Server.logger.Add("Установка соединения");
+                Server.OpenConsole = connection_setups.RunServerConsole;
+
+                if (connection_setups.DevSearch) {
+                    Task.Run(() => { 
+                        Server.SearchPort(
+                            connection_setups.ServerName,
+                            connection_setups.ServerPort); 
+                    });
+                    return;
+                }
+
+                if (connection_setups.Attach) {
+                    Task.Run(() => { 
+                        Server.ConncetToRunningServer(
+                            connection_setups.ServerName, 
+                            connection_setups.ServerPort); 
+                    });
+                    return;
+                }
+
+                Task.Run(async () =>
                 {
-                    Server.SearchPort();
+                    await Server.StartPort(
+                    connection_setups.ComPortName,
+                    connection_setups.BaudRate,
+                    connection_setups.ServerName,
+                    connection_setups.ServerPort
+                    );
                 });
             }
-
-           
-            return; 
-            
-            //bool tmp = Server.blDevCnctd;
-            //Server.vReset();
-
-            //if (spdpos == bds.Length - 1) { spdpos = 0; portpos++; } else { spdpos++; }
-            //if (portpos == ports.Count || tmp || !ToolStripMenuItemConAuto.Checked)
-            //    {
-            //        spdpos = 0;
-            //        portpos = 0;
-            //        Server.logger.Add("Сброс соединения ");
-            //        Debug.WriteLine("Сброс соединения ");
-            //        bs_flg = false;
-            //        return;
-            //    }
-
-            //if (ToolStripMenuItemConAuto.Checked)
-            //{
-
-                
-
-            //    foreach (var item in broken_ports)
-            //    {
-            //        int ind = ports.IndexOf(item);
-            //        if (ind >= 0) ports.RemoveAt(ind);
-            //    }
-
-            //    if (ports.Count == 0)
-            //    {
-            //        Debug.WriteLine("No port found");
-            //        return;
-            //    }
-
-            //    spPort.BaudRate = bds[spdpos];
-            //    if (ports.Count <= portpos)
-            //    {
-            //        ports.Clear();
-            //        bs_flg = false;
-            //        portpos = 0;
-            //        return;
-            //    }
-            //    spPort.PortName = ports[portpos];
-            //    spPort.Parity = Parity.None;
-            //    spPort.DataBits = 8;
-            //    spPort.ReadTimeout = 500;
-            //    Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
-
-            //}
-            //else
-            //{
-
-            //    if (toolStripMenuItemConSpd.SelectedItem == null) return;
-            //    spPort.BaudRate = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
-            //    spPort.PortName = toolStripMenuItemConPort.SelectedItem.ToString();
-            //    spPort.Parity = Parity.None;
-            //    spPort.DataBits = 8;
-            //    spPort.ReadTimeout = 500;
-            //    Server.btDevAdr = Convert.ToByte(toolStripTextBox_adr.Text);
-            //};
-
-            //try
-            //{
-            //    Debug.WriteLine(String.Format("Trying {0} {1}", spPort.PortName, spPort.BaudRate));
-            //    spPort.Open();
-                
-            //}
-            //catch (System.UnauthorizedAccessException ex)
-            //{
-            //    Server.logger.Add(ports[portpos].ToString() + " порт занят");
-            //    portpos++;
-            //    spdpos = 0;
-            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
-            //}
-            //catch (Exception ex)
-            //{
-            //    Server.logger.Add(ex.Message.ToString());
-            //    Server.vReset();
-            //    ToolStripMenuItem_Connect.Text = "Отключить";
-            //    bs_flg = false;
-            //    Server.logger.Add(ports[portpos].ToString() + " ошибка доступа");
-            //    broken_ports.Add(ports[portpos].ToString());
-            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
-            //};
-
-            //spPort.Close();
-
-
-            //CtsServerAdapter.Start( "localhost", 8888,  spPort.PortName, spPort.BaudRate);
-
-            //if (CtsServerAdapter.isAlaive())
-            //{
-            //    Task.Run(() =>
-            //    {
-            //        Server.vConnectToDevAsync();
-            //    });
-            //}
-            //else
-            //{
-            //    broken_ports.Add(ports[portpos].ToString());
-            //    if (ToolStripMenuItemConAuto.Checked) goto con_start;
-            //}
-
-            //bs_flg = false;
-
-            //if (!ToolStripMenuItemConAuto.Checked) return;
-
-            ////     // refresh lists in connection menu 
-            ////toolStripMenuItem3_DropDown(this, null);
-
-            //// if (toolStripMenuItemConPort.Items.IndexOf(Server.spPort.PortName.ToString()) < 0)
-            ////     toolStripMenuItemConPort.Items.Add(Server.spPort.PortName.ToString());
-            //// toolStripMenuItemConPort.SelectedItem = Server.spPort.PortName.ToString();
-
-            //// if (toolStripMenuItemConSpd.Items.IndexOf(Server.spPort.BaudRate.ToString()) < 0)
-            ////     toolStripMenuItemConSpd.SelectedItem = Server.spPort.BaudRate.ToString();
-
         }
 
 
@@ -1191,7 +840,7 @@ namespace WindowsFormsApp4
         private void MenuItem_Param_Save_ToFile_Click(object sender, EventArgs e)
         {
 
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             DateTime thisDay = DateTime.Today;
 
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -1220,14 +869,14 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Param_Save_ToDev_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             vSetComandForDev(eDev_cmd.SAVEPRM);
         }
 
         private void MenuItem_Param_Load_FromFile_Click(object sender, EventArgs e)
         {
 
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "Файл параметров|*.txt";
@@ -1294,7 +943,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Param_Load_FromDev_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
 
             vSetComandForDev(eDev_cmd.LOADPRM);
             foreach (DataGridViewRow row in gridHRTable.Rows)
@@ -1314,7 +963,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Refresh_State_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             tabForm.SelectTab(0);
             Server.blReadIRreq = true;
             Server.iFail = 0;
@@ -1322,7 +971,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Refresh_Dev_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             Server.blReadIRreq = true;
             tabForm.SelectTab(0);
             int i = 0;
@@ -1345,7 +994,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Refresh_Prog_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             tabForm.SelectTab(0);
             Server.uilHRadrForRead.Add(0);
             Server.uilHRadrForRead.Add(256);
@@ -1357,13 +1006,16 @@ namespace WindowsFormsApp4
         }
 
 
-        private void MenuItem_Loader_Flash_Click(object sender, EventArgs e)
+        private async void MenuItem_Loader_Flash_Click(object sender, EventArgs e)
         {
-            if (toolStripMenuItemConSpd.SelectedItem == null) return;
+            //     if (toolStripMenuItemConSpd.SelectedItem == null) return;
 
-            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
-            int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
-            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
+            
+
+
+            string pname = connection_setups.ComPortName;
+            int pspeed = connection_setups.BaudRate;
+            int dadr = connection_setups.SlaveAdr;
 
             // получаем выбранный файл
             OpenFileDialog openFileDialog2 = new OpenFileDialog();
@@ -1373,13 +1025,15 @@ namespace WindowsFormsApp4
 
            string filename = "\"" + openFileDialog2.FileName + "\"";
 
-            //if (Server.spPort.IsOpen)
-            //{
-            //    pname = Server.spPort.PortName;
-            //    pspeed = Server.spPort.BaudRate;
-            //    dadr = Server.btDevAdr;
-            //    btn_Cnct_Click(sender, e);
-            //}
+            if (Server.isDeviceConnected)
+            {
+                var res = await Server.GetComInfoAsync();
+                Server.logger.Add(String.Format("{0}:{1}", res.Item1, res.Item2));
+                pname = res.Item1;
+                pspeed = res.Item2;
+                dadr = 1;
+                btn_Cnct_Click(sender, e);
+            }
 
             string dst = pname + "," + pspeed + "," + dadr;
 
@@ -1395,13 +1049,13 @@ namespace WindowsFormsApp4
             LoaderUtilsAdapter.LoaderUtilsAdapter.Write(filename, dst);
         }
 
-        private void MenuItem_Loader_Verify_Click(object sender, EventArgs e)
+        private async void MenuItem_Loader_Verify_Click(object sender, EventArgs e)
         {
             if (toolStripMenuItemConSpd.SelectedItem == null) return;
 
-            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
-            int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
-            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
+            string pname = connection_setups.ComPortName;
+            int pspeed = connection_setups.BaudRate;
+            int dadr = connection_setups.SlaveAdr;
 
             // получаем выбранный файл
             OpenFileDialog openFileDialog2 = new OpenFileDialog();
@@ -1411,12 +1065,15 @@ namespace WindowsFormsApp4
 
             string filename = "\"" + openFileDialog2.FileName + "\"";
 
-            //if (Server.spPort.IsOpen) {
-            //    pname = Server.spPort.PortName;
-            //    pspeed = Server.spPort.BaudRate;
-            //    dadr = Server.btDevAdr;
-            //    btn_Cnct_Click(sender,e);
-            //}
+            if (Server.isDeviceConnected)
+            {
+                var res = await Server.GetComInfoAsync();
+                Server.logger.Add(String.Format("{0}:{1}", res.Item1, res.Item2));
+                pname = res.Item1;
+                pspeed = res.Item2;
+                dadr = 1;
+                btn_Cnct_Click(sender, e);
+            }
 
             string dst = pname + "," + pspeed + "," + dadr;
 
@@ -1436,9 +1093,9 @@ namespace WindowsFormsApp4
         {
             if (toolStripMenuItemConSpd.SelectedItem == null) return;
             //if (Server.spPort.IsOpen) { return; }
-            string pname = toolStripMenuItemConPort.SelectedItem.ToString();
+            string pname = connection_setups.ComPortName;
             int pspeed = Convert.ToInt32(toolStripMenuItemConSpd.SelectedItem.ToString());
-            int dadr = Convert.ToByte(toolStripTextBox_adr.Text);
+            int dadr = connection_setups.BaudRate;
             string dst = pname + "," + pspeed + "," + dadr;
             tabForm.SelectTab(3);
             LoaderUtilsAdapter.LoaderUtilsAdapter.SetOutput(txtBoxLog);
@@ -1449,7 +1106,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Loader_Stop_Click(object sender, EventArgs e)
         {
-            //if (Server.spPort.IsOpen) { return; }
+            if (Server.isDeviceConnected) { return; }
             LoaderUtilsAdapter.LoaderUtilsAdapter.Abort();
 
         }
@@ -1458,7 +1115,7 @@ namespace WindowsFormsApp4
         {
             if (ScopeForm != null) if (ScopeForm.Created) { ScopeForm.BringToFront(); return; };
 
-            if (!Server.blnScpEnbl && Server.blDevCnctd)
+            if (!Server.blnScpEnbl && Server.isDeviceConnected)
             {
                 ScopeForm = new FormScope(Server);
                 ScopeForm.Show();
@@ -1472,7 +1129,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_Param_MotorSel_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
             if (SetupForm1 != null) if (SetupForm1.Created) { SetupForm1.BringToFront(); return; };
             SetupForm1 = new SetupForm(Server);
             SetupForm1.Show();
@@ -1480,7 +1137,7 @@ namespace WindowsFormsApp4
 
         private void MenuItem_SetParamDescriptFile_Click(object sender, EventArgs e)
         {
-            if (!Server.blDevCnctd) return;
+            if (!Server.isDeviceConnected) return;
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "Файл описания параметров|*.json";
@@ -1492,7 +1149,7 @@ namespace WindowsFormsApp4
             try
             {
                 string jsonString = File.ReadAllText(filename, Encoding.Default);
-                paramNames = JsonConvert.DeserializeObject<List<ParamNames>>(jsonString);
+                paramNames = JsonConvert.DeserializeObject<List<CustomControlsReader>>(jsonString);
                 customControlsList.Clear();
                 tableLayoutPanel_IR.RowCount = 0;
                 tableLayoutPanel_IR.Controls.Clear();
@@ -1545,21 +1202,30 @@ namespace WindowsFormsApp4
 
         }
 
-        private void toolStripMenuItem3_DropDown(object sender, EventArgs e)
-        {
-
-            toolStripMenuItemConPort.Items.Clear();
-            List<String> tempPortsList = SerialPort.GetPortNames().ToList();
-            if (tempPortsList is null) return;
-            foreach (String el in tempPortsList) toolStripMenuItemConPort.Items.Add(el);
-
-
-        }
-
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             if(CtsServerAdapter.isAlaive()) CtsServerAdapter.Close();
         }
 
+        private void tableLayoutPanel_IR_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItemConPort_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ParamToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormConnectionSetups connectionSetups = new FormConnectionSetups();
+            connection_setups = ConnectionSetups.read();
+            if (Server.isDeviceConnected) {
+                btn_Cnct_Click(sender, e);
+                Thread.Sleep(300);
+                btn_Cnct_Click(sender, e);
+            }
+        }
     }
 }

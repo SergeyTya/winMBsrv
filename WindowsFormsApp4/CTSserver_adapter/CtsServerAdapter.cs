@@ -23,8 +23,26 @@ namespace ctsServerAdapter
         private static bool _isAttached=false;
         public static bool isAttached { get { return _isAttached; } }
 
+        private static bool sendStringToServer(string mes) {
+            var buf = Encoding.UTF8.GetBytes(mes);
+            try
+            {
+                TcpClient tcpClient = new TcpClient();
+                tcpClient.Connect(host, port);
+                NetworkStream stream = tcpClient.GetStream();
+                stream.Write(buf, 0, buf.Length);
+                return true;
+            }
+            catch (System.Net.Sockets.SocketException ex)
+            {
+                Debug.Write(ex.ToString());
+                return false;
+            }
 
-        public static void Start(string host="localhost", int port=8888, string serial_name="com6", int serial_speed=9600)
+        }
+
+
+        public static void Start(string host="localhost", int port=8888, string serial_name="com6", int serial_speed=9600, bool createWindow = false)
         {
             _isAttached = false;
             if (isAlaive() == false)
@@ -36,7 +54,7 @@ namespace ctsServerAdapter
                     CtsServerAdapter.serial_name = serial_name;
                     CtsServerAdapter.serial_speed = serial_speed;
                     string param = String.Format("--host {0} --port {1} --serial {2} --speed {3}", host, port, serial_name, serial_speed);
-                    task = new ConsoleTask("CTS_server.exe", param, consoleStreamReader, true);
+                    task = new ConsoleTask("CTS_server.exe", param, consoleStreamReader, createWindow);
                 }
             }
 
@@ -44,6 +62,7 @@ namespace ctsServerAdapter
         }
 
         public static void Close() {
+            //sendStringToServer("close");
             var buf = Encoding.UTF8.GetBytes("close");
             try
             {
@@ -51,8 +70,11 @@ namespace ctsServerAdapter
                 tcpClient.Connect(host, port);
                 NetworkStream stream = tcpClient.GetStream();
                 stream.Write(buf, 0, buf.Length);
+
             }
-            catch (System.Net.Sockets.SocketException ex) { 
+            catch (System.Net.Sockets.SocketException ex)
+            {
+                Debug.Write(ex.ToString());
             }
         }
 
@@ -92,6 +114,12 @@ namespace ctsServerAdapter
             {
                 return false;
             }
+
+        }
+
+        public static void GetComInfo()
+        {
+
 
         }
 

@@ -20,14 +20,17 @@ using AsyncSocketTest;
 using System.Collections;
 using static AsyncSocketTest.ServerModbusTCP;
 using ctsServerAdapter;
+using System.Dynamic;
 
 namespace WindowsFormsApp4
 {
     public class MODBUS_srv
     {
 
+        public bool isDeviceConnected = false;
+
         public byte btDevAdr = 0;
-        public bool blDevCnctd = false;
+  
         public bool blReadIRreq = false;
         public bool blReadHRreq = false;
         public bool blUpdGridHR = false;
@@ -84,6 +87,8 @@ namespace WindowsFormsApp4
 
         }
 
+        public bool OpenConsole { set; get; } = false;
+
         // public IModbusSerialMaster master;
 
         public AsyncSocketTest.ServerModbusTCP tcp_master;
@@ -91,13 +96,13 @@ namespace WindowsFormsApp4
         public MODBUS_srv()
         {
             btDevAdr = 1;
-            blDevCnctd = false;
+            isDeviceConnected = false;
 
         }
 
         public async void ConnectToDevAsync(string host= "localhost", int port= 8888)
         {
-            if (!blDevCnctd)
+            if (!isDeviceConnected)
             {
                 try
                 {
@@ -132,7 +137,7 @@ namespace WindowsFormsApp4
                     return;
                 };
                 Debug.WriteLine("Connected");
-                blDevCnctd = true;
+                isDeviceConnected = true;
                 uilHRadrForRead.Add(0);
                 uilHRadrForRead.Add(256);
                 return;
@@ -147,7 +152,7 @@ namespace WindowsFormsApp4
 
                 while (suspend) await Task.Delay(1000);
 
-                if (blDevCnctd)
+                if (isDeviceConnected)
                 {
                     if (uiInputReg[0] > 0)
                     {
@@ -212,7 +217,7 @@ namespace WindowsFormsApp4
                     }
                 }
 
-                if (blDevCnctd & blReadIRreq)
+                if (isDeviceConnected & blReadIRreq)
                     if (await intReadDataAsync(0, uiInputReg[0], comand.RD_INPUT) < 0)
                     {
                         for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
@@ -225,8 +230,6 @@ namespace WindowsFormsApp4
             }
 
         }
-
-
 
         async Task<int> intReadDataAsync(UInt16 adr, UInt16 count, comand cmd)
         {
@@ -260,11 +263,14 @@ namespace WindowsFormsApp4
             catch (Exception e)
             {
                 logger.Add(e.Message);
+                Debug.WriteLine(e);
+                if (e is System.IO.IOException)
+                {
+                    Close();
+                }
                 return -1;
             }
-
             return 0;
-
         }
 
         async Task<int> iWriteDataAsync(UInt16 adr, UInt16 data)
@@ -282,7 +288,6 @@ namespace WindowsFormsApp4
 
             return 0;
         }
-
 
         //write multiply register
         async Task<int> iWriteData(UInt16 adrW, List<ushort> data)
@@ -611,7 +616,7 @@ namespace WindowsFormsApp4
                 });
                 CtsServerAdapter.Close();
             }
-           blDevCnctd = false;
+           isDeviceConnected = false;
             iFail = 0;
             strDevID = "";
 
@@ -635,7 +640,7 @@ namespace WindowsFormsApp4
             tcp_master.close();
         }
 
-        async Task<bool> StartPort(string name, int speed) {
+        public async Task<bool> StartPort(string name, int speed, string server = "localhost", int server_port = 8888) {
             SerialPort port = new SerialPort();
             try
             {
@@ -654,8 +659,8 @@ namespace WindowsFormsApp4
                 await master.ReadHoldingRegistersAsync(btDevAdr, 0, 1);
                 port.Close();
                 logger.Add("Запуск сервера");
-                CtsServerAdapter.Start("localhost", 8888, port.PortName, port.BaudRate);
-                ConnectToDevAsync();
+                CtsServerAdapter.Start(server, server_port, port.PortName, port.BaudRate, OpenConsole);
+                ConnectToDevAsync(server, server_port);
                 return true;
             }
             catch (Exception ex)
@@ -677,9 +682,9 @@ namespace WindowsFormsApp4
 
 
 
-        public async void SearchPort() {
+        public async void SearchPort(string server = "localhost", int server_port = 8888) {
 
-            if (blDevCnctd) Close();
+            if (isDeviceConnected) Close();
             
             List<String> broken_ports = new List<string>();
             int[] speeds_avalible = new int[] { 9600, 38400, 115200, 128000, 230400, 406000 };
@@ -688,7 +693,7 @@ namespace WindowsFormsApp4
             {
                 foreach (int speed in speeds_avalible)
                 {
-                    if (await StartPort(name, speed) == true) {
+                    if (await StartPort(name, speed, server, server_port) == true) {
                         return;
                     }
                 }
@@ -696,7 +701,22 @@ namespace WindowsFormsApp4
         }
 
 
+        public async Task<Tuple<string, int>> GetComInfoAsync() {
+            string tmp =  await tcp_master.GetInfoAsync();
 
+            try
+            {
+                var data = tmp.Split(' ')[1].Split(':');
+                Debug.WriteLine(data[0]);
+                Debug.WriteLine(data[1]);
+                return new Tuple<string, int>(data[0], Convert.ToInt32(data[1]));
+            }
+            catch (System.IndexOutOfRangeException ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return new Tuple<string, int>("COM0", 0000);
+            }
+        }
 
     }
 }

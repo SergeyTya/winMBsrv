@@ -98,6 +98,14 @@
     <Compile Include="Bootloader.cs" />
     <Compile Include="CTSserver_adapter\consoleTask.cs" />
     <Compile Include="CTSserver_adapter\CtsServerAdapter.cs" />
+    <Compile Include="CustomControlsReader.cs" />
+    <Compile Include="FormConnectionSetups.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConnectionSetups.Designer.cs">
+      <DependentUpon>FormConnectionSetups.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputRegisterIndicator.cs" />
     <Compile Include="loaderutils\crc.cs" />
     <Compile Include="loaderutils\ISerialPort.cs" />
     <Compile Include="loaderutils\win_port.cs" />
@@ -143,6 +151,9 @@
     </Compile>
     <EmbeddedResource Include="AdrSelForm.resx">
       <DependentUpon>AdrSelForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormConnectionSetups.resx">
+      <DependentUpon>FormConnectionSetups.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>

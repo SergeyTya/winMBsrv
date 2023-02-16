@@ -45,7 +45,6 @@
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.contextMenuForChart = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemConSpd = new System.Windows.Forms.ToolStripComboBox();
-            this.скоростьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tbState = new System.Windows.Forms.TextBox();
@@ -59,13 +58,6 @@
             this.MenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_Connect = new System.Windows.Forms.ToolStripMenuItem();
             this.ParamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolStripMenuItemConAuto = new System.Windows.Forms.ToolStripMenuItem();
-            this.портToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemConPort = new System.Windows.Forms.ToolStripComboBox();
-            this.адресToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox_adr = new System.Windows.Forms.ToolStripTextBox();
-            this.периодОпросаМсToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox_RefTime = new System.Windows.Forms.ToolStripComboBox();
             this.MenuItem_Param = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Param_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Param_Save_ToFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -138,7 +130,6 @@
             this.contextMenuForChart.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemConSpd});
             this.contextMenuForChart.Name = "contextMenuForChart";
-            this.contextMenuForChart.OwnerItem = this.скоростьToolStripMenuItem;
             this.contextMenuForChart.Size = new System.Drawing.Size(241, 31);
             // 
             // toolStripMenuItemConSpd
@@ -152,13 +143,6 @@
             this.toolStripMenuItemConSpd.Name = "toolStripMenuItemConSpd";
             this.toolStripMenuItemConSpd.Size = new System.Drawing.Size(180, 23);
             this.toolStripMenuItemConSpd.Text = "...";
-            // 
-            // скоростьToolStripMenuItem
-            // 
-            this.скоростьToolStripMenuItem.DropDown = this.contextMenuForChart;
-            this.скоростьToolStripMenuItem.Name = "скоростьToolStripMenuItem";
-            this.скоростьToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.скоростьToolStripMenuItem.Text = "Скорость";
             // 
             // statusStrip1
             // 
@@ -295,79 +279,10 @@
             // 
             // ParamToolStripMenuItem
             // 
-            this.ParamToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolStripMenuItemConAuto,
-            this.портToolStripMenuItem,
-            this.скоростьToolStripMenuItem,
-            this.адресToolStripMenuItem1,
-            this.периодОпросаМсToolStripMenuItem});
             this.ParamToolStripMenuItem.Name = "ParamToolStripMenuItem";
             this.ParamToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
             this.ParamToolStripMenuItem.Text = "Параметры";
-            // 
-            // ToolStripMenuItemConAuto
-            // 
-            this.ToolStripMenuItemConAuto.Checked = true;
-            this.ToolStripMenuItemConAuto.CheckOnClick = true;
-            this.ToolStripMenuItemConAuto.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ToolStripMenuItemConAuto.Name = "ToolStripMenuItemConAuto";
-            this.ToolStripMenuItemConAuto.Size = new System.Drawing.Size(215, 26);
-            this.ToolStripMenuItemConAuto.Text = "Автосоединение";
-            // 
-            // портToolStripMenuItem
-            // 
-            this.портToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemConPort});
-            this.портToolStripMenuItem.Name = "портToolStripMenuItem";
-            this.портToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.портToolStripMenuItem.Text = "Порт";
-            // 
-            // toolStripMenuItemConPort
-            // 
-            this.toolStripMenuItemConPort.Name = "toolStripMenuItemConPort";
-            this.toolStripMenuItemConPort.Size = new System.Drawing.Size(152, 23);
-            this.toolStripMenuItemConPort.Text = "...";
-            this.toolStripMenuItemConPort.DropDown += new System.EventHandler(this.toolStripMenuItem3_DropDown);
-            // 
-            // адресToolStripMenuItem1
-            // 
-            this.адресToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripTextBox_adr});
-            this.адресToolStripMenuItem1.Name = "адресToolStripMenuItem1";
-            this.адресToolStripMenuItem1.Size = new System.Drawing.Size(215, 26);
-            this.адресToolStripMenuItem1.Text = "Адрес";
-            // 
-            // toolStripTextBox_adr
-            // 
-            this.toolStripTextBox_adr.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripTextBox_adr.Name = "toolStripTextBox_adr";
-            this.toolStripTextBox_adr.Size = new System.Drawing.Size(152, 23);
-            this.toolStripTextBox_adr.Text = "1";
-            this.toolStripTextBox_adr.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolStripTextBox_adr.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox_adr_KeyPress);
-            this.toolStripTextBox_adr.TextChanged += new System.EventHandler(this.txtBox_ModbusAdr_TextChanged);
-            // 
-            // периодОпросаМсToolStripMenuItem
-            // 
-            this.периодОпросаМсToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripComboBox_RefTime});
-            this.периодОпросаМсToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.периодОпросаМсToolStripMenuItem.Name = "периодОпросаМсToolStripMenuItem";
-            this.периодОпросаМсToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.периодОпросаМсToolStripMenuItem.Text = "Период опроса, мс";
-            // 
-            // toolStripComboBox_RefTime
-            // 
-            this.toolStripComboBox_RefTime.Items.AddRange(new object[] {
-            "10",
-            "20",
-            "50",
-            "100",
-            "200"});
-            this.toolStripComboBox_RefTime.Name = "toolStripComboBox_RefTime";
-            this.toolStripComboBox_RefTime.Size = new System.Drawing.Size(152, 23);
-            this.toolStripComboBox_RefTime.Text = "1";
-            this.toolStripComboBox_RefTime.SelectedIndexChanged += new System.EventHandler(this.cmbBoxServerDelay_SelectedIndexChanged);
+            this.ParamToolStripMenuItem.Click += new System.EventHandler(this.ParamToolStripMenuItem_Click);
             // 
             // MenuItem_Param
             // 
@@ -906,6 +821,7 @@
             this.tableLayoutPanel_IR.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel_IR.Size = new System.Drawing.Size(224, 525);
             this.tableLayoutPanel_IR.TabIndex = 35;
+            this.tableLayoutPanel_IR.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel_IR_Paint);
             // 
             // FormMain
             // 
@@ -1007,16 +923,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_debug;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.ToolStripMenuItem ParamToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemConAuto;
         private System.Windows.Forms.ToolStripComboBox toolStripMenuItemConSpd;
-        private System.Windows.Forms.ToolStripMenuItem скоростьToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem портToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox toolStripMenuItemConPort;
-        private System.Windows.Forms.ToolStripMenuItem адресToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem периодОпросаМсToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_RefTime;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_adr;
+        private System.Windows.Forms.ToolStripMenuItem ParamToolStripMenuItem;
     }
 }
 
