@@ -167,12 +167,21 @@ namespace WindowsFormsApp4
 
         private void button_stop_Click(object sender, EventArgs e)
         {
-            CtsServerAdapter.Close();
+            //CtsServerAdapter.Close();
+            Process[] processes = Process.GetProcessesByName("CTS_server");
+
+            foreach (Process process in processes) // В цикле их переберём
+            {
+                process.Kill(); // завершим процесс
+                Console.WriteLine(process.ProcessName);
+            }
+
+            
         }
     }
 
 
-    class ConnectionSetups
+    public class ConnectionSetups
     {
         public ConnectionSetups(
             bool aconnect = true,

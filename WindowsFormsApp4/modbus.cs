@@ -118,7 +118,16 @@ namespace WindowsFormsApp4
 
                byte[] cmdGetID = new byte[]  { 0, 0, 0, 0, 0 , 5, btDevAdr, 0x2B, 0xE, 0x1, 0x1 };
 
-                var resp = await tcp_master.SendRawDataAsync(cmdGetID);
+                byte[] resp;
+                try
+                {
+                    resp = await tcp_master.SendRawDataAsync(cmdGetID);
+
+                }
+                catch (ServerModbusTCPException ex) {
+                    logger.Add(ex.Message);
+                    return;
+                }
 
                 if (resp.Length > 43)
                 {

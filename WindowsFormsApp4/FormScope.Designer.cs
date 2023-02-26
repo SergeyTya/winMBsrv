@@ -570,7 +570,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.72973F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70.27027F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel3.Controls.Add(this.label8, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.label9, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.label10, 0, 1);
@@ -643,7 +643,7 @@
             this.textBoxAdrCh1.MaxLength = 8;
             this.textBoxAdrCh1.Name = "textBoxAdrCh1";
             this.textBoxAdrCh1.ShortcutsEnabled = false;
-            this.textBoxAdrCh1.Size = new System.Drawing.Size(84, 22);
+            this.textBoxAdrCh1.Size = new System.Drawing.Size(83, 22);
             this.textBoxAdrCh1.TabIndex = 6;
             this.textBoxAdrCh1.Tag = "";
             this.textBoxAdrCh1.Text = "0";
@@ -670,7 +670,7 @@
             this.textBoxAdrCh2.MaxLength = 8;
             this.textBoxAdrCh2.Name = "textBoxAdrCh2";
             this.textBoxAdrCh2.ShortcutsEnabled = false;
-            this.textBoxAdrCh2.Size = new System.Drawing.Size(84, 22);
+            this.textBoxAdrCh2.Size = new System.Drawing.Size(83, 22);
             this.textBoxAdrCh2.TabIndex = 6;
             this.textBoxAdrCh2.Tag = "";
             this.textBoxAdrCh2.Text = "0";
@@ -685,7 +685,7 @@
             this.textBoxAdrCh3.MaxLength = 8;
             this.textBoxAdrCh3.Name = "textBoxAdrCh3";
             this.textBoxAdrCh3.ShortcutsEnabled = false;
-            this.textBoxAdrCh3.Size = new System.Drawing.Size(84, 22);
+            this.textBoxAdrCh3.Size = new System.Drawing.Size(83, 22);
             this.textBoxAdrCh3.TabIndex = 6;
             this.textBoxAdrCh3.Tag = "";
             this.textBoxAdrCh3.Text = "0";
@@ -700,7 +700,7 @@
             this.textBoxAdrCh4.MaxLength = 8;
             this.textBoxAdrCh4.Name = "textBoxAdrCh4";
             this.textBoxAdrCh4.ShortcutsEnabled = false;
-            this.textBoxAdrCh4.Size = new System.Drawing.Size(84, 22);
+            this.textBoxAdrCh4.Size = new System.Drawing.Size(83, 22);
             this.textBoxAdrCh4.TabIndex = 6;
             this.textBoxAdrCh4.Tag = "";
             this.textBoxAdrCh4.Text = "0";
@@ -713,9 +713,9 @@
             this.btnSendAdrCh1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnSendAdrCh1.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSendAdrCh1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnSendAdrCh1.Location = new System.Drawing.Point(165, 3);
+            this.btnSendAdrCh1.Location = new System.Drawing.Point(164, 3);
             this.btnSendAdrCh1.Name = "btnSendAdrCh1";
-            this.btnSendAdrCh1.Size = new System.Drawing.Size(36, 23);
+            this.btnSendAdrCh1.Size = new System.Drawing.Size(37, 23);
             this.btnSendAdrCh1.TabIndex = 32;
             this.btnSendAdrCh1.Text = "Aqn";
             this.btnSendAdrCh1.UseVisualStyleBackColor = true;
@@ -725,9 +725,9 @@
             // 
             this.btnSendAdrCh2.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSendAdrCh2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnSendAdrCh2.Location = new System.Drawing.Point(165, 32);
+            this.btnSendAdrCh2.Location = new System.Drawing.Point(164, 32);
             this.btnSendAdrCh2.Name = "btnSendAdrCh2";
-            this.btnSendAdrCh2.Size = new System.Drawing.Size(36, 23);
+            this.btnSendAdrCh2.Size = new System.Drawing.Size(37, 23);
             this.btnSendAdrCh2.TabIndex = 32;
             this.btnSendAdrCh2.Text = "Aqn";
             this.btnSendAdrCh2.UseVisualStyleBackColor = true;
@@ -737,9 +737,9 @@
             // 
             this.btnSendAdrCh3.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSendAdrCh3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnSendAdrCh3.Location = new System.Drawing.Point(165, 61);
+            this.btnSendAdrCh3.Location = new System.Drawing.Point(164, 61);
             this.btnSendAdrCh3.Name = "btnSendAdrCh3";
-            this.btnSendAdrCh3.Size = new System.Drawing.Size(36, 23);
+            this.btnSendAdrCh3.Size = new System.Drawing.Size(37, 23);
             this.btnSendAdrCh3.TabIndex = 32;
             this.btnSendAdrCh3.Text = "Aqn";
             this.btnSendAdrCh3.UseVisualStyleBackColor = true;
@@ -749,9 +749,9 @@
             // 
             this.btnSendAdrCh4.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnSendAdrCh4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnSendAdrCh4.Location = new System.Drawing.Point(165, 90);
+            this.btnSendAdrCh4.Location = new System.Drawing.Point(164, 90);
             this.btnSendAdrCh4.Name = "btnSendAdrCh4";
-            this.btnSendAdrCh4.Size = new System.Drawing.Size(36, 23);
+            this.btnSendAdrCh4.Size = new System.Drawing.Size(37, 23);
             this.btnSendAdrCh4.TabIndex = 32;
             this.btnSendAdrCh4.Text = "Aqn";
             this.btnSendAdrCh4.UseVisualStyleBackColor = true;
@@ -760,7 +760,7 @@
             // textBoxAdrShCh1
             // 
             this.textBoxAdrShCh1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.textBoxAdrShCh1.Location = new System.Drawing.Point(131, 3);
+            this.textBoxAdrShCh1.Location = new System.Drawing.Point(130, 3);
             this.textBoxAdrShCh1.MaxLength = 8;
             this.textBoxAdrShCh1.Name = "textBoxAdrShCh1";
             this.textBoxAdrShCh1.ShortcutsEnabled = false;
@@ -774,7 +774,7 @@
             // textBoxAdrShCh2
             // 
             this.textBoxAdrShCh2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.textBoxAdrShCh2.Location = new System.Drawing.Point(131, 32);
+            this.textBoxAdrShCh2.Location = new System.Drawing.Point(130, 32);
             this.textBoxAdrShCh2.MaxLength = 8;
             this.textBoxAdrShCh2.Name = "textBoxAdrShCh2";
             this.textBoxAdrShCh2.ShortcutsEnabled = false;
@@ -788,7 +788,7 @@
             // textBoxAdrShCh3
             // 
             this.textBoxAdrShCh3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.textBoxAdrShCh3.Location = new System.Drawing.Point(131, 61);
+            this.textBoxAdrShCh3.Location = new System.Drawing.Point(130, 61);
             this.textBoxAdrShCh3.MaxLength = 8;
             this.textBoxAdrShCh3.Name = "textBoxAdrShCh3";
             this.textBoxAdrShCh3.ShortcutsEnabled = false;
@@ -802,7 +802,7 @@
             // textBoxAdrShCh4
             // 
             this.textBoxAdrShCh4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.textBoxAdrShCh4.Location = new System.Drawing.Point(131, 90);
+            this.textBoxAdrShCh4.Location = new System.Drawing.Point(130, 90);
             this.textBoxAdrShCh4.MaxLength = 8;
             this.textBoxAdrShCh4.Name = "textBoxAdrShCh4";
             this.textBoxAdrShCh4.ShortcutsEnabled = false;

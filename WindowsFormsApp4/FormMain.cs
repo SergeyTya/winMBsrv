@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using consoleTask;
 using ctsServerAdapter;
 using System.Net.NetworkInformation;
+using TestGen;
 
 namespace WindowsFormsApp4
 {
@@ -39,7 +40,7 @@ namespace WindowsFormsApp4
         private MODBUS_srv Server =  new MODBUS_srv();
         private Bootloader bloader = null;
         private SetupForm SetupForm1 = null;
-        private FormGensig FormGenSig;
+        private FormGensig2 FormGenSig;
 
         private string sTempForCell = null;
         private UInt16 uiServerDelay = 10;
@@ -56,10 +57,16 @@ namespace WindowsFormsApp4
         public FormScope ScopeForm = null;
         public delegate void MyDelegate();
 
+       
+
         public FormMain()
         {
+            //FormScope2 scp = new FormScope2();
+            //scp.Show();
+            //return;
 
             InitializeComponent();
+
             connection_setups = ConnectionSetups.read();
 
             try
@@ -802,6 +809,21 @@ namespace WindowsFormsApp4
             }
             else {
 
+                Process[] processes = Process.GetProcessesByName("CTS_server");
+
+                if (processes.Length != 0) {
+
+                    if (MessageBox.Show("Cервер уже работает. Завершить?", "Внимание", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        foreach (Process process in processes) // В цикле их переберём
+                        {
+                            process.Kill(); // завершим процесс
+                            Console.WriteLine(process.ProcessName);
+                            Thread.Sleep(2000);
+                        }
+                    }
+                }
+
                 Server.logger.Add("Установка соединения");
                 Server.OpenConsole = connection_setups.RunServerConsole;
 
@@ -1193,7 +1215,11 @@ namespace WindowsFormsApp4
                     return;
                 };
 
-            FormGenSig = new FormGensig(Server);
+
+            //FormGensig2 formgs = new FormGensig2();
+            //formgs.Show();
+
+            FormGenSig = new FormGensig2();
             FormGenSig.Show();
         }
 
