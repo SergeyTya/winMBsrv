@@ -57,6 +57,8 @@ namespace WindowsFormsApp4
         public FormScope ScopeForm = null;
         public delegate void MyDelegate();
 
+        int delay = 250;
+
        
 
         public FormMain()
@@ -125,8 +127,8 @@ namespace WindowsFormsApp4
             this.tableLayoutPanel_debug.Controls.Add(timeStepInd.indicator, 0, 1);
             this.tableLayoutPanel_debug.RowCount++;
 
-            Server.SlavePollAsync(300);
-            Task_FormRefreshAsync();
+            _ = Task.Run(async () =>  await Server.SlavePollAsync(3*delay/4) );
+            _ = Task.Run(async () => await Task_FormRefreshAsync(delay) ); 
 
             if (connection_setups.Aconnect) {
                 btn_Cnct_Click(new object(), new EventArgs());
@@ -147,17 +149,16 @@ namespace WindowsFormsApp4
 
 
         //основной поток
-        private async void Task_FormRefreshAsync()
+        private async Task Task_FormRefreshAsync(int ref_delay)
         {
-            double counter = 0.0;
-            int pos = 0;
 
             while (true)
             {
                
 
                     try { 
-                        BeginInvoke(new MyDelegate(vLog_Update)); }
+                        BeginInvoke(new MyDelegate(vLog_Update)); 
+                    }
                     catch (Exception e) { Debug.WriteLine(e.Message); }
 
                     try
@@ -172,28 +173,18 @@ namespace WindowsFormsApp4
                             BeginInvoke(new MyDelegate(vIndi_Clear));
                         }
                     }
-                    catch (System.InvalidOperationException e) { await Task.Delay(1000); };
+                    catch (System.InvalidOperationException e) {
+                        await Task.Delay(10); 
+                    };
 
 
                     if (Server.isDeviceConnected)
-                    {
-                        //if (FormGenSig.GetState())
-                        //{
-                        //    //UInt16 point = FormGenSig.GetReference();
-                        //    //UInt16 target = FormGenSig.GetTargetHR();
-                        //    //FormGenSig.SetTargetRef(Server.uiHoldingReg[target]);
-                        //    //FormGenSig.SetResponce(Server.uiInputReg[FormGenSig.GetResponceIR()]);
-                        //    //if (Server.uiHoldingReg[target] != point)
-                        //    //    Server.uialHRForWrite.Add(new UInt16[2] { target, point });
-                        //};
-
-                        //try { BeginInvoke(new MyDelegate(() => { FormGenSig.proc(timeStep); })); }
-                        //catch (Exception) { }
-
+                    { 
                         Server.blReadIRreq = true;
                     }
 
-                await Task.Delay(100);
+                 await Task.Delay(ref_delay);
+               
             }
         }
 
@@ -339,35 +330,32 @@ namespace WindowsFormsApp4
 
 
             //обновляю таблицу RIO
-            BeginInvoke(new MyDelegate(() =>
+
+            if (tabForm.SelectedTab.Name == "tabPage3")
             {
 
-                if (tabForm.SelectedTab.Name == "tabPage3")
+                i = 0;
+                gridRelayIO.ClearSelection();
+                foreach (DataGridViewRow row in gridRelayIO.Rows)
                 {
-
-                    i = 0;
-                    gridRelayIO.ClearSelection();
-                    foreach (DataGridViewRow row in gridRelayIO.Rows)
+                    row.Cells[1].Value = 0;
+                    row.Cells[3].Value = 0;
+                    row.Cells[1].Style.BackColor = Color.White;
+                    row.Cells[3].Style.BackColor = Color.White;
+                    if ((Server.uiInputReg[9] & (1 << i + 8)) > 0)
                     {
-                        row.Cells[1].Value = 0;
-                        row.Cells[3].Value = 0;
-                        row.Cells[1].Style.BackColor = Color.White;
-                        row.Cells[3].Style.BackColor = Color.White;
-                        if ((Server.uiInputReg[9] & (1 << i + 8)) > 0)
-                        {
-                            row.Cells[1].Value = 1;
-                            row.Cells[1].Style.BackColor = Color.LightGreen;
-                        };
-                        if ((Server.uiInputReg[9] & (1 << i + 0)) > 0)
-                        {
-                            row.Cells[3].Value = 1;
-                            row.Cells[3].Style.BackColor = Color.LightCoral;
-                        };
+                        row.Cells[1].Value = 1;
+                        row.Cells[1].Style.BackColor = Color.LightGreen;
+                    };
+                    if ((Server.uiInputReg[9] & (1 << i + 0)) > 0)
+                    {
+                        row.Cells[3].Value = 1;
+                        row.Cells[3].Style.BackColor = Color.LightCoral;
+                    };
 
-                        i++;
-                    }
+                    i++;
                 }
-            }));
+            }
 
             //обновляю таблицу параметров
             i = 0;

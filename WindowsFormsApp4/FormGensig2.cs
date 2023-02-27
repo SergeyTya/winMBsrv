@@ -191,7 +191,7 @@ namespace TestGen
         RollingPointPairList _data_refer;
         RollingPointPairList _data_respo;
         RollingPointPairList _data_error;
-        int _capacity = 1000;
+        int _capacity = 300;
         private void PrepareGraph()
         {
             _data_error = new RollingPointPairList(_capacity);

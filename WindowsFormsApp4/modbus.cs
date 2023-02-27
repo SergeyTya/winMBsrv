@@ -154,7 +154,7 @@ namespace WindowsFormsApp4
 
         }
 
-        public async void SlavePollAsync(int delay)
+        public async Task SlavePollAsync(int delay)
         {
             while (true)
             {
@@ -175,8 +175,8 @@ namespace WindowsFormsApp4
                             if (await intReadDataAsync((ushort)min, (ushort)max, comand.RD_HOLDING) < 0) iFail++;
                             blUpdGridHR = true;
                             uilHRadrForRead.Clear();
-                            await Task.Delay(delay);
-                            continue;
+                            //await Task.Delay(delay);
+                            //continue;
                         }
 
                         //читаем один РХ
@@ -188,8 +188,8 @@ namespace WindowsFormsApp4
                             uilHRadrForRead.RemoveAt(0);
                             if (uilHRadrForRead.Count > 5) uilHRadrForRead.Clear();
                             blUpdGridHR = true;
-                            await Task.Delay(delay);
-                            continue;
+                            //await Task.Delay(delay);
+                            //continue;
                         }
 
 
@@ -200,8 +200,8 @@ namespace WindowsFormsApp4
                                 await iWriteDataAsync(uialHRForWrite[0][0], uialHRForWrite[0][1]);
                                 uialHRForWrite.RemoveAt(0);
                                 if (uialHRForWrite.Count > 25) uialHRForWrite.Clear();
-                                await Task.Delay(delay);
-                                continue;
+                                //await Task.Delay(delay);
+                                //continue;
                             }
 
 
@@ -216,7 +216,7 @@ namespace WindowsFormsApp4
                             }
                             uialHRForWrite.Clear();
                             blnWriteAllHR = false;
-                            await Task.Delay(delay);
+                            //await Task.Delay(delay);
                             continue;
                         }
                     }
@@ -226,13 +226,14 @@ namespace WindowsFormsApp4
                     }
                 }
 
-                if (isDeviceConnected & blReadIRreq)
+                if (isDeviceConnected )//& blReadIRreq)
                     if (await intReadDataAsync(0, uiInputReg[0], comand.RD_INPUT) < 0)
                     {
                         for (int i = 2; i < uiInputReg[0]; i++) uiInputReg[i] = 0;
                         iFail++;
 
                     }
+
                 blReadIRreq = false;
 
                 await Task.Delay(delay);
