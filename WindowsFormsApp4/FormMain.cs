@@ -55,17 +55,15 @@ namespace WindowsFormsApp4
         private List<InputRegisterIndicator> IrIndicList = new List<InputRegisterIndicator>();
 
         public FormScope ScopeForm = null;
-        public delegate void MyDelegate();
-
         int delay = 250;
 
-       
+        public delegate void MyDelegate();
 
         public FormMain()
         {
-            //FormScope2 scp = new FormScope2();
-            //scp.Show();
-            //return;
+            FormScope2 scp = new FormScope2();
+            scp.Show();
+            return;
 
             InitializeComponent();
 

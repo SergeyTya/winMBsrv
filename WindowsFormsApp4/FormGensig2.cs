@@ -62,7 +62,6 @@ namespace TestGen
             controlTable.addControl( new CustomControl(GenSigParamNames.Amplitude, min: 1, def: 3000));
             controlTable.addControl( new CustomControl(GenSigParamNames.Offset, min: 0));
             controlTable.RenderTable();
-
         }
 
         public void TimerStart(int intervalMs, Action callback)
@@ -184,9 +183,7 @@ namespace TestGen
                 server.close();
             }
             TimerStop();
-
         }
-
 
         RollingPointPairList _data_refer;
         RollingPointPairList _data_respo;
@@ -199,72 +196,46 @@ namespace TestGen
             _data_respo = new RollingPointPairList(_capacity);
             // Получим панель для рисования
             GraphPane pane1 = zedGraph1.GraphPane;
-            GraphPane pane2 = zedGraph2.GraphPane;
-
             pane1.XAxis.Title.Text = "Время, c";
-            pane2.XAxis.Title.Text = "Время, c";
-
             pane1.Title.Text = "Задание";
-            pane2.Title.Text = "Ошибка";
-
-
+            
             int labelsfontSize = 12;
             // Установим размеры шрифтов для меток вдоль осей
             pane1.XAxis.Scale.FontSpec.Size = labelsfontSize;
             pane1.YAxis.Scale.FontSpec.Size = labelsfontSize;
-            pane2.XAxis.Scale.FontSpec.Size = labelsfontSize;
-            pane2.YAxis.Scale.FontSpec.Size = labelsfontSize;
             pane1.XAxis.Title.FontSpec.Size = labelsfontSize;
-            pane2.XAxis.Title.FontSpec.Size = labelsfontSize;
             pane1.Title.FontSpec.Size = labelsfontSize;
-            pane2.Title.FontSpec.Size = labelsfontSize;
             pane1.IsFontsScaled = false;
-            pane2.IsFontsScaled = false;
-
+  
             // По оси Y установим автоматический подбор масштаба
-            pane2.YAxis.Scale.MinAuto = true;
-            pane2.YAxis.Scale.MaxAuto = true;
             pane1.YAxis.Scale.MinAuto = true;
             pane1.YAxis.Scale.MaxAuto = true;
-
 
             // !!! Установим значение параметра IsBoundedRanges как true.
             // !!! Это означает, что при автоматическом подборе масштаба
             // !!! нужно учитывать только видимый интервал графика
             pane1.IsBoundedRanges = true;
-            pane2.IsBoundedRanges = true;
-
 
             // Очистим список кривых на тот случай, если до этого сигналы уже были нарисованы
             pane1.CurveList.Clear();
-            pane2.CurveList.Clear();
 
             // Добавим кривую пока еще без каких-либо точек
-            LineItem myCurve1 = pane1.AddCurve("Расчет ", _data_refer, Color.Blue, SymbolType.Diamond);
-            LineItem myCurve2 = pane2.AddCurve(" ", _data_error, Color.Blue, SymbolType.Star);
-            LineItem myCurve3 = pane1.AddCurve("Факт ", _data_respo, Color.Red,  SymbolType.Star);
-
+            LineItem myCurve1 = pane1.AddCurve("Расчет", _data_refer, Color.Gray, SymbolType.Diamond);
+            LineItem myCurve2 = pane1.AddCurve("Факт", _data_respo, Color.Blue, SymbolType.Star   );
+            LineItem myCurve3 = pane1.AddCurve("Ошибка", _data_error, Color.Red , SymbolType.Star   );
 
             // Устанавливаем интересующий нас интервал по оси Y
             pane1.YAxis.Scale.Min = -1000;
             pane1.YAxis.Scale.Max =  1000;
 
-            pane2.YAxis.Scale.Min = -1000;
-            pane2.YAxis.Scale.Max =  1000;
-
             // Вызываем метод AxisChange (), чтобы обновить данные об осях. 
             zedGraph1.AxisChange();
-            zedGraph2.AxisChange();
 
             // Обновляем график
             zedGraph1.Invalidate();
-            zedGraph2.Invalidate();
-
+    
             zedGraph1.ContextMenuBuilder +=
             new ZedGraphControl.ContextMenuBuilderEventHandler(zedGraph_ContextMenuBuilder);
-            zedGraph2.ContextMenuBuilder +=
-            new ZedGraphControl.ContextMenuBuilderEventHandler(zedGraph_ContextMenuBuilder);
-
         }
 
         private void zedGraph_ContextMenuBuilder(
@@ -278,9 +249,7 @@ namespace TestGen
             // Добавим свой пункт меню
             ToolStripItem newMenuItem = new ToolStripMenuItem("Пауза");
             menuStrip.Items.Add(newMenuItem);
-
             newMenuItem.Click += (_, __) => { this._paused = !this._paused; };
-
         }
 
         private void updateGraph(double refVal, double resVal, bool paused) {
@@ -296,15 +265,11 @@ namespace TestGen
                 try
                 {
                     GraphPane pane1 = zedGraph1.GraphPane;
-                    GraphPane pane2 = zedGraph2.GraphPane;
                     pane1.XAxis.Scale.Min = xmin;
                     pane1.XAxis.Scale.Max = xmax;
-                    pane2.XAxis.Scale.Min = xmin;
-                    pane2.XAxis.Scale.Max = xmax;
                     zedGraph1.AxisChange();
                     zedGraph1.Invalidate();
-                    zedGraph2.AxisChange();
-                    zedGraph2.Invalidate();
+
                 }
                 catch (System.InvalidOperationException ex)
                 {

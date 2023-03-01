@@ -34,7 +34,6 @@
             this.Param = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.zedGraph2 = new ZedGraph.ZedGraphControl();
             this.zedGraph1 = new ZedGraph.ZedGraphControl();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -71,8 +70,6 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.Size = new System.Drawing.Size(214, 444);
             this.dataGridView1.TabIndex = 7;
-            //this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
-            //this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
             // 
             // Param
             // 
@@ -90,33 +87,15 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.zedGraph2, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.zedGraph1, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(223, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(574, 444);
             this.tableLayoutPanel2.TabIndex = 8;
-            // 
-            // zedGraph2
-            // 
-            this.zedGraph2.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.zedGraph2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.zedGraph2.Location = new System.Drawing.Point(3, 225);
-            this.zedGraph2.Name = "zedGraph2";
-            this.zedGraph2.ScrollGrace = 0D;
-            this.zedGraph2.ScrollMaxX = 0D;
-            this.zedGraph2.ScrollMaxY = 0D;
-            this.zedGraph2.ScrollMaxY2 = 0D;
-            this.zedGraph2.ScrollMinX = 0D;
-            this.zedGraph2.ScrollMinY = 0D;
-            this.zedGraph2.ScrollMinY2 = 0D;
-            this.zedGraph2.Size = new System.Drawing.Size(568, 216);
-            this.zedGraph2.TabIndex = 2;
-            this.zedGraph2.UseExtendedPrintDialog = true;
             // 
             // zedGraph1
             // 
@@ -131,7 +110,7 @@
             this.zedGraph1.ScrollMinX = 0D;
             this.zedGraph1.ScrollMinY = 0D;
             this.zedGraph1.ScrollMinY2 = 0D;
-            this.zedGraph1.Size = new System.Drawing.Size(568, 216);
+            this.zedGraph1.Size = new System.Drawing.Size(568, 438);
             this.zedGraph1.TabIndex = 1;
             this.zedGraph1.UseExtendedPrintDialog = true;
             // 
@@ -159,7 +138,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Param;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private ZedGraph.ZedGraphControl zedGraph2;
         private ZedGraph.ZedGraphControl zedGraph1;
     }
 }

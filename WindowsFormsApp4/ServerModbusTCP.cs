@@ -173,7 +173,7 @@ namespace AsyncSocketTest
             request.setRXbuf = buf_rx;
         }
 
-        private UInt16[] ConvertFromByte(byte[] data) {
+        public UInt16[] ConvertFromByte(byte[] data) {
             int index = 0;
             var res = data.GroupBy(x => (index++) / 2).Select(x => BitConverter.ToUInt16(x.Reverse().ToArray(), 0)).ToList();
             return res.ToArray();
