@@ -26,9 +26,9 @@ namespace WindowsFormsApp4
         private ControlsTable controlTable2;
         private ServerModbusTCP server;
         private delegate void MyDelegate();
-        RollingPointPairList[] _data_ch;
+
         private ConnectionSetups connection_setups = new ConnectionSetups();
-        int _capacity = 280*5;
+     
 
         double _time = 0;
         double _time_step = 0.100;
@@ -260,13 +260,6 @@ namespace WindowsFormsApp4
 
         private void PrepareGraph()
         {
-            _data_ch = new RollingPointPairList[4] {
-                 new RollingPointPairList(_capacity),
-                 new RollingPointPairList(_capacity),
-                 new RollingPointPairList(_capacity),
-                 new RollingPointPairList(_capacity) 
-            };
-
             // Получим панель для рисования
             GraphPane pane1 = zedGraph1.GraphPane;
             pane1.XAxis.Title.Text = "Время, c";
@@ -320,17 +313,56 @@ namespace WindowsFormsApp4
 
         private class Scope_ch 
         {
-            public double[][] _data=null;
+            RollingPointPairList[] _data_ch;
+
             public double _time_step=0;
             public double _frame_time=0;
             public int _ch_num = 0;
             public bool fifo_mpty = false;
-            public Scope_ch(double[][] data, double time_step) {
-                if (data == null) return;
-                _data = data;
-                _time_step = time_step;
-                _frame_time = time_step * data[0].Length;
-                _ch_num = _data.Length;
+            int _capacity = 280 * 5;
+
+            public Scope_ch() {
+                _data_ch = new RollingPointPairList[4] {
+                 new RollingPointPairList(_capacity),
+                 new RollingPointPairList(_capacity),
+                 new RollingPointPairList(_capacity),
+                 new RollingPointPairList(_capacity)
+            };
+            }
+
+            public void addData(byte[] RXbuf) {
+
+                /* _______________________________MODBUS SCOPE FRAME (TCP)______________________
+                 *
+                 *       +-----------+---------------+----------------------------+-------------+
+                 * index |0-5   | 6   | 7  | 8 ... 247 |  248  |    249    |  250       |  
+                 *       +-----------+---------------+----------------------------+-------------+
+                 * FRAME |HEADER| ADR |CMD |    DATA   | delay | ch num    |  FIFO LEN  | 
+                 * 
+                 */
+
+                int new_ch_num = RXbuf[249];
+                double new_timestep = (double)RXbuf[248] / 1000.0;
+                int fifo_len = RXbuf[250];
+
+                if (new_ch_num != _ch_num | new_timestep != _time_step) {
+
+                    foreach (var el in _data_ch) { 
+                    
+                    }
+                    _ch_num = new_ch_num;
+                    _time_step = new_timestep;
+                }
+
+                int count = 0;
+                var res = RXbuf.ToList().GetRange(8, 240).GroupBy(_ => count++ / 2).Select(v => (double)IPAddress.NetworkToHostOrder((BitConverter.ToInt16(v.ToArray(), 0)))).ToArray();
+                count = 0;
+                double[][] res2 = res.GroupBy(_ => count++ % _ch_num).Select(v => v.ToArray()).ToArray();
+                _frame_time = _time_step * data[0].Length; 
+            }
+
+            public double[][] getData() {
+               return _data.ToArray();
             }
         }
 
@@ -356,15 +388,7 @@ namespace WindowsFormsApp4
                     }
                 }
 
-                    /* _______________________________MODBUS SCOPE FRAME (TCP)______________________
-                    *
-                    *       +-----------+---------------+----------------------------+-------------+
-                    * index |0-5   | 6   | 7  | 8 ... 247 |  248  |    249    |  250       |  
-                    *       +-----------+---------------+----------------------------+-------------+
-                    * FRAME |HEADER| ADR |CMD |    DATA   | delay | ch num    |  FIFO LEN  | 
-                    * 
-                    */
-                
+                       
                 byte _chnl_num = RXbuf[249];
                 double t_timestep = (double)RXbuf[248] / 1000.0;
                 int count = 0;
