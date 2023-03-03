@@ -30,7 +30,7 @@ namespace WindowsFormsApp4
         private ConnectionSetups connection_setups = new ConnectionSetups();
      
 
-        double _time = 0;
+       // double _time = 0;
         double _time_step = 0.100;
         private System.Timers.Timer _timer;
         private bool _paused;
@@ -39,6 +39,8 @@ namespace WindowsFormsApp4
         LineItem myCurve2;
         LineItem myCurve3;
         LineItem myCurve4;
+
+        Scope_ch chnls = new Scope_ch();
 
 
         private static class ScopeParamNames
@@ -183,80 +185,75 @@ namespace WindowsFormsApp4
 
         }
 
-        double time_1;
-        double time_dt;
-        private void updateGraph(Scope_ch data)
-        {
-
-            double xmin = _time - _capacity * data._time_step;
-            double xmax = _time;
-            
-            time_dt = _time - time_1;
-            time_1 = _time;
+        //double time_1;
+        //double time_dt;
+        //private void updateGraph(Scope_ch data)
+        //{
+   
+        //    time_dt = _time - time_1;
+        //    time_1 = _time;
 
 
-            if (!_paused)
-            {
-                try
-                {
-                    GraphPane pane1 = zedGraph1.GraphPane;
-                    pane1.XAxis.Scale.Min = xmin;
-                    pane1.XAxis.Scale.Max = xmax;
-                    zedGraph1.AxisChange();
-                    zedGraph1.Invalidate();
+        //    if (!_paused)
+        //    {
+        //        try
+        //        {
+        //            GraphPane pane1 = zedGraph1.GraphPane;
+        //            pane1.XAxis.Scale.Min = xmin;
+        //            pane1.XAxis.Scale.Max = xmax;
+        //            zedGraph1.AxisChange();
+        //            zedGraph1.Invalidate();
 
-                }
-                catch (System.InvalidOperationException ex)
-                {
-                    Debug.WriteLine(ex);
-                }
-            }
+        //        }
+        //        catch (System.InvalidOperationException ex)
+        //        {
+        //            Debug.WriteLine(ex);
+        //        }
+        //    }
 
-            if (data == null | !data.fifo_mpty)
-            {
+        //    if (data == null | !data.fifo_mpty)
+        //    {
 
-                for (int k = 0; k < 4; k++)
-                {
-                    _data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing); 
-                }
-                _time += _time_step;
+        //        for (int k = 0; k < 4; k++)
+        //        {
+        //            _data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing); 
+        //        }
+        //        _time += _time_step;
 
-                if (data == null) return;
+        //        if (data == null) return;
 
-            }
-
-
-            for (int i = 0; i < data._data[0].Length; i++)
-            {
-
-                for (int k = 0; k < 3; k++)
-                {
-
-                    if (k < data._data.Length)
-                    {
-                        _data_ch[k].Add(_time, data._data[k][i]);
-                    }
-                    else
-                    {
-                        //_data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing);
-                    }
+        //    }
 
 
-                    //try
-                    //{
-                    //    _data_ch[k].Add(_time, data._data[k][i]);
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    
-                    //}
+        //    for (int i = 0; i < data._data[0].Length; i++)
+        //    {
 
-                }
-                _time += data._time_step;
-            }
+        //        for (int k = 0; k < 3; k++)
+        //        {
+
+        //            if (k < data._data.Length)
+        //            {
+        //                _data_ch[k].Add(_time, data._data[k][i]);
+        //            }
+        //            else
+        //            {
+        //                //_data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing);
+        //            }
 
 
-        }
+        //            //try
+        //            //{
+        //            //    _data_ch[k].Add(_time, data._data[k][i]);
+        //            //}
+        //            //catch (Exception e)
+        //            //{
+        //            //    
+        //            //}
+
+        //        }
+        //        _time += data._time_step;
+        //    }
+        //}
 
         private void PrepareGraph()
         {
@@ -286,10 +283,10 @@ namespace WindowsFormsApp4
             pane1.CurveList.Clear();
 
             // Добавим кривую пока еще без каких-либо точек
-            myCurve1 = pane1.AddCurve("канал 1", _data_ch[0], Color.Gray, SymbolType.Circle);
-            myCurve2 = pane1.AddCurve("канал 2", _data_ch[1], Color.Blue, SymbolType.None);
-            myCurve3 = pane1.AddCurve("канал 3", _data_ch[2], Color.Red, SymbolType.None);
-           // myCurve4 = pane1.AddCurve("канал 4", _data_ch[3], Color.Red, SymbolType.None);
+            myCurve1 = pane1.AddCurve("канал 1", chnls._data_ch[0], Color.Gray, SymbolType.Circle);
+            myCurve2 = pane1.AddCurve("канал 2", chnls._data_ch[1], Color.Blue, SymbolType.None);
+            myCurve3 = pane1.AddCurve("канал 3", chnls._data_ch[2], Color.Red,  SymbolType.None);
+            myCurve4 = pane1.AddCurve("канал 4", chnls._data_ch[3], Color.Red,  SymbolType.None);
 
 
             // Устанавливаем интересующий нас интервал по оси Y
@@ -313,14 +310,18 @@ namespace WindowsFormsApp4
 
         private class Scope_ch 
         {
-            RollingPointPairList[] _data_ch;
+            public RollingPointPairList[] _data_ch;
 
             public double _time_step=0;
-            public double _frame_time=0;
-            public int _ch_num = 0;
-            public bool fifo_mpty = false;
-            int _capacity = 280 * 5;
 
+            public double _frame_time=0;
+            
+            public int _ch_num = 0;
+            
+            public bool fifo_mpty = false;
+            
+            int _capacity = 280 * 5;
+            
             public Scope_ch() {
                 _data_ch = new RollingPointPairList[4] {
                  new RollingPointPairList(_capacity),
@@ -330,7 +331,8 @@ namespace WindowsFormsApp4
             };
             }
 
-            public void addData(byte[] RXbuf) {
+            public void addData(byte[] RXbuf, double time_now) 
+            {
 
                 /* _______________________________MODBUS SCOPE FRAME (TCP)______________________
                  *
@@ -358,11 +360,30 @@ namespace WindowsFormsApp4
                 var res = RXbuf.ToList().GetRange(8, 240).GroupBy(_ => count++ / 2).Select(v => (double)IPAddress.NetworkToHostOrder((BitConverter.ToInt16(v.ToArray(), 0)))).ToArray();
                 count = 0;
                 double[][] res2 = res.GroupBy(_ => count++ % _ch_num).Select(v => v.ToArray()).ToArray();
-                _frame_time = _time_step * data[0].Length; 
-            }
+                _frame_time = _time_step * res2[0].Length;
 
-            public double[][] getData() {
-               return _data.ToArray();
+
+                for (int i = 0; i < res2[0].Length; i++)
+                {
+
+                    for (int k = 0; k < 3; k++)
+                    {
+
+                        if (k < res2.Length)
+                        {
+                            _data_ch[k].Add(time_now, res2[k][i]);
+                        }
+                        else
+                        {
+                            _data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing);
+                        }
+                    }
+                    _time += _time_step;
+
+                }
+
+                double xmin = _time - _capacity * data._time_step;
+                double xmax = _time;
             }
         }
 
@@ -396,7 +417,7 @@ namespace WindowsFormsApp4
                 count = 0;
                 double[][] res2 = res.GroupBy(_ => count++ % _chnl_num).Select(v => v.ToArray()).ToArray();
 
-                Scope_ch retval = new Scope_ch(res2, (double)RXbuf[248] * 0.001);
+                
                 retval.fifo_mpty = RXbuf[250] == 0;
                 return retval;
 
