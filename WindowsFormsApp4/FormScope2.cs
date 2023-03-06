@@ -16,6 +16,7 @@ using System.Threading;
 using ZedGraph;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace WindowsFormsApp4
 {
@@ -87,6 +88,8 @@ namespace WindowsFormsApp4
                 return;
             }
 
+            //if(_paused) { return; }
+
             _ = Task.Run(async () =>
             {
                 bool newResValue;
@@ -100,7 +103,7 @@ namespace WindowsFormsApp4
                     };
 
                     update_cnt++;
-                    if (update_cnt > 4)
+                    if (update_cnt > 1)
                     {
                         updateGraph(_paused);
                         update_cnt = 0;
@@ -114,7 +117,7 @@ namespace WindowsFormsApp4
                     }
                 }else {
                     _time += chnls.addMissingFrame();
-                    log_data(String.Format("Time out: timestep={0}", chnls._frame_time));
+                    log_data(String.Format("Time out: FrameStep={0} TimeStep={1} ", chnls._frame_time, chnls._chnls_time_step));
 
 
                 }
@@ -250,11 +253,15 @@ namespace WindowsFormsApp4
             pane1.CurveList.Clear();
 
             // Добавим кривую пока еще без каких-либо точек
-            myCurve1 = pane1.AddCurve("канал 1", chnls._data_ch[0], Color.Gray, SymbolType.Circle);
-            myCurve2 = pane1.AddCurve("канал 2", chnls._data_ch[1], Color.Blue, SymbolType.None);
-            myCurve3 = pane1.AddCurve("канал 3", chnls._data_ch[2], Color.Red,  SymbolType.None);
-            myCurve4 = pane1.AddCurve("канал 4", chnls._data_ch[3], Color.Red,  SymbolType.None);
+            myCurve1 = pane1.AddCurve("канал 1", chnls._data_ch[0], Color.Red, SymbolType.Circle);
+            myCurve2 = pane1.AddCurve("канал 2", chnls._data_ch[1], Color.Blue, SymbolType.Circle);
+            myCurve3 = pane1.AddCurve("канал 3", chnls._data_ch[2], Color.Green,  SymbolType.Circle);
+            myCurve4 = pane1.AddCurve("канал 4", chnls._data_ch[3], Color.Black,  SymbolType.Circle);
 
+            myCurve1.Symbol.Size = 2;
+            myCurve2.Symbol.Size = 2;
+            myCurve3.Symbol.Size = 2;
+            myCurve4.Symbol.Size = 2;
 
             // Устанавливаем интересующий нас интервал по оси Y
             pane1.YAxis.Scale.Min = -1000;
@@ -268,6 +275,9 @@ namespace WindowsFormsApp4
 
             zedGraph1.ContextMenuBuilder +=
             new ZedGraphControl.ContextMenuBuilderEventHandler(zedGraph_ContextMenuBuilder);
+            zedGraph1.ZoomEvent += 
+                new ZedGraph.ZedGraphControl.ZoomEventHandler(this.zedGraph1_ZoomEvent);
+
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -332,10 +342,6 @@ namespace WindowsFormsApp4
                 double[][] res2 = res.GroupBy(_ => count++ % _ch_num).Select(v => v.ToArray()).ToArray();
                 _frame_time = _chnls_time_step * res2[0].Length;
 
-                if (fifo_len == 6) {
-                    _time_now += addMissingFrame();
-                }
-
                 for (int i = 0; i < res2[0].Length; i++)
                 {
 
@@ -365,17 +371,24 @@ namespace WindowsFormsApp4
                 byte[] req = new byte[] { 0, 0, 0, 0, 0, 5, 1, 20, 0x1, 0x1, 0x1 };
                 var RXbuf = await server.SendRawDataAsync(req);
 
+                
+
                 // check function code
                 if (RXbuf[7] != 20 | RXbuf[5] != 245)
                 {
                     if (RXbuf[7] != 148)
                     {
                         _time += chnls.addMissingFrame();
-                        log_data("Frame: " + Encoding.UTF8.GetString(RXbuf).Trim('\0'));
+                        log_data("Frame: " + Encoding.UTF8.GetString(RXbuf).Trim('\0')+ String.Format(": FrameStep={0} TimeStep={1}", chnls._frame_time, chnls._chnls_time_step));
                     }
                     return false;
                 };
 
+                if (RXbuf[250] == 6) {
+                    log_data("Scope: FIFO full");
+                    _time += chnls.addMissingFrame();
+                }
+ 
                 _time = chnls.addData(RXbuf, _time);
                 return true;
             }
@@ -406,6 +419,13 @@ namespace WindowsFormsApp4
             ToolStripItem newMenuItem = new ToolStripMenuItem("Пауза");
             menuStrip.Items.Add(newMenuItem);
             newMenuItem.Click += (_, __) => { this._paused = !this._paused; };
+
+            menuStrip.Items[7].Click += (_, __) => { this._paused = false; };
+        }
+
+        private void zedGraph1_ZoomEvent(ZedGraphControl sender, ZoomState oldState, ZoomState newState)
+        {
+            _paused = true;
         }
 
     }
