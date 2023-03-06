@@ -63,9 +63,10 @@ namespace WindowsFormsApp4
         {
             FormScope2 scp = new FormScope2();
             scp.Show();
+            InitializeComponent();
             return;
 
-            InitializeComponent();
+            
 
             connection_setups = ConnectionSetups.read();
 

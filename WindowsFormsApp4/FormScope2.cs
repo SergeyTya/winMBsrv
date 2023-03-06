@@ -30,9 +30,12 @@ namespace WindowsFormsApp4
         private ConnectionSetups connection_setups = new ConnectionSetups();
      
 
-       // double _time = 0;
-        double _time_step = 0.100;
+        double _time = 0;
+
+        double _time_step = 1.0;
+
         private System.Timers.Timer _timer;
+
         private bool _paused;
 
         LineItem myCurve1;
@@ -70,51 +73,53 @@ namespace WindowsFormsApp4
 
         private void log_data(string msg) {
 
-            this.textBox1.Text += msg + "\n";
+            BeginInvoke(new MyDelegate(() =>
+            {
+                this.textBox1.AppendText(Environment.NewLine + DateTime.Now.ToLongTimeString()+" "+msg);
+            }));
         }
 
+        int update_cnt = 0;
         private void TimerCallback()
         {
-           
-            Scope_ch newResValue;
+            if (server == null) {
+                _timer.Stop();
+                return;
+            }
 
             _ = Task.Run(async () =>
             {
+                bool newResValue;
                 var myTask = ReadScopeAsync();
                 if (await Task.WhenAny(myTask, Task.Delay((int)(_time_step * 1000))) == myTask)
                 {
                     newResValue = myTask.Result;
-                    if (newResValue == null) { return; };
-
-
-                    BeginInvoke(new MyDelegate(() =>
+                    if (newResValue == false)
                     {
-                        try
-                        {
-                            updateGraph(newResValue);
-                        }
-                        catch (System.InvalidOperationException ex)
-                        {
-                            Debug.WriteLine(ex);
-                        }
+                        return;
+                    };
 
-                    }));
-
-                    if (_time_step != newResValue._frame_time)
+                    update_cnt++;
+                    if (update_cnt > 4)
                     {
-                        _time_step = newResValue._frame_time * 0.5;
+                        updateGraph(_paused);
+                        update_cnt = 0;
+                    }
+
+                    if (_time_step != chnls._frame_time)
+                    {
                         _timer.Stop();
+                        _time_step = chnls._frame_time * 0.5;
                         TimerStart();
                     }
-                }
-                else 
-                {   
-                    newResValue = null; 
-                
+                }else {
+                    _time += chnls.addMissingFrame();
+                    log_data(String.Format("Time out: timestep={0}", chnls._frame_time));
+
+
                 }
             });
         }
-
 
         public void TimerStart()
         {
@@ -151,6 +156,7 @@ namespace WindowsFormsApp4
             catch (ServerModbusTCPException ex)
             {
                 Debug.WriteLine(ex.Message);
+                log_data(ex.Message);
             }
             TimerStart();
         }
@@ -185,82 +191,43 @@ namespace WindowsFormsApp4
 
         }
 
-        //double time_1;
-        //double time_dt;
-        //private void updateGraph(Scope_ch data)
-        //{
-   
-        //    time_dt = _time - time_1;
-        //    time_1 = _time;
+        private void updateGraph(bool paused)
+        {
+            if (paused) return;
+            try
+            {                    
+                double xmin = _time - chnls._capacity * chnls._chnls_time_step;      
+                double xmax = _time;
 
-
-        //    if (!_paused)
-        //    {
-        //        try
-        //        {
-        //            GraphPane pane1 = zedGraph1.GraphPane;
-        //            pane1.XAxis.Scale.Min = xmin;
-        //            pane1.XAxis.Scale.Max = xmax;
-        //            zedGraph1.AxisChange();
-        //            zedGraph1.Invalidate();
-
-        //        }
-        //        catch (System.InvalidOperationException ex)
-        //        {
-        //            Debug.WriteLine(ex);
-        //        }
-        //    }
-
-        //    if (data == null | !data.fifo_mpty)
-        //    {
-
-        //        for (int k = 0; k < 4; k++)
-        //        {
-        //            _data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing); 
-        //        }
-        //        _time += _time_step;
-
-        //        if (data == null) return;
-
-        //    }
-
-
-        //    for (int i = 0; i < data._data[0].Length; i++)
-        //    {
-
-        //        for (int k = 0; k < 3; k++)
-        //        {
-
-        //            if (k < data._data.Length)
-        //            {
-        //                _data_ch[k].Add(_time, data._data[k][i]);
-        //            }
-        //            else
-        //            {
-        //                //_data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing);
-        //            }
-
-
-        //            //try
-        //            //{
-        //            //    _data_ch[k].Add(_time, data._data[k][i]);
-        //            //}
-        //            //catch (Exception e)
-        //            //{
-        //            //    
-        //            //}
-
-        //        }
-        //        _time += data._time_step;
-        //    }
-        //}
+                GraphPane pane1 = zedGraph1.GraphPane;
+                pane1.XAxis.Scale.Min = xmin;
+                pane1.XAxis.Scale.Max = xmax;
+                zedGraph1.AxisChange();
+                zedGraph1.Invalidate();
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                Debug.WriteLine(ex);
+                log_data(ex.Message);
+            }
+            catch (System.NullReferenceException ex)
+            {
+                Debug.WriteLine(ex);
+                log_data(ex.Message);
+            }
+            catch (System.ArgumentOutOfRangeException ex)
+            {
+                Debug.WriteLine(ex);
+                log_data(ex.Message);
+            }
+        }
 
         private void PrepareGraph()
         {
             // Получим панель для рисования
             GraphPane pane1 = zedGraph1.GraphPane;
             pane1.XAxis.Title.Text = "Время, c";
-            pane1.Title.Text = "Задание";
+            pane1.Title.Text = "Scope";
 
             int labelsfontSize = 12;
             // Установим размеры шрифтов для меток вдоль осей
@@ -311,27 +278,31 @@ namespace WindowsFormsApp4
         private class Scope_ch 
         {
             public RollingPointPairList[] _data_ch;
-
-            public double _time_step=0;
-
             public double _frame_time=0;
-            
             public int _ch_num = 0;
-            
             public bool fifo_mpty = false;
-            
-            int _capacity = 280 * 5;
-            
+            public int _capacity = 240 * 10;
+            public double _chnls_time_step = 0;
+
+
             public Scope_ch() {
                 _data_ch = new RollingPointPairList[4] {
                  new RollingPointPairList(_capacity),
                  new RollingPointPairList(_capacity),
                  new RollingPointPairList(_capacity),
                  new RollingPointPairList(_capacity)
-            };
+                };
             }
 
-            public void addData(byte[] RXbuf, double time_now) 
+            public double addMissingFrame() {
+                foreach (var el in _data_ch)
+                {
+                    el.Add(PointPairBase.Missing, PointPairBase.Missing);
+                }
+               return _frame_time;
+            }
+
+            public double addData(byte[] RXbuf, double time_now) 
             {
 
                 /* _______________________________MODBUS SCOPE FRAME (TCP)______________________
@@ -344,24 +315,26 @@ namespace WindowsFormsApp4
                  */
 
                 int new_ch_num = RXbuf[249];
-                double new_timestep = (double)RXbuf[248] / 1000.0;
+                double new_timestep = RXbuf[248] * 0.001;
                 int fifo_len = RXbuf[250];
+                double _time_now = time_now;
 
-                if (new_ch_num != _ch_num | new_timestep != _time_step) {
+                if (new_ch_num != _ch_num | new_timestep != _chnls_time_step | _ch_num == 0 | _chnls_time_step ==0 ) {
 
-                    foreach (var el in _data_ch) { 
-                    
-                    }
+                    _time_now += addMissingFrame();
                     _ch_num = new_ch_num;
-                    _time_step = new_timestep;
+                    _chnls_time_step = new_timestep;
                 }
 
                 int count = 0;
                 var res = RXbuf.ToList().GetRange(8, 240).GroupBy(_ => count++ / 2).Select(v => (double)IPAddress.NetworkToHostOrder((BitConverter.ToInt16(v.ToArray(), 0)))).ToArray();
                 count = 0;
                 double[][] res2 = res.GroupBy(_ => count++ % _ch_num).Select(v => v.ToArray()).ToArray();
-                _frame_time = _time_step * res2[0].Length;
+                _frame_time = _chnls_time_step * res2[0].Length;
 
+                if (fifo_len == 6) {
+                    _time_now += addMissingFrame();
+                }
 
                 for (int i = 0; i < res2[0].Length; i++)
                 {
@@ -371,62 +344,52 @@ namespace WindowsFormsApp4
 
                         if (k < res2.Length)
                         {
-                            _data_ch[k].Add(time_now, res2[k][i]);
+                            _data_ch[k].Add(_time_now, res2[k][i]);
                         }
                         else
                         {
                             _data_ch[k].Add(PointPairBase.Missing, PointPairBase.Missing);
                         }
                     }
-                    _time += _time_step;
-
+                    _time_now += new_timestep;
                 }
-
-                double xmin = _time - _capacity * data._time_step;
-                double xmax = _time;
+                return _time_now;
             }
         }
 
 
-        private async Task<Scope_ch> ReadScopeAsync(){
+        private async Task<bool> OneTimeReadScopeAsync() {
 
             try
             {
-                //var RXbuf = await server.SendRawDataAsync(new byte[] { (byte) connection_setups.SlaveAdr, 20, 0x1, 0x1, 0x1 });
-                var RXbuf = await server.SendRawDataAsync(new byte[] { 0, 0, 0, 0, 0, 5, 1, 20, 0x1, 0x1, 0x1 });
-               
+                byte[] req = new byte[] { 0, 0, 0, 0, 0, 5, 1, 20, 0x1, 0x1, 0x1 };
+                var RXbuf = await server.SendRawDataAsync(req);
 
                 // check function code
-                if (RXbuf[7] != 20) throw new ServerModbusTCPException("Sope wrong request");
-                if (RXbuf[5] != 245) throw new ServerModbusTCPException("Sope wrong responce");
-
-                if (RXbuf[250] != 0) {
-                    int fifo_lvl = RXbuf[250];
-                    for (int i=0; i< RXbuf[250]; i++)
+                if (RXbuf[7] != 20 | RXbuf[5] != 245)
+                {
+                    if (RXbuf[7] != 148)
                     {
-                        RXbuf = await server.SendRawDataAsync(new byte[] { 0, 0, 0, 0, 0, 5, 1, 20, 0x1, 0x1, 0x1 });
-
+                        _time += chnls.addMissingFrame();
+                        log_data("Frame: " + Encoding.UTF8.GetString(RXbuf).Trim('\0'));
                     }
-                }
+                    return false;
+                };
 
-                       
-                byte _chnl_num = RXbuf[249];
-                double t_timestep = (double)RXbuf[248] / 1000.0;
-                int count = 0;
-                var res = RXbuf.ToList().GetRange(8, 240).GroupBy(_ => count++ / 2).Select(v => (double)IPAddress.NetworkToHostOrder((BitConverter.ToInt16(v.ToArray(), 0)))).ToArray();
-                count = 0;
-                double[][] res2 = res.GroupBy(_ => count++ % _chnl_num).Select(v => v.ToArray()).ToArray();
-
-                
-                retval.fifo_mpty = RXbuf[250] == 0;
-                return retval;
-
+                _time = chnls.addData(RXbuf, _time);
+                return true;
             }
-            catch(Exception ex)
+            catch (ServerModbusTCPException ex)
             {
                 log_data(ex.Message);
+                return false;
             }
-            return null;
+        }
+
+        private async Task<bool> ReadScopeAsync(){
+
+            bool res = await OneTimeReadScopeAsync();
+            return res;
         }
 
 
