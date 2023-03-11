@@ -17,6 +17,8 @@ using ZedGraph;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Net;
 using System.Security.Cryptography;
+using System.Windows.Documents;
+using System.Xml;
 
 namespace WindowsFormsApp4
 {
@@ -37,12 +39,13 @@ namespace WindowsFormsApp4
 
         private System.Timers.Timer _timer;
 
-        private bool _paused;
+        private bool _paused = false;
+        private bool Paused { 
+            get { return _paused; } 
+            set { _paused = value; chnls.addMissingFrame(); }
+        }
 
-        LineItem myCurve1;
-        LineItem myCurve2;
-        LineItem myCurve3;
-        LineItem myCurve4;
+
 
         Scope_ch chnls = new Scope_ch();
 
@@ -52,7 +55,7 @@ namespace WindowsFormsApp4
             public static string SampleRate = "Дискретность";
             public static string Oversampling = "Делитель";
             public static string ChanelsNum = "Кол-во каналов";
-            public static string TimeScale = "Разветка";
+            public static string TimeScale = "Разветка, с";
             public static string Ch1_gain = "Множитель K1";
             public static string Ch1_shift = "Смещение K1";
             public static string Ch2_gain = "Множитель K2";
@@ -68,8 +71,45 @@ namespace WindowsFormsApp4
         {
             InitializeComponent();
             CreateControlTable1();
-            controlTable2 = new ControlsTable(this.dataGridView2);
+            CreateTreeView();
             PrepareGraph();
+        }
+
+        private void CreateTreeView()
+        {
+            XmlDocument xmlDoc;
+            string xmlpath = @"..\..\scope_tree.xml";
+            xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlpath);
+            treeView1.Nodes.Clear();
+            treeView1.Nodes.Add(new TreeNode(xmlDoc.DocumentElement.Name));
+            TreeNode rootNode = new TreeNode();
+            rootNode = treeView1.Nodes[0];
+            AddNode(xmlDoc.DocumentElement, rootNode);
+            treeView1.ExpandAll();
+        }
+
+        private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
+        {
+            XmlNode xNode;
+            TreeNode tNode;
+            XmlNodeList nodeList;
+            int i;
+            if (inXmlNode.HasChildNodes)
+            {
+                nodeList = inXmlNode.ChildNodes;
+                for (i = 0; i< nodeList.Count; i++)
+{
+                    xNode = inXmlNode.ChildNodes[i];
+                    inTreeNode.Nodes.Add(new TreeNode(xNode.Name));
+                    tNode = inTreeNode.Nodes[i];
+                    AddNode(xNode, tNode);
+                }
+            }
+            else
+            {
+                inTreeNode.Text = (inXmlNode.OuterXml).Trim();
+            }
         }
 
         private void log_data(string msg) {
@@ -88,14 +128,15 @@ namespace WindowsFormsApp4
                 return;
             }
 
-            //if(_paused) { return; }
+            
 
             _ = Task.Run(async () =>
             {
                 bool newResValue;
-                var myTask = ReadScopeAsync();
+                var myTask = OneTimeReadScopeAsync();
                 if (await Task.WhenAny(myTask, Task.Delay((int)(_time_step * 1000))) == myTask)
                 {
+                    if (Paused) { return; }
                     newResValue = myTask.Result;
                     if (newResValue == false)
                     {
@@ -103,9 +144,9 @@ namespace WindowsFormsApp4
                     };
 
                     update_cnt++;
-                    if (update_cnt > 1)
+                    if (update_cnt > 5)
                     {
-                        updateGraph(_paused);
+                        updateGraph();
                         update_cnt = 0;
                     }
 
@@ -118,8 +159,6 @@ namespace WindowsFormsApp4
                 }else {
                     _time += chnls.addMissingFrame();
                     log_data(String.Format("Time out: FrameStep={0} TimeStep={1} ", chnls._frame_time, chnls._chnls_time_step));
-
-
                 }
             });
         }
@@ -166,40 +205,92 @@ namespace WindowsFormsApp4
 
         private void CreateControlTable1() {
 
-
+            // Развертка
             controlTable1 = new ControlsTable(this.dataGridView1);
-            controlTable1.addControl(new CustomControl(
-                ScopeParamNames.SampleRate,
-                range: new string[] { "100", "200", "300", "500", "700", "1000" },
-                max: 5,
-                min: 0
-            ));
 
-            controlTable1.addControl(new CustomControl(
-                ScopeParamNames.Oversampling,
-                range: new string[] { "1", "2", "4", "8", "10" },
-                max: 4,
-                min: 0
-            ));
+            CustomControl tmp = new CustomControl(
+               ScopeParamNames.TimeScale,
+               max: 100,
+               min: 0.2,
+               def: 1
+            );
+            tmp.OnControlEvetn+= TimeScaleChenged;
+            controlTable1.addControl(tmp);
 
-            controlTable1.addControl(new CustomControl(
-                ScopeParamNames.ChanelsNum,
-                def: 4,
-                max: 4,
-                min: 1
-            ));
+            // Усиление
+            Action GainEvent = () => { chnls.setGains(
+                new double[] {
+                controlTable1.getControlValue(ScopeParamNames.Ch1_gain),
+                controlTable1.getControlValue(ScopeParamNames.Ch2_gain),
+                controlTable1.getControlValue(ScopeParamNames.Ch3_gain),
+                controlTable1.getControlValue(ScopeParamNames.Ch4_gain),
+
+                }); 
+            };
+
+            tmp = new CustomControl(ScopeParamNames.Ch1_gain, max: 100.0,min: 0.0,def: 1.0);
+            tmp.OnControlEvetn += GainEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch2_gain, max: 100.0, min: 0.0, def: 1.0);
+            tmp.OnControlEvetn += GainEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch3_gain, max: 100.0, min: 0.0, def: 1.0);
+            tmp.OnControlEvetn += GainEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch4_gain, max: 100.0, min: 0.0, def: 1.0);
+            tmp.OnControlEvetn += GainEvent.Invoke;
+            controlTable1.addControl(tmp);
+            // Смещение
+            Action OffsetEvent = () => {
+                chnls.setOffsets(
+                new double[] {
+                controlTable1.getControlValue(ScopeParamNames.Ch1_shift),
+                controlTable1.getControlValue(ScopeParamNames.Ch2_shift),
+                controlTable1.getControlValue(ScopeParamNames.Ch3_shift),
+                controlTable1.getControlValue(ScopeParamNames.Ch4_shift),
+                });
+            };
+
+            tmp = new CustomControl(ScopeParamNames.Ch1_shift, max: 100000.0, min: -100000.0, def: 0.0);
+            tmp.OnControlEvetn += OffsetEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch2_shift, max: 100000.0, min: -100000.0, def: 0.0);
+            tmp.OnControlEvetn += OffsetEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch3_shift, max: 100000.0, min: -100000.0, def: 0.0);
+            tmp.OnControlEvetn += OffsetEvent.Invoke;
+            controlTable1.addControl(tmp);
+            tmp = new CustomControl(ScopeParamNames.Ch4_shift, max: 100000.0, min: -100000.0, def: 0.0);
+            tmp.OnControlEvetn += OffsetEvent.Invoke;
+            controlTable1.addControl(tmp);
+
+
+
 
             controlTable1.RenderTable();
 
 
         }
 
-        private void updateGraph(bool paused)
+        private void TimeScaleChenged() {
+            double newScaleValue = controlTable1.getControlValue(ScopeParamNames.TimeScale);
+            _timer.Stop();
+            GraphPane pane = zedGraph1.GraphPane;
+            pane.CurveList.Clear();
+            chnls.capacity = (int)(newScaleValue / chnls._chnls_time_step);
+            log_data("new TimeScale=" + newScaleValue);
+            log_data("new capacity=" + chnls.capacity);
+
+            _time = 0;
+            createCruves();
+            _timer.Start();
+        }
+
+        private void updateGraph()
         {
-            if (paused) return;
             try
             {                    
-                double xmin = _time - chnls._capacity * chnls._chnls_time_step;      
+                double xmin = _time - chnls.capacity * chnls._chnls_time_step;      
                 double xmax = _time;
 
                 GraphPane pane1 = zedGraph1.GraphPane;
@@ -225,10 +316,41 @@ namespace WindowsFormsApp4
             }
         }
 
+        private void createCruves() {
+
+            GraphPane pane1 = zedGraph1.GraphPane;
+
+            // Очистим список кривых на тот случай, если до этого сигналы уже были нарисованы
+            pane1.CurveList.Clear();
+
+            // Добавим кривую пока еще без каких-либо точек
+
+
+            var myCurve1 = pane1.AddCurve("канал 1", chnls._data_ch[0], Color.Red, SymbolType.Circle);
+            var myCurve2 = pane1.AddCurve("канал 2", chnls._data_ch[1], Color.Blue, SymbolType.Circle);
+            var myCurve3 = pane1.AddCurve("канал 3", chnls._data_ch[2], Color.Green, SymbolType.Circle);
+            var myCurve4 = pane1.AddCurve("канал 4", chnls._data_ch[3], Color.Black, SymbolType.Circle);
+
+            myCurve1.Symbol.Size = 2;
+            myCurve2.Symbol.Size = 2;
+            myCurve3.Symbol.Size = 2;
+            myCurve4.Symbol.Size = 2;
+
+        }
+
         private void PrepareGraph()
         {
             // Получим панель для рисования
             GraphPane pane1 = zedGraph1.GraphPane;
+
+            // Show the horizontal scrollbar
+            zedGraph1.IsShowHScrollBar = true;
+            // Tell ZedGraph to automatically set the range of the scrollbar according to the data range
+            zedGraph1.IsAutoScrollRange = true;
+            // Make the scroll cover slightly more than the range of the data
+            // (This is a brand new property in the development version -- leave this line out if you are using an older one).
+            zedGraph1.ScrollGrace = .05;
+
             pane1.XAxis.Title.Text = "Время, c";
             pane1.Title.Text = "Scope";
 
@@ -249,23 +371,16 @@ namespace WindowsFormsApp4
             // !!! нужно учитывать только видимый интервал графика
             pane1.IsBoundedRanges = true;
 
-            // Очистим список кривых на тот случай, если до этого сигналы уже были нарисованы
-            pane1.CurveList.Clear();
-
-            // Добавим кривую пока еще без каких-либо точек
-            myCurve1 = pane1.AddCurve("канал 1", chnls._data_ch[0], Color.Red, SymbolType.Circle);
-            myCurve2 = pane1.AddCurve("канал 2", chnls._data_ch[1], Color.Blue, SymbolType.Circle);
-            myCurve3 = pane1.AddCurve("канал 3", chnls._data_ch[2], Color.Green,  SymbolType.Circle);
-            myCurve4 = pane1.AddCurve("канал 4", chnls._data_ch[3], Color.Black,  SymbolType.Circle);
-
-            myCurve1.Symbol.Size = 2;
-            myCurve2.Symbol.Size = 2;
-            myCurve3.Symbol.Size = 2;
-            myCurve4.Symbol.Size = 2;
-
             // Устанавливаем интересующий нас интервал по оси Y
             pane1.YAxis.Scale.Min = -1000;
             pane1.YAxis.Scale.Max = 1000;
+
+            zedGraph1.ContextMenuBuilder +=
+            new ZedGraphControl.ContextMenuBuilderEventHandler(zedGraph_ContextMenuBuilder);
+            zedGraph1.ZoomEvent += 
+                new ZedGraph.ZedGraphControl.ZoomEventHandler(this.zedGraph1_ZoomEvent);
+
+            createCruves();
 
             // Вызываем метод AxisChange (), чтобы обновить данные об осях. 
             zedGraph1.AxisChange();
@@ -273,27 +388,39 @@ namespace WindowsFormsApp4
             // Обновляем график
             zedGraph1.Invalidate();
 
-            zedGraph1.ContextMenuBuilder +=
-            new ZedGraphControl.ContextMenuBuilderEventHandler(zedGraph_ContextMenuBuilder);
-            zedGraph1.ZoomEvent += 
-                new ZedGraph.ZedGraphControl.ZoomEventHandler(this.zedGraph1_ZoomEvent);
+            chnls.onChanged += TimeScaleChenged;
 
-        }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
 
         }
 
         private class Scope_ch 
         {
+            public delegate void MethodContainer();
+
+            //Событие OnCount c типом делегата MethodContainer.
+            public event MethodContainer onChanged;
+
             public RollingPointPairList[] _data_ch;
+            private double[] gains = new double[4] { 1, 1, 1, 1 };
+            private double[] offsets = new double[4] { 0, 0, 0, 0 };
             public double _frame_time=0;
             public int _ch_num = 0;
             public bool fifo_mpty = false;
-            public int _capacity = 240 * 10;
-            public double _chnls_time_step = 0;
+            private int _capacity = 240 * 10;
+            public int capacity {
+                set {
+                    _capacity = value;
+                    _data_ch[0] = new RollingPointPairList(_capacity);
+                    _data_ch[1] = new RollingPointPairList(_capacity);
+                    _data_ch[2] = new RollingPointPairList(_capacity);
+                    _data_ch[3] = new RollingPointPairList(_capacity);
+                   
+                } 
+                get { return _capacity; } 
+            }
 
+            public double _chnls_time_step = 0;
 
             public Scope_ch() {
                 _data_ch = new RollingPointPairList[4] {
@@ -304,12 +431,22 @@ namespace WindowsFormsApp4
                 };
             }
 
+            public void setGains(double[] newValue) {
+                gains = newValue;
+            }
+
+            public void setOffsets(double[] newValue)
+            {
+                offsets = newValue;
+            }
+
             public double addMissingFrame() {
                 foreach (var el in _data_ch)
                 {
                     el.Add(PointPairBase.Missing, PointPairBase.Missing);
                 }
-               return _frame_time;
+
+                return _frame_time;
             }
 
             public double addData(byte[] RXbuf, double time_now) 
@@ -334,6 +471,7 @@ namespace WindowsFormsApp4
                     _time_now += addMissingFrame();
                     _ch_num = new_ch_num;
                     _chnls_time_step = new_timestep;
+                    onChanged();
                 }
 
                 int count = 0;
@@ -350,7 +488,7 @@ namespace WindowsFormsApp4
 
                         if (k < res2.Length)
                         {
-                            _data_ch[k].Add(_time_now, res2[k][i]);
+                            _data_ch[k].Add(_time_now, res2[k][i] * gains[k] + offsets[k] );
                         }
                         else
                         {
@@ -388,8 +526,9 @@ namespace WindowsFormsApp4
                     log_data("Scope: FIFO full");
                     _time += chnls.addMissingFrame();
                 }
- 
-                _time = chnls.addData(RXbuf, _time);
+                // add data
+
+                if (!Paused) _time = chnls.addData(RXbuf, _time);
                 return true;
             }
             catch (ServerModbusTCPException ex)
@@ -398,13 +537,6 @@ namespace WindowsFormsApp4
                 return false;
             }
         }
-
-        private async Task<bool> ReadScopeAsync(){
-
-            bool res = await OneTimeReadScopeAsync();
-            return res;
-        }
-
 
 
         private void zedGraph_ContextMenuBuilder(
@@ -418,14 +550,14 @@ namespace WindowsFormsApp4
             // Добавим свой пункт меню
             ToolStripItem newMenuItem = new ToolStripMenuItem("Пауза");
             menuStrip.Items.Add(newMenuItem);
-            newMenuItem.Click += (_, __) => { this._paused = !this._paused; };
+            newMenuItem.Click += (_, __) => { this.Paused = !this.Paused; };
 
-            menuStrip.Items[7].Click += (_, __) => { this._paused = false; };
+            menuStrip.Items[7].Click += (_, __) => { this.Paused = false; };
         }
 
         private void zedGraph1_ZoomEvent(ZedGraphControl sender, ZoomState oldState, ZoomState newState)
         {
-            _paused = true;
+            Paused = true;
         }
 
     }

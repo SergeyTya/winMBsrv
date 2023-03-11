@@ -12,6 +12,14 @@ namespace TestGen
     internal class CustomControl
     {
 
+        public delegate void MethodContainer();
+        public event MethodContainer OnControlEvetn;
+
+        internal void ControlEvetn()
+        {
+            OnControlEvetn();
+        }
+
         public string Name { set; get; }
         public string[] Range { set; get; }
 
@@ -57,6 +65,8 @@ namespace TestGen
             Value = def;
             Checkedbox = checkedbox;
         }
+
+
 
     }
 
@@ -150,6 +160,7 @@ namespace TestGen
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             string name = table.Rows[e.RowIndex].Cells[0].Value.ToString();
+
             if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewComboBoxCell))
             {
 
@@ -158,9 +169,9 @@ namespace TestGen
                                        table.Rows[e.RowIndex].Cells[1].Value
                                    );
                 this.controls[name].Value = index;
-                return;
+               
 
-            };
+            } else
 
             if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewTextBoxCell))
             {
@@ -172,8 +183,8 @@ namespace TestGen
                         table.Rows[e.RowIndex].Cells[1].Value = this.controls[name].Value;
 
                 }
-                return;
-            };
+                
+            } else
 
             if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewCheckBoxCell))
             {
@@ -183,8 +194,10 @@ namespace TestGen
                 this.controls[name].Value = 0;
                 if (res) this.controls[name].Value = 1;
 
-                return;
+                
             }
+
+            this.controls[name].ControlEvetn();
 
         }
     }
