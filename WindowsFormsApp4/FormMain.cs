@@ -54,20 +54,17 @@ namespace WindowsFormsApp4
         private List<CustomControlTyple> customControlsList = new List<CustomControlTyple>();
         private List<InputRegisterIndicator> IrIndicList = new List<InputRegisterIndicator>();
 
-        public FormScope ScopeForm = null;
+        public FormScope2 ScopeForm = null;
         int delay = 250;
 
         public delegate void MyDelegate();
 
         public FormMain()
         {
-            FormScope2 scp = new FormScope2();
-            scp.Show();
+
             InitializeComponent();
-            return;
 
-            
-
+         
             connection_setups = ConnectionSetups.read();
 
             try
@@ -134,23 +131,10 @@ namespace WindowsFormsApp4
             }
         }
 
-        private async void TStart_Scope()
-        {
-
-            while (true)
-            {
-                MenuItem_Scope_Start_Click(new object(), new EventArgs());
-                await Task.Delay(200);
-                if (ScopeForm != null) if (ScopeForm.Created) return;
-            }
-
-        }
-
-
         //основной поток
         private async Task Task_FormRefreshAsync(int ref_delay)
         {
-
+            bool beenConnected = false;
             while (true)
             {
                
@@ -164,11 +148,15 @@ namespace WindowsFormsApp4
                     {
                         if (Server.isDeviceConnected)
                         {
+                        if (!beenConnected) {
+                            BeginInvoke(new MyDelegate(vSearchDeviceDescriptionFile));
+                            beenConnected = true;
+                        }
                             BeginInvoke(new MyDelegate(vIndi_Update));
                         }
                         else
                         {
-
+                            beenConnected = false;
                             BeginInvoke(new MyDelegate(vIndi_Clear));
                         }
                     }
@@ -231,8 +219,10 @@ namespace WindowsFormsApp4
                 {
 
                 }
+                catch (Newtonsoft.Json.JsonSerializationException ex)
+                {
 
-
+                }
             }
 
         }
@@ -1126,7 +1116,7 @@ namespace WindowsFormsApp4
 
             if (!Server.blnScpEnbl && Server.isDeviceConnected)
             {
-                ScopeForm = new FormScope(Server);
+                ScopeForm = new FormScope2();
                 ScopeForm.Show();
             };
         }
@@ -1153,7 +1143,7 @@ namespace WindowsFormsApp4
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
             // получаем выбранный файл
-            string filename = "\"" + openFileDialog1.FileName+ "\"";
+            string filename = String.Format(" {0} ", openFileDialog1.FileName);
 
             try
             {

@@ -19,6 +19,8 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Windows.Documents;
 using System.Xml;
+using static WindowsFormsApp4.ScopeFrameReader;
+using Newtonsoft.Json.Linq;
 
 namespace WindowsFormsApp4
 {
@@ -71,47 +73,10 @@ namespace WindowsFormsApp4
         {
             InitializeComponent();
             CreateControlTable1();
-            CreateTreeView();
             PrepareGraph();
         }
 
-        private void CreateTreeView()
-        {
-            XmlDocument xmlDoc;
-            string xmlpath = @"..\..\scope_tree.xml";
-            xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlpath);
-            treeView1.Nodes.Clear();
-            treeView1.Nodes.Add(new TreeNode(xmlDoc.DocumentElement.Name));
-            TreeNode rootNode = new TreeNode();
-            rootNode = treeView1.Nodes[0];
-            AddNode(xmlDoc.DocumentElement, rootNode);
-            treeView1.ExpandAll();
-        }
-
-        private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
-        {
-            XmlNode xNode;
-            TreeNode tNode;
-            XmlNodeList nodeList;
-            int i;
-            if (inXmlNode.HasChildNodes)
-            {
-                nodeList = inXmlNode.ChildNodes;
-                for (i = 0; i< nodeList.Count; i++)
-{
-                    xNode = inXmlNode.ChildNodes[i];
-                    inTreeNode.Nodes.Add(new TreeNode(xNode.Name));
-                    tNode = inTreeNode.Nodes[i];
-                    AddNode(xNode, tNode);
-                }
-            }
-            else
-            {
-                inTreeNode.Text = (inXmlNode.OuterXml).Trim();
-            }
-        }
-
+     
         private void log_data(string msg) {
 
             BeginInvoke(new MyDelegate(() =>
@@ -144,7 +109,7 @@ namespace WindowsFormsApp4
                     };
 
                     update_cnt++;
-                    if (update_cnt > 5)
+                    if (update_cnt > 3)
                     {
                         updateGraph();
                         update_cnt = 0;
@@ -190,10 +155,9 @@ namespace WindowsFormsApp4
         {
             try
             {
-
-                //server = new ServerModbusTCP(connection_setups.ServerName, connection_setups.ServerPort);
-                server = new ServerModbusTCP("localhost", 8888);
-
+                connection_setups = ConnectionSetups.read();
+                server = new ServerModbusTCP(connection_setups.ServerName, connection_setups.ServerPort);
+                //server = new ServerModbusTCP("localhost", 8888);
             }
             catch (ServerModbusTCPException ex)
             {
@@ -506,7 +470,7 @@ namespace WindowsFormsApp4
 
             try
             {
-                byte[] req = new byte[] { 0, 0, 0, 0, 0, 5, 1, 20, 0x1, 0x1, 0x1 };
+                byte[] req = new byte[] { 0, 0, 0, 0, 0, 5,(byte) connection_setups.SlaveAdr, 20, 0x1, 0x1, 0x1 };
                 var RXbuf = await server.SendRawDataAsync(req);
 
                 
@@ -560,5 +524,122 @@ namespace WindowsFormsApp4
             Paused = true;
         }
 
+        async private void btn_Chanels_Click(object sender, EventArgs e)
+        {
+
+
+            /* _______________________________MODBUS SCOPE CHANNEl LIST FRAME TCP__________
+            *
+            *       +-----------+---------------+----------------------------+-------------+
+            * index | 0-5    | 6   | 7  | 8    |                                   |  
+            *       +-----------+---------------+----------------------------+-------------+
+            * FRAME | HEADER | ADR |CMD |CHNNUM|      ADR 4b, INFO 5b, TYPE 1b     |  
+            *
+            */
+
+            try
+            {
+
+                ServerModbusTCP tmp = new ServerModbusTCP(connection_setups.ServerName, connection_setups.ServerPort);
+                byte[] req = new byte[] { 0, 0, 0, 0, 0, 2, (byte)connection_setups.SlaveAdr, 21 };
+                var RXbuf = await server.SendRawDataAsync(req);
+
+                int cnlnum = (int)RXbuf[8];
+                int count = 0;
+                var res = RXbuf.ToList().GetRange(9, cnlnum*10).GroupBy(_ => count++ / 10);
+
+                dataGridView2.Rows.Clear();
+                controlTable2 = new ControlsTable(this.dataGridView2);
+
+                foreach (var item in res)
+                {
+                    if (item.Count() < 10) break;
+                    UInt32 adr = BitConverter.ToUInt32(item.ToArray(), 0);
+                    string info = Encoding.UTF8.GetString(item.ToList().GetRange(4, 5).ToArray());
+                    int type = item.ToArray()[9];
+
+                    CustomControl tmp_row = new CustomControl(info, checkedbox: true, msg: Convert.ToString(adr, 16));
+                    tmp_row.OnControlEvetn += Chanels_CellEndEdit;
+                    controlTable2.addControl(tmp_row);
+
+                    Debug.WriteLine(adr.ToString(), info, type);
+                }
+                controlTable2.RenderTable();
+                tmp.close();
+
+            } catch (ServerModbusTCPException ex)
+            {
+                Debug.WriteLine(ex.Message);
+                log_data(ex.Message);
+            }
+
+        }
+
+        private void Chanels_CellEndEdit()
+        {
+            List<int> ind = new List<int>();
+            Color[] colors = new Color[4] { Color.Red, Color.Blue , Color.Green , Color.Black };
+            foreach (DataGridViewRow row in dataGridView2.Rows) {
+
+                if ((bool)(row.Cells[1] as DataGridViewCheckBoxCell).Value)
+                {
+                    if (ind.Count < 4)
+                    {
+                        row.Cells[1].Style.BackColor = colors[ind.Count];
+                        ind.Add(row.Index);
+                    }
+                    else
+                    {
+                        (row.Cells[1] as DataGridViewCheckBoxCell).Value = false;
+                        row.Cells[1].Style.BackColor = Color.White;
+                    }
+                }
+                else {
+                    row.Cells[1].Style.BackColor = Color.White;
+                }
+
+            }
+            if (ind.Count == 0) return;
+
+            List<byte> req = new List<byte> { 0, 0, 0, 0, 0, 18, 1, 22 };
+            for (int i=0; i<4; i++) {
+
+                if (i < ind.Count)
+                {
+                    req.AddRange(BitConverter.GetBytes(Convert.ToInt32(dataGridView2.Rows[ind[i]].Cells[0].ToolTipText, 16)));
+                }
+                else {
+                    req.AddRange(new byte[] { 0, 0, 0, 0 });
+                }
+               
+
+            }
+            
+
+            _ = Task.Run(async () =>
+            {
+
+                try
+                {
+                    ServerModbusTCP tmp = new ServerModbusTCP(connection_setups.ServerName, connection_setups.ServerPort);
+                    var RXbuf = await server.SendRawDataAsync(req.ToArray());
+
+                    int freq = (byte)(ind.Count);
+                  //  if (ind.Count <= 1) freq = 0;
+                    req = new List<byte> { 0, 0, 0, 0, 0, 4, (byte)connection_setups.SlaveAdr, 25, (byte) (ind.Count-1), (byte)freq  };
+                    RXbuf = await server.SendRawDataAsync(req.ToArray());
+                    tmp.close();
+                    TimeScaleChenged();
+                }
+                catch (ServerModbusTCPException ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+
+
+            });
+
+
+        }
     }
 }

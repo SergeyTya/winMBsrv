@@ -536,6 +536,7 @@ namespace WindowsFormsApp4
         {
             token = new CancellationToken();
             server = new ServerModbusTCP("localhost", 8888);
+
             Timer(token);
         }
     }

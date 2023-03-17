@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace TestGen
 
         internal void ControlEvetn()
         {
+            if(OnControlEvetn ==null) { return; }
             OnControlEvetn();
+
         }
 
+        public string msg;
         public string Name { set; get; }
         public string[] Range { set; get; }
 
@@ -50,12 +54,13 @@ namespace TestGen
         }
 
         public CustomControl(
-            string name, 
-            string[] range = null, 
-            double max = 32768, 
-            double min = -32768, 
-            double def = 0, 
-            bool checkedbox = false
+            string name,
+            string[] range = null,
+            double max = 32768,
+            double min = -32768,
+            double def = 0,
+            bool checkedbox = false,
+            string msg = ""
         )
         {
             Name = name;
@@ -64,6 +69,7 @@ namespace TestGen
             Min = min;
             Value = def;
             Checkedbox = checkedbox;
+            this.msg = msg;
         }
 
 
@@ -137,6 +143,7 @@ namespace TestGen
                 row.Cells[1] = checkedBox;
 
             }
+            row.Cells[0].ToolTipText = control.msg;
             this.table.Rows.Add(row);
         }
 
@@ -159,46 +166,53 @@ namespace TestGen
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            string name = table.Rows[e.RowIndex].Cells[0].Value.ToString();
+            try {
 
-            if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewComboBoxCell))
-            {
+                string name = table.Rows[e.RowIndex].Cells[0].Value.ToString();
 
-                UInt16 index = (UInt16)(table.Rows[e.RowIndex].Cells[1] as DataGridViewComboBoxCell).Items.IndexOf
-                                   (
-                                       table.Rows[e.RowIndex].Cells[1].Value
-                                   );
-                this.controls[name].Value = index;
-               
-
-            } else
-
-            if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewTextBoxCell))
-            {
-                double num = 0;
-                if (double.TryParse(table.Rows[e.RowIndex].Cells[1].Value.ToString(), out num))
+                if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewComboBoxCell))
                 {
-                    this.controls[name].Value = num;
-                    if (this.controls[name].Value != num)
-                        table.Rows[e.RowIndex].Cells[1].Value = this.controls[name].Value;
+
+                    UInt16 index = (UInt16)(table.Rows[e.RowIndex].Cells[1] as DataGridViewComboBoxCell).Items.IndexOf
+                                       (
+                                           table.Rows[e.RowIndex].Cells[1].Value
+                                       );
+                    this.controls[name].Value = index;
+
 
                 }
-                
-            } else
+                else
 
-            if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewCheckBoxCell))
-            {
+                if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewTextBoxCell))
+                {
+                    double num = 0;
+                    if (double.TryParse(table.Rows[e.RowIndex].Cells[1].Value.ToString(), out num))
+                    {
+                        this.controls[name].Value = num;
+                        if (this.controls[name].Value != num)
+                            table.Rows[e.RowIndex].Cells[1].Value = this.controls[name].Value;
 
-                bool res = (bool)(table.Rows[e.RowIndex].Cells[1] as DataGridViewCheckBoxCell).Value;
+                    }
 
-                this.controls[name].Value = 0;
-                if (res) this.controls[name].Value = 1;
+                }
+                else
 
-                
+                if (table.Rows[e.RowIndex].Cells[1].GetType() == typeof(DataGridViewCheckBoxCell))
+                {
+
+                    bool res = (bool)(table.Rows[e.RowIndex].Cells[1] as DataGridViewCheckBoxCell).Value;
+
+                    this.controls[name].Value = 0;
+                    if (res) this.controls[name].Value = 1;
+
+
+                }
+
+                this.controls[name].ControlEvetn();
+
+            } catch(System.Collections.Generic.KeyNotFoundException ex) {
+                Debug.WriteLine(ex.Message);
             }
-
-            this.controls[name].ControlEvetn();
-
         }
     }
 

@@ -29,7 +29,7 @@ namespace TestGen
         private ServerModbusTCP  server;
         private delegate void MyDelegate();
         double _time = 0;
-        double _time_step = 0.100;
+        double _time_step = 0.150;
         private System.Timers.Timer _timer;
         private bool _paused = false;
 
@@ -113,9 +113,13 @@ namespace TestGen
                 };
                
                 var myTask = PollAsync((ushort) newRefValue);
-                if (await Task.WhenAny(myTask, Task.Delay((int)(_time_step  * 1000))) == myTask)
+                if (await Task.WhenAny(myTask, Task.Delay((int)(_time_step * 1000))) == myTask)
                 {
-                    newResValue =(int) myTask.Result;
+                    newResValue = (int)myTask.Result;
+                }
+                else {
+                    await Task.Delay((int)(1000));
+                    return;
                 }
                 _time += _time_step;
 
@@ -142,19 +146,20 @@ namespace TestGen
      
             if ( controlTable.getControlValue(GenSigParamNames.Enable) == 1)
             {
-                var refVal =  await server.ReadWriteHoldingsAsync(connection_setups.SlaveAdr, target_HR, 1, target_HR, new ushort[] { point_val });
+                //var refVal =  await server.ReadWriteHoldingsAsync(connection_setups.SlaveAdr, target_HR, 1, target_HR, new ushort[] { point_val });
+                var refVal = await server.WriteHoldingsAsync(connection_setups.SlaveAdr, target_HR, new ushort[] { point_val });
+                //if (controlTable.getControlValue(GenSigParamNames.ResEnable) == 1) {
+                //    var respVal = await server.ReadInputsAsync(connection_setups.SlaveAdr, target_IR, 1);
+                //    if (respVal != null)
+                //    {
+                //        return (Int16) respVal[0];
+                //    }
+                //}
 
-                if (controlTable.getControlValue(GenSigParamNames.ResEnable) == 1) {
-                    var respVal = await server.ReadInputsAsync(connection_setups.SlaveAdr, target_IR, 1);
-                    if (respVal != null)
-                    {
-                        return (Int16) respVal[0];
-                    }
-                }
-                if (refVal != null)
-                {
-                    return (Int16) refVal[0];
-                }
+                //if (refVal != null)
+                //{
+                //    return (Int16) refVal[0];
+                //}
             }
             return 0;
         }
