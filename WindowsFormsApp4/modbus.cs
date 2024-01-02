@@ -410,7 +410,7 @@ namespace WindowsFormsApp4
                 ushort[] temp;
                 if (cmd == comand.RD_HOLDING)
                 {
-                    temp = master.ReadHoldingRegisters(1, adr, count);
+                    temp = master.ReadHoldingRegisters(btDevAdr, adr, count);
                     //temp =master.ReadHoldingRegistersAsync(1, adr, count);
                     int i = 0;
                     foreach (var el in temp)
@@ -425,7 +425,7 @@ namespace WindowsFormsApp4
                 {
 
                     //temp = master.ReadInputRegistersAsync(1, adr, count);
-                    temp = master.ReadInputRegisters(1, adr, count); 
+                    temp = master.ReadInputRegisters(btDevAdr, adr, count); 
                     int i = 0;
                     foreach (var el in temp)
                     {
@@ -451,7 +451,7 @@ namespace WindowsFormsApp4
 
             try
             {
-                master.WriteSingleRegisterAsync(1, adr, data);
+                master.WriteSingleRegisterAsync(btDevAdr, adr, data);
                 uilHRadrForRead.Add(adr);
             }
             catch (Exception e){
@@ -468,7 +468,7 @@ namespace WindowsFormsApp4
             try
             {
                 //master.WriteMultipleRegisters(1, adrW, data.ToArray());
-                master.WriteMultipleRegistersAsync(1, adrW, data.ToArray());
+                master.WriteMultipleRegistersAsync(btDevAdr, adrW, data.ToArray());
                 uilHRadrForRead.Add(0);
                 uilHRadrForRead.Add(256);
             }
